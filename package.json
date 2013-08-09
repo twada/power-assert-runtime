@@ -13,6 +13,9 @@
     "email": "takuto.wada@gmail.com",
     "url": "http://github.com/twada"
   },
+  "scripts": {
+    "test": "grunt qunit-test"
+  },
   "main": "./lib/empower",
   "directories": {
     "lib": "./lib"
