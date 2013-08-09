@@ -1,4 +1,4 @@
-var espower = require('./lib/espower'),
+var espower = require('espower'),
     esprima = require('esprima'),
     escodegen = require('escodegen'),
     q = require('qunitjs');

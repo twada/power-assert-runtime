@@ -5,7 +5,7 @@ var q = require('../test_helper').QUnit,
     _pa_ = enhance(q.assert, formatter, function (context, message) {
         powerAssertTextLines = formatter.format(context);
     }),
-    espower = require('../lib/espower'),
+    espower = require('espower'),
     esprima = require('esprima'),
     escodegen = require('escodegen'),
     CoffeeScript = require('coffee-script-redux');

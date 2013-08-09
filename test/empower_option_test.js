@@ -6,7 +6,7 @@ var q = require('../test_helper').QUnit,
     _pa_ = enhance(q.assert, formatter, function (context, message) {
         powerAssertTextLines = formatter.format(context);
     }),
-    espower = require('../lib/espower'),
+    espower = require('espower'),
     esprima = require('esprima');
 
 q.module('destructive option');
