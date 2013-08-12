@@ -14,7 +14,7 @@
     "url": "http://github.com/twada"
   },
   "scripts": {
-    "test": "grunt qunit-test"
+    "test": "grunt test"
   },
   "main": "./lib/empower",
   "directories": {

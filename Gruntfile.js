@@ -74,5 +74,5 @@ module.exports = function(grunt) {
         });
     });
 
-    grunt.registerTask('default', ['qunit-test']);
+    grunt.registerTask('test', ['qunit-test']);
 };
