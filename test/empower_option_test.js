@@ -3,41 +3,11 @@ var q = require('../test_helper').QUnit,
     formatter = require('../lib/power-assert-formatter'),
     enhance = require('../lib/empower').enhance,
     powerAssertTextLines = [],
-    _pa_ = enhance(q.assert, formatter, function (context, message) {
+    assert = enhance(q.assert, formatter, function (context, message) {
         powerAssertTextLines = formatter.format(context);
     }),
     espower = require('espower'),
     esprima = require('esprima');
-
-q.module('destructive option');
-
-var destructiveOptionTest = function (testName, option, callback) {
-    q.test(testName, function (assert) {
-        var tree = esprima.parse('assert(falsyStr);', {tolerant: true, loc: true, range: true}),
-            saved = espower.deepCopy(tree),
-            result = espower(tree, option);
-        callback(assert, saved, tree, result);
-    });
-};
-
-destructiveOptionTest('default option', {}, function (assert, before, tree, after) {
-    assert.deepEqual(tree, before);
-    assert.notDeepEqual(after, before);
-    assert.notDeepEqual(after, tree);
-});
-
-destructiveOptionTest('destructive: false', {destructive: false}, function (assert, before, tree, after) {
-    assert.deepEqual(tree, before);
-    assert.notDeepEqual(after, before);
-    assert.notDeepEqual(after, tree);
-});
-
-destructiveOptionTest('destructive: true', {destructive: true}, function (assert, before, tree, after) {
-    assert.notDeepEqual(tree, before);
-    assert.notDeepEqual(after, before);
-    assert.deepEqual(after, tree);
-});
-
 
 q.module('path option', {
     setup: function () {
@@ -45,10 +15,10 @@ q.module('path option', {
     }
 });
 
-q.test('when path option is undefined', function (assert) {
+q.test('when path option is undefined', function () {
     var falsyStr = '';
-    _pa_.ok(eval(instrument('assert(falsyStr);', {destructive: false, source: 'assert(falsyStr);', powerAssertVariableName: '_pa_'})));
-    assert.deepEqual(powerAssertTextLines, [
+    assert.ok(eval(instrument('assert(falsyStr);', {destructive: false, source: 'assert(falsyStr);', powerAssertVariableName: 'assert'})));
+    q.deepEqual(powerAssertTextLines, [
         '# at line: 1',
         '',
         'assert(falsyStr);',
@@ -58,10 +28,10 @@ q.test('when path option is undefined', function (assert) {
     ]);
 });
 
-q.test('when path option is provided', function (assert) {
+q.test('when path option is provided', function () {
     var falsyStr = '';
-    _pa_.ok(eval(instrument('assert(falsyStr);', {destructive: false, source: 'assert(falsyStr);', path: '/path/to/source.js', powerAssertVariableName: '_pa_'})));
-    assert.deepEqual(powerAssertTextLines, [
+    assert.ok(eval(instrument('assert(falsyStr);', {destructive: false, source: 'assert(falsyStr);', path: '/path/to/source.js', powerAssertVariableName: 'assert'})));
+    q.deepEqual(powerAssertTextLines, [
         '# /path/to/source.js:1',
         '',
         'assert(falsyStr);',
@@ -70,50 +40,3 @@ q.test('when path option is provided', function (assert) {
         ''
     ]);
 });
-
-
-
-q.module('AST prerequisites. Error should be thrown if loc is missing.', {
-    setup: function () {
-        this.jsCode = 'assert(falsyStr);',
-        this.tree = esprima.parse(this.jsCode, {tolerant: true, loc: false});
-    }
-});
-
-q.test('Error content (without path)', function (assert) {
-    try {
-        espower(this.tree, {destructive: false, source: this.jsCode, powerAssertVariableName: '_pa_'});
-        assert.ok(false, 'Error should be thrown');
-    } catch (e) {
-        assert.equal(e.name, 'Error');
-        assert.equal(e.message, 'JavaScript AST should contain location information.');
-    }
-});
-
-q.test('Error content (with path)', function (assert) {
-    try {
-        espower(this.tree, {destructive: false, source: this.jsCode, path: '/path/to/baz_test.js', powerAssertVariableName: '_pa_'});
-        assert.ok(false, 'Error should be thrown');
-    } catch (e) {
-        assert.equal(e.name, 'Error');
-        assert.equal(e.message, 'JavaScript AST should contain location information. path: /path/to/baz_test.js');
-    }
-});
-
-
-
-q.module('preserve location information');
-
-q.test('preserve location of instrumented nodes', function (assert) {
-    var tree = esprima.parse('assert((three * (seven * ten)) === three);', {tolerant: true, loc: true, range: true}),
-        saved = espower.deepCopy(tree),
-        result = espower(tree, {destructive: false, source: this.jsCode, path: '/path/to/baz_test.js'});
-    espower.traverse(result, function (node) {
-        if (typeof node.type === 'undefined') {
-            return;
-        }
-        assert.ok(typeof node.loc !== 'undefined', 'type: ' + node.type);
-        assert.ok(typeof node.range !== 'undefined', 'type: ' + node.type);
-    });
-});
-

@@ -29,17 +29,9 @@ var instrument = function () {
         return escodegen.generate(expression.arguments[0], {format: {compact: true}});
     };
     return function (line, options) {
-        options = options || {destructive: false, source: line, path: '/path/to/some_test.js', powerAssertVariableName: '_pa_'};
+        options = options || {destructive: false, source: line, path: '/path/to/some_test.js', powerAssertVariableName: 'assert'};
         var tree = extractBodyFrom(line);
         var result = espower(tree, options);
-
-        // espower.traverse(result, function (node) {
-        //     if (typeof node.type === 'undefined') {
-        //         return;
-        //     }
-        //     q.assert.ok(typeof node.loc !== 'undefined', 'type: ' + node.type);
-        //     q.assert.ok(typeof node.range !== 'undefined', 'type: ' + node.type);
-        // });
 
         var instrumentedCode = extractBodyOfAssertionAsCode(result);
         //tap.note(instrumentedCode);
