@@ -7,7 +7,7 @@ var q = require('../test_helper').QUnit,
         powerAssertTextLines = formatter.format(context);
     });
 
-q.module('formatter & reporter', {
+q.module('power-assert-formatter', {
     setup: function () {
         powerAssertTextLines.length = 0;
     }
