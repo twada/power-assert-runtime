@@ -62,8 +62,9 @@ q.test('UnaryExpression, negation', function () {
         '# /path/to/some_test.js:1',
         '',
         'assert(!truth);',
-        '        |      ',
-        '        true   ',
+        '       ||      ',
+        '       |true   ',
+        '       false   ',
         ''
     ]);
 });
@@ -76,8 +77,10 @@ q.test('UnaryExpression, double negative', function () {
         '# /path/to/some_test.js:1',
         '',
         'assert(!!some);',
-        '         |     ',
-        '         ""    ',
+        '       |||     ',
+        '       ||""    ',
+        '       |true   ',
+        '       false   ',
         ''
     ]);
 });
@@ -89,20 +92,41 @@ q.test('typeof operator: assert(typeof foo !== "undefined");', function () {
         '# /path/to/some_test.js:1',
         '',
         'assert(typeof foo !== "undefined");',
-        '                  |                ',
-        '                  false            ',
+        '       |          |                ',
+        '       |          false            ',
+        '       "undefined"                 ',
         ''
     ]);
 });
 
 
-q.test('assert(delete foo.bar);', function () {
+q.test('assert((delete foo.bar) === false);', function () {
     var foo = {
         bar: {
             baz: false
         }
     };
-    assert.ok(eval(instrument('assert(delete foo.bar);')));
+    assert.ok(eval(instrument('assert((delete foo.bar) === false);')));
+    q.deepEqual(powerAssertTextLines, [
+        '# /path/to/some_test.js:1',
+        '',
+        'assert((delete foo.bar) === false);',
+        '        |      |   |    |          ',
+        '        |      |   |    false      ',
+        '        |      |   {"baz":false}   ',
+        '        true   {"bar":{"baz":false}}',
+        ''
+    ]);
+});
+
+
+q.test('assert((delete foo) === false);', function () {
+    var foo = {
+        bar: {
+            baz: false
+        }
+    };
+    assert.ok(eval(instrument('assert((delete foo) === false);')));
     q.deepEqual(powerAssertTextLines, [
     ]);
 });
@@ -434,10 +458,11 @@ q.test('double byte character width', function () {
         '# /path/to/some_test.js:1',
         '',
         'assert(!concat(fuga, piyo));',
-        '        |      |     |      ',
-        '        |      |     "うえお"',
-        '        |      "あい"       ',
-        '        "あいうえお"        ',
+        '       ||      |     |      ',
+        '       ||      |     "うえお"',
+        '       ||      "あい"       ',
+        '       |"あいうえお"        ',
+        '       false                ',
         ''
     ]);
 
@@ -455,9 +480,10 @@ q.test('Japanese hankaku width', function () {
         '# /path/to/some_test.js:1',
         '',
         'assert(!concat(fuga, piyo));',
-        '        |      |     |      ',
-        '        |      "ｱｲ"  "ｳｴｵ"  ',
-        '        "ｱｲｳｴｵ"             ',
+        '       ||      |     |      ',
+        '       ||      "ｱｲ"  "ｳｴｵ"  ',
+        '       |"ｱｲｳｴｵ"             ',
+        '       false                ',
         ''
     ]);
 
