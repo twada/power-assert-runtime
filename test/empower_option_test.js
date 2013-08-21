@@ -11,7 +11,13 @@ q.test('destructive: false', function () {
         }
     };
     var fakeAssertObject = {
-        ok: assertOk
+        ok: assertOk,
+        equal: function (actual, expected, message) {
+            this.ok(actual == expected, message);
+        },
+        strictEqual: function (actual, expected, message) {
+            this.ok(actual === expected, message);
+        }
     };
 
     var empoweredAssert = empower(fakeAssertObject, {destructive: false});
@@ -19,12 +25,26 @@ q.test('destructive: false', function () {
     q.ok(typeof empoweredAssert.ok === 'function');
     q.ok(typeof empoweredAssert._capt === 'function');
     q.ok(typeof empoweredAssert._expr === 'function');
+    q.ok(typeof empoweredAssert.equal === 'function');
+    q.ok(typeof empoweredAssert.strictEqual === 'function');
+
     q.notEqual(empoweredAssert, fakeAssertObject);
     q.notEqual(empoweredAssert.ok, fakeAssertObject.ok);
     q.equal(fakeAssertObject.ok, assertOk);
-    q.throws(function () {
-        empoweredAssert.ok(false);
-    }, Error, 'Error should be thrown');
+
+    try {
+        empoweredAssert.ok(false, 'empoweredAssert.ok');
+    } catch (e) {
+        q.ok(e instanceof Error);
+        q.equal(e.message, 'FakeAssert: assertion failed. empoweredAssert.ok');
+    }
+
+    try {
+        empoweredAssert.strictEqual(1, '1', 'empoweredAssert.strictEqual');
+    } catch (e) {
+        q.ok(e instanceof Error);
+        q.equal(e.message, 'FakeAssert: assertion failed. empoweredAssert.strictEqual');
+    }
 });
 
 q.test('destructive: true', function () {
@@ -34,7 +54,13 @@ q.test('destructive: true', function () {
         }
     };
     var fakeAssertObject = {
-        ok: assertOk
+        ok: assertOk,
+        equal: function (actual, expected, message) {
+            this.ok(actual == expected, message);
+        },
+        strictEqual: function (actual, expected, message) {
+            this.ok(actual === expected, message);
+        }
     };
 
     empower(fakeAssertObject, {destructive: true});
@@ -42,10 +68,24 @@ q.test('destructive: true', function () {
     q.ok(typeof fakeAssertObject.ok === 'function');
     q.ok(typeof fakeAssertObject._capt === 'function');
     q.ok(typeof fakeAssertObject._expr === 'function');
+    q.ok(typeof fakeAssertObject.equal === 'function');
+    q.ok(typeof fakeAssertObject.strictEqual === 'function');
+
     q.notEqual(fakeAssertObject.ok, assertOk);
-    q.throws(function () {
-        fakeAssertObject.ok(false);
-    }, Error, 'Error should be thrown');
+
+    try {
+        fakeAssertObject.ok(false, 'fakeAssertObject.ok');
+    } catch (e) {
+        q.ok(e instanceof Error);
+        q.equal(e.message, 'FakeAssert: assertion failed. fakeAssertObject.ok');
+    }
+
+    try {
+        fakeAssertObject.strictEqual(1, '1', 'fakeAssertObject.strictEqual');
+    } catch (e) {
+        q.ok(e instanceof Error);
+        q.equal(e.message, 'FakeAssert: assertion failed. fakeAssertObject.strictEqual');
+    }
 });
 
 
@@ -59,15 +99,35 @@ q.test('destructive: false', function () {
         }
     };
     assertOk.ok = assertOk;
+    assertOk.equal = function (actual, expected, message) {
+        this.ok(actual == expected, message);
+    };
+    assertOk.strictEqual = function (actual, expected, message) {
+        this.ok(actual === expected, message);
+    };
 
     var empoweredAssert = empower(assertOk, {destructive: false});
     q.ok(typeof empoweredAssert === 'function');
     q.ok(typeof empoweredAssert.ok === 'function');
     q.ok(typeof empoweredAssert._capt === 'function');
     q.ok(typeof empoweredAssert._expr === 'function');
+    q.ok(typeof empoweredAssert.equal === 'function');
+    q.ok(typeof empoweredAssert.strictEqual === 'function');
+
     q.notEqual(empoweredAssert, assertOk);
     q.notEqual(empoweredAssert.ok, assertOk);
-    q.throws(function () {
-        empoweredAssert(false);
-    }, Error, 'Error should be thrown');
+
+    try {
+        empoweredAssert.ok(false, 'empoweredAssert.ok');
+    } catch (e) {
+        q.ok(e instanceof Error);
+        q.equal(e.message, 'FakeAssert: assertion failed. empoweredAssert.ok');
+    }
+
+    try {
+        empoweredAssert.strictEqual(1, '1', 'empoweredAssert.strictEqual');
+    } catch (e) {
+        q.ok(e instanceof Error);
+        q.equal(e.message, 'FakeAssert: assertion failed. empoweredAssert.strictEqual');
+    }
 });
