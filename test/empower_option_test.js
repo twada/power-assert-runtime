@@ -45,7 +45,11 @@ q.test('destructive: false', function () {
         q.ok(e instanceof Error);
         q.equal(e.message, 'FakeAssert: assertion failed. empoweredAssert.strictEqual');
     }
+
+    var empoweredAgain = empower(empoweredAssert, {destructive: false});
+    q.equal(empoweredAgain, empoweredAssert, 'avoid empowering multiple times');
 });
+
 
 q.test('destructive: true', function () {
     var assertOk = function (actual, message) {
@@ -86,6 +90,9 @@ q.test('destructive: true', function () {
         q.ok(e instanceof Error);
         q.equal(e.message, 'FakeAssert: assertion failed. fakeAssertObject.strictEqual');
     }
+
+    var empoweredAgain = empower(fakeAssertObject, {destructive: true});
+    q.equal(empoweredAgain, fakeAssertObject, 'avoid empowering multiple times');
 });
 
 
@@ -130,4 +137,7 @@ q.test('destructive: false', function () {
         q.ok(e instanceof Error);
         q.equal(e.message, 'FakeAssert: assertion failed. empoweredAssert.strictEqual');
     }
+
+    var empoweredAgain = empower(empoweredAssert, {destructive: false});
+    q.equal(empoweredAgain, empoweredAssert, 'avoid empowering multiple times');
 });
