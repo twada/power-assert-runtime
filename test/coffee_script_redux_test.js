@@ -55,3 +55,40 @@ q.test('assert.ok dog.speak() == says', function () {
         ''
     ]);
 });
+
+
+q.test('assert.ok dog.age is four', function () {
+    var dog = { age: 3 },
+        four = 4;
+    assert.ok(eval(espowerCoffee('assert.ok dog.age is four')));
+    q.deepEqual(powerAssertTextLines, [
+        '# /path/to/bar_test.coffee:1',
+        '',
+        'assert.ok dog.age is four',
+        '          |   |   |  |   ',
+        '          |   |   |  4   ',
+        '          |   3   false  ',
+        '          {"age":3}      ',
+        ''
+    ]);
+});
+
+
+q.test('assert.ok dog[prop].year is lastYear', function () {
+    var dog = {birthday: { year: 2011 }},
+        lastYear = 2012,
+        prop = 'birthday';
+    assert.ok(eval(espowerCoffee('assert.ok dog[prop].year is lastYear')));
+    q.deepEqual(powerAssertTextLines, [
+        '# /path/to/bar_test.coffee:1',
+        '',
+        'assert.ok dog[prop].year is lastYear',
+        '          |  ||     |    |  |       ',
+        '          |  ||     |    |  2012    ',
+        '          |  ||     2011 false      ',
+        '          |  |"birthday"            ',
+        '          |  {"year":2011}          ',
+        '          {"birthday":{"year":2011}}',
+        ''
+    ]);
+});

@@ -276,6 +276,74 @@ q.test('Deep MemberExpression chain: assert(foo.bar.baz);', function () {
 });
 
 
+q.test('computed MemberExpression with Literal key: assert(foo["bar"].baz);', function () {
+    var foo = {
+        bar: {
+            baz: false
+        }
+    };
+    assert.ok(eval(instrument('assert(foo["bar"].baz);')));
+    q.deepEqual(powerAssertTextLines, [
+        '# /path/to/some_test.js:1',
+        '',
+        'assert(foo["bar"].baz);',
+        '       |  |       |    ',
+        '       |  |       false',
+        '       |  {"baz":false}',
+        '       {"bar":{"baz":false}}',
+        ''
+    ]);
+});
+
+
+q.test('computed MemberExpression with Identifier key: assert(foo[propName].baz);', function () {
+    var propName = 'bar',
+        foo = {
+            bar: {
+                baz: false
+            }
+        };
+    assert.ok(eval(instrument('assert(foo[propName].baz);')));
+    q.deepEqual(powerAssertTextLines, [
+        '# /path/to/some_test.js:1',
+        '',
+        'assert(foo[propName].baz);',
+        '       |  ||         |    ',
+        '       |  |"bar"     false',
+        '       |  {"baz":false}   ',
+        '       {"bar":{"baz":false}}',
+        ''
+    ]);
+});
+
+
+q.test('computed MemberExpression chain with various key: assert(foo[propName]["baz"][keys()[0]]);', function () {
+    var keys = function () { return ["toto"]; },
+        propName = "bar",
+        foo = {
+            bar: {
+                baz: {
+                    toto: false
+                }
+            }
+        };
+    assert.ok(eval(instrument('assert(foo[propName]["baz"][keys()[0]]);')));
+    q.deepEqual(powerAssertTextLines, [
+        '# /path/to/some_test.js:1',
+        '',
+        'assert(foo[propName]["baz"][keys()[0]]);',
+        '       |  ||        |      ||     |     ',
+        '       |  ||        |      ||     "toto"',
+        '       |  ||        |      |["toto"]    ',
+        '       |  ||        |      false        ',
+        '       |  |"bar"    {"toto":false}      ',
+        '       |  {"baz":{"toto":false}}        ',
+        '       {"bar":{"baz":{"toto":false}}}   ',
+        ''
+    ]);
+});
+
+
 q.test('assert(func());', function () {
     var func = function () { return false; };
     assert.ok(eval(instrument('assert(func());')));
