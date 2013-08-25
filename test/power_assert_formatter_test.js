@@ -99,6 +99,19 @@ q.test('typeof operator: assert(typeof foo !== "undefined");', function () {
     ]);
 });
 
+q.test('undefined property: assert({}.hoge === "xxx");', function () {
+    assert.ok(eval(instrument('assert({}.hoge === "xxx");')));
+    q.deepEqual(powerAssertTextLines, [
+        '# /path/to/some_test.js:1',
+        '',
+        'assert({}.hoge === "xxx");',
+        '          |    |          ',
+        '          |    false      ',
+        '          undefined       ',
+        ''
+    ]);
+});
+
 
 q.test('assert((delete foo.bar) === false);', function () {
     var foo = {
