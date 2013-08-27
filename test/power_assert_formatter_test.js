@@ -590,3 +590,21 @@ q.test('Object having circular structure', function () {
         ''
     ]);
 });
+
+
+
+q.test('UnaryExpression of UnaryExpression: assert(typeof + twoStr === -twoStr);', function () {
+    var twoStr = '2';
+    assert.ok(eval(instrument('assert(typeof + twoStr === -twoStr);')));
+    q.deepEqual(powerAssertTextLines, [
+        '# /path/to/some_test.js:1',
+        '',
+        'assert(typeof + twoStr === -twoStr);',
+        '       |      | |      |   ||       ',
+        '       |      | |      |   |"2"     ',
+        '       |      | |      |   -2       ',
+        '       |      2 "2"    false        ',
+        '       "number"                     ',
+        ''
+    ]);
+});
