@@ -25,7 +25,7 @@
     "url": "http://github.com/twada/empower.git"
   },
   "devDependencies": {
-    "espower": "~0.1.0",
+    "espower": "~0.1.1",
     "esprima": "1.0.3",
     "escodegen": "0.0.24",
     "coffee-script-redux": "2.0.0-beta6",
@@ -36,7 +36,7 @@
   "licenses": [
     {
       "type": "MIT",
-      "url": "http://www.opensource.org/licenses/mit-license.php"
+      "url": "https://raw.github.com/twada/empower/master/MIT-LICENSE.txt"
     }
   ],
   "bugs": {
