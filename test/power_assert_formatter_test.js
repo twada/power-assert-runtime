@@ -569,3 +569,24 @@ q.test('Japanese hankaku width', function () {
     ]);
 
 });
+
+
+
+q.test('Object having circular structure', function () {
+    var cyclic = [], two = 2;
+    cyclic.push('foo');
+    cyclic.push(cyclic);
+    cyclic.push('baz');
+    assert.ok(eval(instrument('assert.ok(cyclic[two] === cyclic);')));
+    q.deepEqual(powerAssertTextLines, [
+        '# /path/to/some_test.js:1',
+        '',
+        'assert.ok(cyclic[two] === cyclic);',
+        '          |     ||    |   |       ',
+        '          |     ||    |   ["foo","#Circular#","baz"]',
+        '          |     |2    false       ',
+        '          |     "baz"             ',
+        '          ["foo","#Circular#","baz"]',
+        ''
+    ]);
+});
