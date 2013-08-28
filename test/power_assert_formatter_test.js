@@ -231,8 +231,9 @@ q.test('LogicalExpression: assert(5 < actual && actual < 13);', function () {
         '# /path/to/some_test.js:1',
         '',
         'assert(5 < actual && actual < 13);',
-        '         | |         |      |     ',
-        '         | 16        16     false ',
+        '         | |      |  |      |     ',
+        '         | |      |  16     false ',
+        '         | 16     false           ',
         '         true                     ',
         ''
     ]);
@@ -246,9 +247,10 @@ q.test('LogicalExpression OR: assert.ok(actual < 5 || 13 < actual);', function (
         '# /path/to/some_test.js:1',
         '',
         'assert.ok(actual < 5 || 13 < actual);',
-        '          |      |         | |       ',
-        '          |      |         | 10      ',
-        '          10     false     false     ',
+        '          |      |   |     | |       ',
+        '          |      |   |     | 10      ',
+        '          |      |   false false     ',
+        '          10     false               ',
         ''
     ]);
 });
@@ -261,8 +263,8 @@ q.test('Characterization test of LogicalExpression current spec: assert(2 > actu
         '# /path/to/some_test.js:1',
         '',
         'assert(2 > actual && actual < 13);',
-        '         | |                      ',
-        '         | 5                      ',
+        '         | |      |               ',
+        '         | 5      false           ',
         '         false                    ',
         ''
     ]);
