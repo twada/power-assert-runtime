@@ -608,3 +608,34 @@ q.test('UnaryExpression of UnaryExpression: assert(typeof + twoStr === -twoStr);
         ''
     ]);
 });
+
+
+
+q.test('AssignmentExpression: assert(minusOne += 1);', function () {
+    var minusOne = -1;
+    assert.ok(eval(instrument('assert(minusOne += 1);')));
+    q.deepEqual(powerAssertTextLines, [
+        '# /path/to/some_test.js:1',
+        '',
+        'assert(minusOne += 1);',
+        '                |     ',
+        '                0     ',
+        ''
+    ]);
+});
+
+
+
+q.test('AssignmentExpression with MemberExpression: assert((dog.age += 1) === four);', function () {
+    var dog = { age: 2 }, four = 4;
+    assert.ok(eval(instrument('assert((dog.age += 1) === four);')));
+    q.deepEqual(powerAssertTextLines, [
+        '# /path/to/some_test.js:1',
+        '',
+        'assert((dog.age += 1) === four);',
+        '                |     |   |     ',
+        '                |     |   4     ',
+        '                3     false     ',
+        ''
+    ]);
+});
