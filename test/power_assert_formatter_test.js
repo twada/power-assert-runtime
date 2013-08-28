@@ -641,3 +641,39 @@ q.test('AssignmentExpression with MemberExpression: assert((dog.age += 1) === fo
         ''
     ]);
 });
+
+
+
+q.test('ArrayExpression: assert([foo, bar].length === four);', function () {
+    var foo = 'hoge', bar = 'fuga', four = 4;
+    assert.ok(eval(instrument('assert([foo, bar].length === four);')));
+    q.deepEqual(powerAssertTextLines, [
+        '# /path/to/some_test.js:1',
+        '',
+        'assert([foo, bar].length === four);',
+        '        |    |    |      |   |     ',
+        '        |    |    |      |   4     ',
+        '        |    |    2      false     ',
+        '        |    "fuga"                ',
+        '        "hoge"                     ',
+        ''
+    ]);
+});
+
+
+
+q.test('various expressions in ArrayExpression: assert(typeof [[foo.bar, baz(moo)], + fourStr] === "number");', function () {
+    var foo = {bar: 'fuga'}, baz = function (arg) { return null; }, moo = 'boo', fourStr = '4';
+    assert.ok(eval(instrument('assert(typeof [[foo.bar, baz(moo)], + fourStr] === "number");')));
+    q.deepEqual(powerAssertTextLines, [
+        '# /path/to/some_test.js:1',
+        '',
+        'assert(typeof [[foo.bar, baz(moo)], + fourStr] === "number");',
+        '       |        |   |    |   |      | |        |             ',
+        '       |        |   |    |   "boo"  4 "4"      false         ',
+        '       |        |   |    null                                ',
+        '       |        |   "fuga"                                   ',
+        '       "object" {"bar":"fuga"}                               ',
+        ''
+    ]);
+});
