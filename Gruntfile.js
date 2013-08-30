@@ -82,5 +82,5 @@ module.exports = function(grunt) {
         });
     });
 
-    grunt.registerTask('test', ['qunit-test']);
+    grunt.registerTask('test', ['jshint', 'qunit-test']);
 };
