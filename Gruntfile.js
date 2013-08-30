@@ -13,6 +13,14 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: pkg,
         ver: '<%= pkg.version %>',
+        jshint: {
+            files: [
+                'lib/**/*.js'
+            ],
+            options: {
+                jshintrc: '.jshintrc'
+            }
+        },
         unit: {
             dir: ['test/**/*.js']
         }
