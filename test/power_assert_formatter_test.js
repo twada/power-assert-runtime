@@ -677,3 +677,33 @@ q.test('various expressions in ArrayExpression: assert(typeof [[foo.bar, baz(moo
         ''
     ]);
 });
+
+
+
+q.test('prefix UpdateExpression: assert(++minusOne);', function () {
+    var minusOne = -1;
+    assert.ok(eval(instrument('assert(++minusOne);')));
+    q.deepEqual(powerAssertTextLines, [
+        '# /path/to/some_test.js:1',
+        '',
+        'assert(++minusOne);',
+        '       |           ',
+        '       0           ',
+        ''
+    ]);
+});
+
+
+
+q.test('suffix UpdateExpression: assert(zero--);', function () {
+    var zero = 0;
+    assert.ok(eval(instrument('assert(zero--);')));
+    q.deepEqual(powerAssertTextLines, [
+        '# /path/to/some_test.js:1',
+        '',
+        'assert(zero--);',
+        '       |       ',
+        '       0       ',
+        ''
+    ]);
+});
