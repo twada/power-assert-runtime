@@ -3,6 +3,7 @@ empower
 
 [![Build Status](https://travis-ci.org/twada/empower.png?branch=master)](https://travis-ci.org/twada/empower)
 [![NPM version](https://badge.fury.io/js/empower.png)](http://badge.fury.io/js/empower)
+[![Dependency Status](https://gemnasium.com/twada/empower.png)](https://gemnasium.com/twada/empower)
 
 Power Assert feature enhancer for assert function/object.
 
