@@ -1,11 +1,13 @@
 var q = require('../test_helper').QUnit,
     instrument = require('../test_helper').instrument,
-    formatter = require('../lib/power-assert-formatter'),
-    enhance = require('../lib/empower').enhance,
-    powerAssertTextLines = [],
-    assert = enhance(q.assert.ok, formatter, function (context, message) {
-        powerAssertTextLines = formatter.format(context);
-    });
+    empower = require('../lib/empower'),
+    config = Object.create(empower.DEFAULT_OPTIONS),
+    powerAssertTextLines = [];
+
+config.callback = function (context, message) {
+    powerAssertTextLines = config.formatter.format(context);
+};
+var assert = empower(q.assert, config);
 
 q.module('power-assert-formatter', {
     setup: function () {
@@ -133,14 +135,15 @@ q.test('assert((delete foo.bar) === false);', function () {
 });
 
 
-q.test('assert((delete foo) === false);', function () {
-    var foo = {
-        bar: {
-            baz: false
-        }
-    };
-    assert.ok(eval(instrument('assert((delete foo) === false);')));
+q.test('assert((delete nonexistent) === false);', function () {
+    assert.ok(eval(instrument('assert((delete nonexistent) === false);')));
     q.deepEqual(powerAssertTextLines, [
+        '# /path/to/some_test.js:1',
+        '',
+        'assert((delete nonexistent) === false);',
+        '        |                   |          ',
+        '        true                false      ',
+        ''
     ]);
 });
 

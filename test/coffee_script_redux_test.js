@@ -1,15 +1,16 @@
 var q = require('../test_helper').QUnit,
-    formatter = require('../lib/power-assert-formatter'),
-    enhance = require('../lib/empower').enhance,
+    empower = require('../lib/empower'),
+    config = Object.create(empower.DEFAULT_OPTIONS),
     powerAssertTextLines = [],
-    assert = enhance(q.assert.ok, formatter, function (context, message) {
-        powerAssertTextLines = formatter.format(context);
-    }),
     espower = require('espower'),
     esprima = require('esprima'),
     escodegen = require('escodegen'),
     CoffeeScript = require('coffee-script-redux');
 
+config.callback = function (context, message) {
+    powerAssertTextLines = config.formatter.format(context);
+};
+var assert = empower(q.assert, config);
 
 q.module('CoffeeScriptRedux integration', {
     setup: function () {
