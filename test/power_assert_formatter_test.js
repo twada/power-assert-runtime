@@ -707,3 +707,32 @@ q.test('suffix UpdateExpression: assert(zero--);', function () {
         ''
     ]);
 });
+
+
+
+q.test('ConditionalExpression: assert(truthy ? falsy : anotherFalsy);', function () {
+    var truthy = 'truthy', falsy = 0, anotherFalsy = null;
+    assert.ok(eval(instrument('assert(truthy ? falsy : anotherFalsy);')));
+    q.deepEqual(powerAssertTextLines, [
+        '# /path/to/some_test.js:1',
+        '',
+        'assert(truthy ? falsy : anotherFalsy);',
+        '       |        |                     ',
+        '       "truthy" 0                     ',
+        ''
+    ]);
+});
+
+
+q.test('ConditionalExpression of ConditionalExpression: assert(falsy ? truthy : truthy ? anotherFalsy : truthy);', function () {
+    var truthy = 'truthy', falsy = 0, anotherFalsy = null;
+    assert.ok(eval(instrument('assert(falsy ? truthy : truthy ? anotherFalsy : truthy);')));
+    q.deepEqual(powerAssertTextLines, [
+        '# /path/to/some_test.js:1',
+        '',
+        'assert(falsy ? truthy : truthy ? anotherFalsy : truthy);',
+        '       |                |        |                      ',
+        '       0                "truthy" null                   ',
+        ''
+    ]);
+});
