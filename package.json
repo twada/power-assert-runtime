@@ -25,7 +25,7 @@
     "url": "http://github.com/twada/empower.git"
   },
   "devDependencies": {
-    "espower": "~0.1.2",
+    "espower": "~0.1.4",
     "esprima": "1.0.4",
     "escodegen": "0.0.26",
     "coffee-script-redux": "2.0.0-beta7",
