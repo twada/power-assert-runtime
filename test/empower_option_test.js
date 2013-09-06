@@ -2,15 +2,16 @@ var q = require('../test_helper').QUnit,
     empower = require('../lib/empower');
 
 
-q.module('empower.DEFAULT_OPTIONS');
-
+q.module('empower.defaultOptions()', {
+    setup: function () {
+        this.options = empower.defaultOptions();
+    }
+});
 q.test('destructive: false', function () {
-    var options = empower.DEFAULT_OPTIONS;
-    q.equal(options.destructive, false);
+    q.equal(this.options.destructive, false);
 });
 q.test('formatter: power-assert-formatter module', function () {
-    var options = empower.DEFAULT_OPTIONS;
-    q.deepEqual(options.formatter, require('../lib/power-assert-formatter'));
+    q.deepEqual(this.options.formatter, require('../lib/power-assert-formatter'));
 });
 
 

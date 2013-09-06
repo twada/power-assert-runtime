@@ -1,7 +1,7 @@
 var q = require('../test_helper').QUnit,
     instrument = require('../test_helper').instrument,
     empower = require('../lib/empower'),
-    config = Object.create(empower.DEFAULT_OPTIONS),
+    config = empower.defaultOptions(),
     powerAssertTextLines = [];
 
 config.callback = function (context, message) {

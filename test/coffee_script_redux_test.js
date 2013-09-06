@@ -1,6 +1,6 @@
 var q = require('../test_helper').QUnit,
     empower = require('../lib/empower'),
-    config = Object.create(empower.DEFAULT_OPTIONS),
+    config = empower.defaultOptions(),
     powerAssertTextLines = [],
     espower = require('espower'),
     esprima = require('esprima'),
