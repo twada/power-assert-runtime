@@ -26,8 +26,8 @@
   },
   "devDependencies": {
     "espower": "~0.1.4",
-    "esprima": "1.0.4",
-    "escodegen": "0.0.26",
+    "esprima": "~1.0.4",
+    "escodegen": "~0.0.27",
     "coffee-script-redux": "2.0.0-beta7",
     "qunitjs": "1.10.0",
     "qunit-tap": "1.4.0",
