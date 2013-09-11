@@ -739,3 +739,18 @@ q.test('ConditionalExpression of ConditionalExpression: assert(falsy ? truthy : 
         ''
     ]);
 });
+
+
+
+q.test('RegularExpression will not be instrumented: assert(/^not/.exec(str));', function () {
+    var str = 'ok';
+    assert.ok(eval(instrument('assert(/^not/.exec(str));')));
+    q.deepEqual(powerAssertTextLines, [
+        '# /path/to/some_test.js:1',
+        '',
+        'assert(/^not/.exec(str));',
+        '              |    |     ',
+        '              null "ok"  ',
+        ''
+    ]);
+});
