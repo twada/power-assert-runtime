@@ -6,16 +6,8 @@ var empower = require('../lib/empower'),
     config = empower.defaultOptions(),
     powerAssertTextLines = [],
     CoffeeScript = require('coffee-script-redux'),
+    extractBodyOfAssertionAsCode = require('../test_helper').extractBodyOfAssertionAsCode,
     espowerCoffee = function () {
-        var extractBodyOfAssertionAsCode = function (node) {
-            var expression;
-            if (node.type === 'ExpressionStatement') {
-                expression = node.expression;
-            } else if (node.type === 'ReturnStatement') {
-                expression = node.argument;
-            }
-            return escodegen.generate(expression.arguments[0], {format: {compact: true}});
-        };
         return function (csCode) {
             var parseOptions = {raw: true},
                 csAST = CoffeeScript.parse(csCode, parseOptions),
