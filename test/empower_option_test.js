@@ -1,5 +1,7 @@
 var empower = require('../lib/empower'),
+    instrument = require('../test_helper').instrument,
     assert = require('assert');
+
 
 suite('empower.defaultOptions()', function () {
     setup (function () {
@@ -11,6 +13,33 @@ suite('empower.defaultOptions()', function () {
     test('formatter: power-assert-formatter module', function () {
         assert.deepEqual(this.options.formatter, require('../lib/power-assert-formatter'));
     });
+});
+
+
+suite('lineSeparator option', function () {
+    function lineSeparatorTest (name, option, expectedSeparator) {
+        test(name, function () {
+            var baseAssert = require('assert');
+            var assert = empower(baseAssert, option);
+            var falsyNum = 0;
+            try {
+                assert(eval(instrument('assert(falsyNum);')));
+            } catch (e) {
+                baseAssert.equal(e.message, [
+                    '# /path/to/some_test.js:1',
+                    '',
+                    'assert(falsyNum);',
+                    '       |         ',
+                    '       0         ',
+                    ''
+                ].join(expectedSeparator));
+            }
+        });
+    }
+    lineSeparatorTest('default is LF', {}, '\n');
+    lineSeparatorTest('LF', {lineSeparator: '\n'}, '\n');
+    lineSeparatorTest('CR', {lineSeparator: '\r'}, '\r');
+    lineSeparatorTest('CRLF', {lineSeparator: '\r\n'}, '\r\n');
 });
 
 
