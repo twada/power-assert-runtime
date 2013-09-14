@@ -1,5 +1,5 @@
-var q = require('../test_helper').QUnit,
-    empower = require('../lib/empower'),
+var empower = require('../lib/empower'),
+    baseAssert = require('assert'),
     config = empower.defaultOptions(),
     powerAssertTextLines = [],
     espower = require('espower'),
@@ -10,13 +10,7 @@ var q = require('../test_helper').QUnit,
 config.callback = function (context, message) {
     powerAssertTextLines = config.formatter.format(context);
 };
-var assert = empower(q.assert, config);
-
-q.module('CoffeeScriptRedux integration', {
-    setup: function () {
-        powerAssertTextLines.length = 0;
-    }
-});
+var assert = empower(baseAssert, config);
 
 var espowerCoffee = function () {
     var extractBodyOfAssertionAsCode = function (node) {
@@ -42,11 +36,17 @@ var espowerCoffee = function () {
 }();
 
 
-q.test('assert.ok dog.speak() == says', function () {
+suite('CoffeeScriptRedux integration', function () {
+    setup(function () {
+        powerAssertTextLines.length = 0;
+    });
+
+
+test('assert.ok dog.speak() == says', function () {
     var dog = { speak: function () { return 'woof'; } },
         says = 'meow';
     assert.ok(eval(espowerCoffee('assert.ok dog.speak() == says')));
-    q.deepEqual(powerAssertTextLines, [
+    baseAssert.deepEqual(powerAssertTextLines, [
         '# /path/to/bar_test.coffee:1',
         '',
         'assert.ok dog.speak() == says',
@@ -58,11 +58,11 @@ q.test('assert.ok dog.speak() == says', function () {
 });
 
 
-q.test('assert.ok dog.age is four', function () {
+test('assert.ok dog.age is four', function () {
     var dog = { age: 3 },
         four = 4;
     assert.ok(eval(espowerCoffee('assert.ok dog.age is four')));
-    q.deepEqual(powerAssertTextLines, [
+    baseAssert.deepEqual(powerAssertTextLines, [
         '# /path/to/bar_test.coffee:1',
         '',
         'assert.ok dog.age is four',
@@ -75,12 +75,12 @@ q.test('assert.ok dog.age is four', function () {
 });
 
 
-q.test('assert.ok dog[prop].year is lastYear', function () {
+test('assert.ok dog[prop].year is lastYear', function () {
     var dog = {birthday: { year: 2011 }},
         lastYear = 2012,
         prop = 'birthday';
     assert.ok(eval(espowerCoffee('assert.ok dog[prop].year is lastYear')));
-    q.deepEqual(powerAssertTextLines, [
+    baseAssert.deepEqual(powerAssertTextLines, [
         '# /path/to/bar_test.coffee:1',
         '',
         'assert.ok dog[prop].year is lastYear',
@@ -92,4 +92,6 @@ q.test('assert.ok dog[prop].year is lastYear', function () {
         '          {"birthday":{"year":2011}}',
         ''
     ]);
+});
+
 });

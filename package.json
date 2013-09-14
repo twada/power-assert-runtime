@@ -29,9 +29,9 @@
     "esprima": "~1.0.4",
     "escodegen": "~0.0.27",
     "coffee-script-redux": "2.0.0-beta7",
-    "qunitjs": "1.10.0",
-    "qunit-tap": "1.4.0",
+    "mocha": "1.12.1",
     "grunt": "~0.4.1",
+    "grunt-mocha-test": "~0.6.3",
     "grunt-contrib-jshint": "~0.6.4"
   },
   "licenses": [
