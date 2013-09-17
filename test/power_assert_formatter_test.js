@@ -1,24 +1,24 @@
 var empower = require('../lib/empower'),
     instrument = require('../test_helper').instrument,
     baseAssert = require('assert'),
-    config = empower.defaultOptions(),
-    powerAssertTextLines = [];
-config.callback = function (context, message) {
-    powerAssertTextLines = config.formatter.format(context);
-};
-var assert = empower(baseAssert, config);
+    assert = empower(baseAssert),
+    expectPowerAssertMessage = function (body, expectedLines) {
+        try {
+            body();
+            baseAssert.fail('AssertionError should be thrown');
+        } catch (e) {
+            baseAssert.equal(e.message, expectedLines.join('\n'));
+        }
+    };
 
 
 suite('power-assert-formatter', function () {
-    setup(function () {
-        powerAssertTextLines.length = 0;
-    });
-
 
     test('Identifier with empty string', function () {
         var falsyStr = '';
-        assert(eval(instrument('assert(falsyStr);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(falsyStr);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(falsyStr);',
@@ -31,8 +31,9 @@ suite('power-assert-formatter', function () {
 
     test('ReturnStatement', function () {
         var falsyStr = '';
-        assert(eval(instrument('return assert(falsyStr);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('return assert(falsyStr);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'return assert(falsyStr);',
@@ -45,8 +46,9 @@ suite('power-assert-formatter', function () {
 
     test('Identifier with falsy number', function () {
         var falsyNum = 0;
-        assert(eval(instrument('assert(falsyNum);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(falsyNum);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(falsyNum);',
@@ -59,8 +61,9 @@ suite('power-assert-formatter', function () {
 
     test('UnaryExpression, negation', function () {
         var truth = true;
-        assert(eval(instrument('assert(!truth);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(!truth);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(!truth);',
@@ -74,8 +77,9 @@ suite('power-assert-formatter', function () {
 
     test('UnaryExpression, double negative', function () {
         var some = '';
-        assert(eval(instrument('assert(!!some);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(!!some);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(!!some);',
@@ -89,8 +93,9 @@ suite('power-assert-formatter', function () {
 
 
     test('typeof operator: assert(typeof foo !== "undefined");', function () {
-        assert(eval(instrument('assert(typeof foo !== "undefined");')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(typeof foo !== "undefined");')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(typeof foo !== "undefined");',
@@ -103,8 +108,9 @@ suite('power-assert-formatter', function () {
 
 
     test('undefined property: assert({}.hoge === "xxx");', function () {
-        assert(eval(instrument('assert({}.hoge === "xxx");')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert({}.hoge === "xxx");')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert({}.hoge === "xxx");',
@@ -122,8 +128,9 @@ suite('power-assert-formatter', function () {
                 baz: false
             }
         };
-        assert(eval(instrument('assert((delete foo.bar) === false);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert((delete foo.bar) === false);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert((delete foo.bar) === false);',
@@ -137,8 +144,9 @@ suite('power-assert-formatter', function () {
 
 
     test('assert((delete nonexistent) === false);', function () {
-        assert(eval(instrument('assert((delete nonexistent) === false);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert((delete nonexistent) === false);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert((delete nonexistent) === false);',
@@ -152,8 +160,9 @@ suite('power-assert-formatter', function () {
     test('assert(fuga === piyo);', function () {
         var fuga = 'foo',
             piyo = 8;
-        assert(eval(instrument('assert(fuga === piyo);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(fuga === piyo);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(fuga === piyo);',
@@ -169,8 +178,9 @@ suite('power-assert-formatter', function () {
     test('assert(fuga !== piyo);', function () {
         var fuga = 'foo',
             piyo = 'foo';
-        assert(eval(instrument('assert(fuga !== piyo);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(fuga !== piyo);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(fuga !== piyo);',
@@ -185,8 +195,9 @@ suite('power-assert-formatter', function () {
 
     test('BinaryExpression with Literal and Identifier: assert(fuga !== 4);', function () {
         var fuga = 4;
-        assert(eval(instrument('assert(fuga !== 4);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(fuga !== 4);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(fuga !== 4);',
@@ -198,8 +209,9 @@ suite('power-assert-formatter', function () {
 
 
     test('assert(4 !== 4);', function () {
-        assert(eval(instrument('assert(4 !== 4);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(4 !== 4);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(4 !== 4);',
@@ -213,8 +225,9 @@ suite('power-assert-formatter', function () {
     test('MemberExpression: assert(ary1.length === ary2.length);', function () {
         var ary1 = ['foo', 'bar'];
         var ary2 = ['aaa', 'bbb', 'ccc'];
-        assert(eval(instrument('assert(ary1.length === ary2.length);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(ary1.length === ary2.length);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(ary1.length === ary2.length);',
@@ -230,8 +243,9 @@ suite('power-assert-formatter', function () {
 
     test('LogicalExpression: assert(5 < actual && actual < 13);', function () {
         var actual = 16;
-        assert(eval(instrument('assert(5 < actual && actual < 13);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(5 < actual && actual < 13);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(5 < actual && actual < 13);',
@@ -246,8 +260,9 @@ suite('power-assert-formatter', function () {
 
     test('LogicalExpression OR: assert.ok(actual < 5 || 13 < actual);', function () {
         var actual = 10;
-        assert(eval(instrument('assert.ok(actual < 5 || 13 < actual);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert.ok(actual < 5 || 13 < actual);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert.ok(actual < 5 || 13 < actual);',
@@ -262,8 +277,9 @@ suite('power-assert-formatter', function () {
 
     test('Characterization test of LogicalExpression current spec: assert(2 > actual && actual < 13);', function () {
         var actual = 5;
-        assert(eval(instrument('assert(2 > actual && actual < 13);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(2 > actual && actual < 13);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(2 > actual && actual < 13);',
@@ -281,8 +297,9 @@ suite('power-assert-formatter', function () {
                 baz: false
             }
         };
-        assert(eval(instrument('assert(foo.bar.baz);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(foo.bar.baz);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(foo.bar.baz);',
@@ -301,8 +318,9 @@ suite('power-assert-formatter', function () {
                 baz: false
             }
         };
-        assert(eval(instrument('assert(foo["bar"].baz);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(foo["bar"].baz);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(foo["bar"].baz);',
@@ -322,8 +340,9 @@ suite('power-assert-formatter', function () {
                     baz: false
                 }
             };
-        assert(eval(instrument('assert(foo[propName].baz);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(foo[propName].baz);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(foo[propName].baz);',
@@ -346,8 +365,9 @@ suite('power-assert-formatter', function () {
                     }
                 }
             };
-        assert(eval(instrument('assert(foo[propName]["baz"][keys()[0]]);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(foo[propName]["baz"][keys()[0]]);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(foo[propName]["baz"][keys()[0]]);',
@@ -365,8 +385,9 @@ suite('power-assert-formatter', function () {
 
     test('assert(func());', function () {
         var func = function () { return false; };
-        assert(eval(instrument('assert(func());')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(func());')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(func());',
@@ -383,8 +404,9 @@ suite('power-assert-formatter', function () {
                 return 0;
             }
         };
-        assert(eval(instrument('assert(obj.age());')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(obj.age());')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(obj.age());',
@@ -400,8 +422,9 @@ suite('power-assert-formatter', function () {
             return !(arg);
         };
         var positiveInt = 50;
-        assert(eval(instrument('assert(isFalsy(positiveInt));')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(isFalsy(positiveInt));')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(isFalsy(positiveInt));',
@@ -421,8 +444,9 @@ suite('power-assert-formatter', function () {
             return result;
         };
         var one = 1, two = 2, three = 3, seven = 7, ten = 10;
-        assert(eval(instrument('assert(sum(one, two, three) === seven);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(sum(one, two, three) === seven);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(sum(one, two, three) === seven);',
@@ -443,8 +467,9 @@ suite('power-assert-formatter', function () {
             return result;
         };
         var one = 1, two = 2, three = 3, seven = 7, ten = 10;
-        assert(eval(instrument('assert(sum(sum(one, two), three) === sum(sum(two, three), seven));')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(sum(sum(one, two), three) === sum(sum(two, three), seven));')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(sum(sum(one, two), three) === sum(sum(two, three), seven));',
@@ -469,8 +494,9 @@ suite('power-assert-formatter', function () {
             }
         };
         var one = 1, two = 2, three = 3, seven = 7, ten = 10;
-        assert(eval(instrument('assert(math.calc.sum(one, two, three) === seven);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(math.calc.sum(one, two, three) === seven);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(math.calc.sum(one, two, three) === seven);',
@@ -485,8 +511,9 @@ suite('power-assert-formatter', function () {
 
     test('Nested CallExpression with BinaryExpression: assert((three * (seven * ten)) === three);', function () {
         var one = 1, two = 2, three = 3, seven = 7, ten = 10;
-        assert(eval(instrument('assert((three * (seven * ten)) === three);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert((three * (seven * ten)) === three);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert((three * (seven * ten)) === three);',
@@ -503,8 +530,9 @@ suite('power-assert-formatter', function () {
     test('Simple BinaryExpression with comment', function () {
         var hoge = 'foo';
         var fuga = 'bar';
-        assert(eval(instrument('assert.ok(hoge === fuga, "comment");')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert.ok(hoge === fuga, "comment");')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert.ok(hoge === fuga, "comment");',
@@ -520,8 +548,9 @@ suite('power-assert-formatter', function () {
     test('Looooong string', function () {
         var longString = 'very very loooooooooooooooooooooooooooooooooooooooooooooooooooong message';
         var anotherLongString = 'yet another loooooooooooooooooooooooooooooooooooooooooooooooooooong message';
-        assert(eval(instrument('assert(longString === anotherLongString);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(longString === anotherLongString);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(longString === anotherLongString);',
@@ -540,8 +569,9 @@ suite('power-assert-formatter', function () {
         var concat = function (a, b) {
             return a + b;
         };
-        assert(eval(instrument('assert(!concat(fuga, piyo));')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(!concat(fuga, piyo));')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(!concat(fuga, piyo));',
@@ -562,8 +592,9 @@ suite('power-assert-formatter', function () {
         var concat = function (a, b) {
             return a + b;
         };
-        assert(eval(instrument('assert(!concat(fuga, piyo));')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(!concat(fuga, piyo));')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(!concat(fuga, piyo));',
@@ -582,8 +613,9 @@ suite('power-assert-formatter', function () {
         cyclic.push('foo');
         cyclic.push(cyclic);
         cyclic.push('baz');
-        assert(eval(instrument('assert.ok(cyclic[two] === cyclic);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert.ok(cyclic[two] === cyclic);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert.ok(cyclic[two] === cyclic);',
@@ -599,8 +631,9 @@ suite('power-assert-formatter', function () {
 
     test('UnaryExpression of UnaryExpression: assert(typeof + twoStr === -twoStr);', function () {
         var twoStr = '2';
-        assert(eval(instrument('assert(typeof + twoStr === -twoStr);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(typeof + twoStr === -twoStr);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(typeof + twoStr === -twoStr);',
@@ -616,8 +649,9 @@ suite('power-assert-formatter', function () {
 
     test('AssignmentExpression: assert(minusOne += 1);', function () {
         var minusOne = -1;
-        assert(eval(instrument('assert(minusOne += 1);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(minusOne += 1);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(minusOne += 1);',
@@ -630,8 +664,9 @@ suite('power-assert-formatter', function () {
 
     test('AssignmentExpression with MemberExpression: assert((dog.age += 1) === four);', function () {
         var dog = { age: 2 }, four = 4;
-        assert(eval(instrument('assert((dog.age += 1) === four);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert((dog.age += 1) === four);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert((dog.age += 1) === four);',
@@ -645,8 +680,9 @@ suite('power-assert-formatter', function () {
 
     test('ArrayExpression: assert([foo, bar].length === four);', function () {
         var foo = 'hoge', bar = 'fuga', four = 4;
-        assert(eval(instrument('assert([foo, bar].length === four);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert([foo, bar].length === four);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert([foo, bar].length === four);',
@@ -662,8 +698,9 @@ suite('power-assert-formatter', function () {
 
     test('various expressions in ArrayExpression: assert(typeof [[foo.bar, baz(moo)], + fourStr] === "number");', function () {
         var foo = {bar: 'fuga'}, baz = function (arg) { return null; }, moo = 'boo', fourStr = '4';
-        assert(eval(instrument('assert(typeof [[foo.bar, baz(moo)], + fourStr] === "number");')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(typeof [[foo.bar, baz(moo)], + fourStr] === "number");')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(typeof [[foo.bar, baz(moo)], + fourStr] === "number");',
@@ -679,8 +716,9 @@ suite('power-assert-formatter', function () {
 
     test('prefix UpdateExpression: assert(++minusOne);', function () {
         var minusOne = -1;
-        assert(eval(instrument('assert(++minusOne);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(++minusOne);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(++minusOne);',
@@ -693,8 +731,9 @@ suite('power-assert-formatter', function () {
 
     test('suffix UpdateExpression: assert(zero--);', function () {
         var zero = 0;
-        assert(eval(instrument('assert(zero--);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(zero--);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(zero--);',
@@ -707,8 +746,9 @@ suite('power-assert-formatter', function () {
 
     test('ConditionalExpression: assert(truthy ? falsy : anotherFalsy);', function () {
         var truthy = 'truthy', falsy = 0, anotherFalsy = null;
-        assert(eval(instrument('assert(truthy ? falsy : anotherFalsy);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(truthy ? falsy : anotherFalsy);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(truthy ? falsy : anotherFalsy);',
@@ -721,8 +761,9 @@ suite('power-assert-formatter', function () {
 
     test('ConditionalExpression of ConditionalExpression: assert(falsy ? truthy : truthy ? anotherFalsy : truthy);', function () {
         var truthy = 'truthy', falsy = 0, anotherFalsy = null;
-        assert(eval(instrument('assert(falsy ? truthy : truthy ? anotherFalsy : truthy);')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(falsy ? truthy : truthy ? anotherFalsy : truthy);')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(falsy ? truthy : truthy ? anotherFalsy : truthy);',
@@ -735,8 +776,9 @@ suite('power-assert-formatter', function () {
 
     test('RegularExpression will not be instrumented: assert(/^not/.exec(str));', function () {
         var str = 'ok';
-        assert(eval(instrument('assert(/^not/.exec(str));')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert(eval(instrument('assert(/^not/.exec(str));')));
+        }, [
             '# /path/to/some_test.js:1',
             '',
             'assert(/^not/.exec(str));',

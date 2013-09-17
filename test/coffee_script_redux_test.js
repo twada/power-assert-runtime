@@ -3,8 +3,7 @@ var empower = require('../lib/empower'),
     esprima = require('esprima'),
     escodegen = require('escodegen'),
     baseAssert = require('assert'),
-    config = empower.defaultOptions(),
-    powerAssertTextLines = [],
+    assert = empower(baseAssert),
     CoffeeScript = require('coffee-script-redux'),
     extractBodyOfAssertionAsCode = require('../test_helper').extractBodyOfAssertionAsCode,
     espowerCoffee = function () {
@@ -20,22 +19,24 @@ var empower = require('../lib/empower'),
         };
     }();
 
-config.callback = function (context, message) {
-    powerAssertTextLines = config.formatter.format(context);
+var expectPowerAssertMessage = function (body, expectedLines) {
+    try {
+        body();
+        baseAssert.fail('AssertionError should be thrown');
+    } catch (e) {
+        baseAssert.equal(e.message, expectedLines.join('\n'));
+    }
 };
-var assert = empower(baseAssert, config);
 
 
 suite('CoffeeScriptRedux integration', function () {
-    setup(function () {
-        powerAssertTextLines.length = 0;
-    });
 
     test('assert.ok dog.speak() == says', function () {
         var dog = { speak: function () { return 'woof'; } },
             says = 'meow';
-        assert.ok(eval(espowerCoffee('assert.ok dog.speak() == says')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert.ok(eval(espowerCoffee('assert.ok dog.speak() == says')));
+        }, [
             '# /path/to/bar_test.coffee:1',
             '',
             'assert.ok dog.speak() == says',
@@ -49,8 +50,9 @@ suite('CoffeeScriptRedux integration', function () {
     test('assert.ok dog.age is four', function () {
         var dog = { age: 3 },
             four = 4;
-        assert.ok(eval(espowerCoffee('assert.ok dog.age is four')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert.ok(eval(espowerCoffee('assert.ok dog.age is four')));
+        }, [
             '# /path/to/bar_test.coffee:1',
             '',
             'assert.ok dog.age is four',
@@ -66,8 +68,9 @@ suite('CoffeeScriptRedux integration', function () {
         var dog = {birthday: { year: 2011 }},
             lastYear = 2012,
             prop = 'birthday';
-        assert.ok(eval(espowerCoffee('assert.ok dog[prop].year is lastYear')));
-        baseAssert.deepEqual(powerAssertTextLines, [
+        expectPowerAssertMessage(function () {
+            assert.ok(eval(espowerCoffee('assert.ok dog[prop].year is lastYear')));
+        }, [
             '# /path/to/bar_test.coffee:1',
             '',
             'assert.ok dog[prop].year is lastYear',
