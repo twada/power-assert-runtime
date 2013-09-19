@@ -18,9 +18,9 @@ suite('empower.defaultOptions()', function () {
 
 suite('lineSeparator option', function () {
     function lineSeparatorTest (name, option, expectedSeparator) {
+        var baseAssert = require('assert'),
+            assert = empower(baseAssert, option);
         test(name, function () {
-            var baseAssert = require('assert');
-            var assert = empower(baseAssert, option);
             var falsyNum = 0;
             try {
                 assert(eval(instrument('assert(falsyNum);')));
@@ -43,56 +43,52 @@ suite('lineSeparator option', function () {
 });
 
 
-suite('assert object empowerment', function () {
-
-    test('destructive: false', function () {
-        var assertOk = function (actual, message) {
-            if (!actual) {
-                throw new Error('FakeAssert: assertion failed. ' + message);
-            }
-        };
-        var fakeAssertObject = {
-            ok: assertOk,
-            equal: function (actual, expected, message) {
-                this.ok(actual == expected, message);
-            },
-            strictEqual: function (actual, expected, message) {
-                this.ok(actual === expected, message);
-            }
-        };
-
-        var empoweredAssert = empower(fakeAssertObject, {destructive: false});
-        assert.ok(typeof empoweredAssert === 'object');
-        assert.ok(typeof empoweredAssert.ok === 'function');
-        assert.ok(typeof empoweredAssert._capt === 'function');
-        assert.ok(typeof empoweredAssert._expr === 'function');
-        assert.ok(typeof empoweredAssert.equal === 'function');
-        assert.ok(typeof empoweredAssert.strictEqual === 'function');
-
-        assert.notEqual(empoweredAssert, fakeAssertObject);
-        assert.notEqual(empoweredAssert.ok, fakeAssertObject.ok);
-        assert.equal(fakeAssertObject.ok, assertOk);
-
+function sharedTestsForEmpowerFunctionReturnValue () {
+    test('has ok method', function () {
+        assert.equal(typeof this.empoweredAssert.ok, 'function');
+    });
+    test('has _capt method', function () {
+        assert.equal(typeof this.empoweredAssert._capt, 'function');
+    });
+    test('has _expr method', function () {
+        assert.equal(typeof this.empoweredAssert._expr, 'function');
+    });
+    test('has equal method', function () {
+        assert.equal(typeof this.empoweredAssert.equal, 'function');
+    });
+    test('has strictEqual method', function () {
+        assert.equal(typeof this.empoweredAssert.strictEqual, 'function');
+    });
+    test('ok method works as assert.ok', function () {
         try {
-            empoweredAssert.ok(false, 'empoweredAssert.ok');
+            this.empoweredAssert.ok(false, 'empoweredAssert.ok');
+            assert.fail('Error should be thrown');
         } catch (e) {
             assert.ok(e instanceof Error);
             assert.equal(e.message, 'FakeAssert: assertion failed. empoweredAssert.ok');
         }
-
+    });
+    test('equal method works', function () {
         try {
-            empoweredAssert.strictEqual(1, '1', 'empoweredAssert.strictEqual');
+            this.empoweredAssert.equal(1, 'hoge', 'empoweredAssert.equal');
+        } catch (e) {
+            assert.ok(e instanceof Error);
+            assert.equal(e.message, 'FakeAssert: assertion failed. empoweredAssert.equal');
+        }
+    });
+    test('strictEqual method works', function () {
+        try {
+            this.empoweredAssert.strictEqual(1, '1', 'empoweredAssert.strictEqual');
         } catch (e) {
             assert.ok(e instanceof Error);
             assert.equal(e.message, 'FakeAssert: assertion failed. empoweredAssert.strictEqual');
         }
-
-        var empoweredAgain = empower(empoweredAssert, {destructive: false});
-        assert.equal(empoweredAgain, empoweredAssert, 'avoid empowering multiple times');
     });
+}
 
 
-    test('destructive: true', function () {
+suite('assert object empowerment', function () {
+    setup(function () {
         var assertOk = function (actual, message) {
             if (!actual) {
                 throw new Error('FakeAssert: assertion failed. ' + message);
@@ -107,40 +103,58 @@ suite('assert object empowerment', function () {
                 this.ok(actual === expected, message);
             }
         };
+        this.fakeAssertObject = fakeAssertObject;
+    });
 
-        empower(fakeAssertObject, {destructive: true});
-        assert.ok(typeof fakeAssertObject === 'object');
-        assert.ok(typeof fakeAssertObject.ok === 'function');
-        assert.ok(typeof fakeAssertObject._capt === 'function');
-        assert.ok(typeof fakeAssertObject._expr === 'function');
-        assert.ok(typeof fakeAssertObject.equal === 'function');
-        assert.ok(typeof fakeAssertObject.strictEqual === 'function');
+    suite('destructive: false', function () {
+        setup(function () {
+            this.empoweredAssert = empower(this.fakeAssertObject, {destructive: false});
+        });
+        suite('returned assert', function () {
+            sharedTestsForEmpowerFunctionReturnValue();
+            test('is also an object', function () {
+                assert.ok(typeof this.empoweredAssert, 'object');
+            });
+            test('is not the same instance as target assert object', function () {
+                assert.notEqual(this.empoweredAssert, this.fakeAssertObject);
+            });
+            test('ok method is not refered to target.ok', function () {
+                assert.notEqual(this.empoweredAssert.ok, this.fakeAssertObject.ok);
+            });
+        });
+        test('avoid empowering multiple times', function () {
+            var empoweredAgain = empower(this.empoweredAssert, {destructive: false});
+            assert.equal(empoweredAgain, this.empoweredAssert);
+        });
+    });
 
-        assert.notEqual(fakeAssertObject.ok, assertOk);
-
-        try {
-            fakeAssertObject.ok(false, 'fakeAssertObject.ok');
-        } catch (e) {
-            assert.ok(e instanceof Error);
-            assert.equal(e.message, 'FakeAssert: assertion failed. fakeAssertObject.ok');
-        }
-
-        try {
-            fakeAssertObject.strictEqual(1, '1', 'fakeAssertObject.strictEqual');
-        } catch (e) {
-            assert.ok(e instanceof Error);
-            assert.equal(e.message, 'FakeAssert: assertion failed. fakeAssertObject.strictEqual');
-        }
-
-        var empoweredAgain = empower(fakeAssertObject, {destructive: true});
-        assert.equal(empoweredAgain, fakeAssertObject, 'avoid empowering multiple times');
+    suite('destructive: true', function () {
+        setup(function () {
+            this.empoweredAssert = empower(this.fakeAssertObject, {destructive: true});
+        });
+        suite('returned assert', function () {
+            sharedTestsForEmpowerFunctionReturnValue();
+            test('is also an object', function () {
+                assert.ok(typeof this.empoweredAssert, 'object');
+            });
+            test('is the same instance as target assert object', function () {
+                assert.equal(this.empoweredAssert, this.fakeAssertObject);
+            });
+            test('ok method is refered to target.ok', function () {
+                assert.equal(this.empoweredAssert.ok, this.fakeAssertObject.ok);
+            });
+        });
+        test('avoid empowering multiple times', function () {
+            var empoweredAgain = empower(this.fakeAssertObject, {destructive: true});
+            assert.equal(empoweredAgain, this.fakeAssertObject);
+        });
     });
 });
 
 
 
 suite('assert function empowerment', function () {
-    test('destructive: false', function () {
+    setup(function () {
         var assertOk = function (actual, message) {
             if (!actual) {
                 throw new Error('FakeAssert: assertion failed. ' + message);
@@ -153,33 +167,31 @@ suite('assert function empowerment', function () {
         assertOk.strictEqual = function (actual, expected, message) {
             this.ok(actual === expected, message);
         };
+        this.fakeAssertFunction = assertOk;
+    });
 
-        var empoweredAssert = empower(assertOk, {destructive: false});
-        assert.ok(typeof empoweredAssert === 'function');
-        assert.ok(typeof empoweredAssert.ok === 'function');
-        assert.ok(typeof empoweredAssert._capt === 'function');
-        assert.ok(typeof empoweredAssert._expr === 'function');
-        assert.ok(typeof empoweredAssert.equal === 'function');
-        assert.ok(typeof empoweredAssert.strictEqual === 'function');
-
-        assert.notEqual(empoweredAssert, assertOk);
-        assert.notEqual(empoweredAssert.ok, assertOk);
-
-        try {
-            empoweredAssert.ok(false, 'empoweredAssert.ok');
-        } catch (e) {
-            assert.ok(e instanceof Error);
-            assert.equal(e.message, 'FakeAssert: assertion failed. empoweredAssert.ok');
-        }
-
-        try {
-            empoweredAssert.strictEqual(1, '1', 'empoweredAssert.strictEqual');
-        } catch (e) {
-            assert.ok(e instanceof Error);
-            assert.equal(e.message, 'FakeAssert: assertion failed. empoweredAssert.strictEqual');
-        }
-
-        var empoweredAgain = empower(empoweredAssert, {destructive: false});
-        assert.equal(empoweredAgain, empoweredAssert, 'avoid empowering multiple times');
+    suite('destructive: false', function () {
+        setup(function () {
+            this.empoweredAssert = empower(this.fakeAssertFunction, {destructive: false});
+        });
+        suite('returned assert', function () {
+            sharedTestsForEmpowerFunctionReturnValue();
+            test('is also a function', function () {
+                assert.ok(typeof this.empoweredAssert, 'function');
+            });
+            test('is not the same instance as target assert function', function () {
+                assert.notEqual(this.empoweredAssert, this.fakeAssertFunction);
+            });
+            test('ok method is not refered to target.ok', function () {
+                assert.notEqual(this.empoweredAssert.ok, this.fakeAssertFunction.ok);
+            });
+            test('ok method is not refered to target assert function', function () {
+                assert.notEqual(this.empoweredAssert.ok, this.fakeAssertFunction.ok);
+            });
+        });
+        test('avoid empowering multiple times', function () {
+            var empoweredAgain = empower(this.empoweredAssert, {destructive: false});
+            assert.equal(empoweredAgain, this.empoweredAssert);
+        });
     });
 });
