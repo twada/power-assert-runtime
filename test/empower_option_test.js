@@ -60,29 +60,22 @@ function sharedTestsForEmpowerFunctionReturnValue () {
         assert.equal(typeof this.empoweredAssert.strictEqual, 'function');
     });
     test('ok method works as assert.ok', function () {
-        try {
-            this.empoweredAssert.ok(false, 'empoweredAssert.ok');
-            assert.fail('Error should be thrown');
-        } catch (e) {
-            assert.ok(e instanceof Error);
-            assert.equal(e.message, 'FakeAssert: assertion failed. empoweredAssert.ok');
-        }
+        var empoweredAssert = this.empoweredAssert;
+        assert.throws(function () {
+            empoweredAssert.ok(false, 'empoweredAssert.ok');
+        }, /FakeAssert: assertion failed. empoweredAssert.ok/);
     });
     test('equal method works', function () {
-        try {
-            this.empoweredAssert.equal(1, 'hoge', 'empoweredAssert.equal');
-        } catch (e) {
-            assert.ok(e instanceof Error);
-            assert.equal(e.message, 'FakeAssert: assertion failed. empoweredAssert.equal');
-        }
+        var empoweredAssert = this.empoweredAssert;
+        assert.throws(function () {
+            empoweredAssert.equal(1, 'hoge', 'empoweredAssert.equal');
+        }, /FakeAssert: assertion failed. empoweredAssert.equal/);
     });
     test('strictEqual method works', function () {
-        try {
-            this.empoweredAssert.strictEqual(1, '1', 'empoweredAssert.strictEqual');
-        } catch (e) {
-            assert.ok(e instanceof Error);
-            assert.equal(e.message, 'FakeAssert: assertion failed. empoweredAssert.strictEqual');
-        }
+        var empoweredAssert = this.empoweredAssert;
+        assert.throws(function () {
+            empoweredAssert.strictEqual(1, '1', 'empoweredAssert.strictEqual');
+        }, /FakeAssert: assertion failed. empoweredAssert.strictEqual/);
     });
 }
 
@@ -152,7 +145,6 @@ suite('assert object empowerment', function () {
 });
 
 
-
 suite('assert function empowerment', function () {
     setup(function () {
         var assertOk = function (actual, message) {
@@ -194,4 +186,34 @@ suite('assert function empowerment', function () {
             assert.equal(empoweredAgain, this.empoweredAssert);
         });
     });
+
+    test('does not support destructive:true', function () {
+        var func = this.fakeAssertFunction;
+        assert.throws(function () {
+            empower(func, {destructive: true});
+        }, 'cannot use destructive:true to function\.');
+    });
+});
+
+
+suite('empower argument preconditions', function () {
+    function argumentTest (name, arg, expectedMessage) {
+        expectedMessage = expectedMessage || 'empower argument should be a function or object.';
+        test(name, function () {
+            assert.throws(
+                function() {
+                    empower(arg);
+                },
+                function(err) {
+                    return ((err instanceof TypeError) && (expectedMessage === err.message));
+                },
+                "unexpected error"
+            );
+        });
+    }
+    argumentTest('cannot pass null', null);
+    argumentTest('cannot pass undefined', undefined);
+    argumentTest('cannot pass number', 3);
+    argumentTest('cannot pass string', 'hoge');
+    argumentTest('should respond to "ok"', {equal: function () { return false; }}, 'empower target object should be respond to \'ok\' method.');
 });
