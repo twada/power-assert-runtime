@@ -862,4 +862,22 @@ suite('power-assert-formatter', function () {
     });
 
 
+
+    test('FunctionExpression will not be instrumented: assert(baz === (function (a, b) { return a + b; })(foo, bar));', function () {
+        var foo = 'foo', bar = 'bar', baz = 'baz';
+        assertPowerAssertContextFormatting(function () {
+            assert(eval(instrument('assert(baz === (function (a, b) { return a + b; })(foo, bar));')));
+        }, [
+            '# /path/to/some_test.js:1',
+            '',
+            'assert(baz === (function (a, b) { return a + b; })(foo, bar));',
+            '       |   |   |                                   |    |     ',
+            '       |   |   |                                   |    "bar" ',
+            '       |   |   "foobar"                            "foo"      ',
+            '       |   false                                              ',
+            '       "baz"                                                  ',
+            ''
+        ]);
+    });
+
 });
