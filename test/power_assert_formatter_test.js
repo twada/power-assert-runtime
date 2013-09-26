@@ -821,4 +821,45 @@ suite('power-assert-formatter', function () {
         ]);
     });
 
+
+    test('NewExpression: assert(!(new Array(foo, bar, baz)));', function () {
+        var foo = 'foo', bar = 'bar', baz = 'baz';
+        assertPowerAssertContextFormatting(function () {
+            assert(eval(instrument('assert(!(new Array(foo, bar, baz)));')));
+        }, [
+            '# /path/to/some_test.js:1',
+            '',
+            'assert(!(new Array(foo, bar, baz)));',
+            '       | |         |    |    |      ',
+            '       | |         |    |    "baz"  ',
+            '       | |         |    "bar"       ',
+            '       | |         "foo"            ',
+            '       | ["foo","bar","baz"]        ',
+            '       false                        ',
+            ''
+        ]);
+    });
+
+
+    test('NewExpression: assert(baz === new Array(foo, bar, baz)[1]);', function () {
+        var foo = 'foo', bar = 'bar', baz = 'baz';
+        assertPowerAssertContextFormatting(function () {
+            assert(eval(instrument('assert(baz === new Array(foo, bar, baz)[1]);')));
+        }, [
+            '# /path/to/some_test.js:1',
+            '',
+            'assert(baz === new Array(foo, bar, baz)[1]);',
+            '       |   |   |         |    |    |   |    ',
+            '       |   |   |         |    |    |   "bar"',
+            '       |   |   |         |    |    "baz"    ',
+            '       |   |   |         |    "bar"         ',
+            '       |   |   |         "foo"              ',
+            '       |   |   ["foo","bar","baz"]          ',
+            '       |   false                            ',
+            '       "baz"                                ',
+            ''
+        ]);
+    });
+
+
 });
