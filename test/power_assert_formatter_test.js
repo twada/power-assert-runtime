@@ -788,4 +788,37 @@ suite('power-assert-formatter', function () {
         ]);
     });
 
+
+
+    test('ObjectExpression: assert(!({foo: bar, hoge: fuga}));', function () {
+        var bar = 'toto', fuga = 100;
+        assertPowerAssertContextFormatting(function () {
+            assert(eval(instrument('assert(!({foo: bar, hoge: fuga}));')));
+        }, [
+            '# /path/to/some_test.js:1',
+            '',
+            'assert(!({foo: bar, hoge: fuga}));',
+            '       |       |          |       ',
+            '       false   "toto"     100     ',
+            ''
+        ]);
+    });
+
+
+    test('complex ObjectExpression: assert(!({ foo: bar.baz, name: nameOf({firstName: first, lastName: last}) }));', function () {
+        var bar = { baz: 'BAZ' },  first = 'Brendan', last = 'Eich',
+            nameOf = function (person) { return person.firstName + ' ' + person.lastName; };
+        assertPowerAssertContextFormatting(function () {
+            assert(eval(instrument('assert(!({ foo: bar.baz, name: nameOf({firstName: first, lastName: last}) }));')));
+        }, [
+            '# /path/to/some_test.js:1',
+            '',
+            'assert(!({ foo: bar.baz, name: nameOf({firstName: first, lastName: last}) }));',
+            '       |        |   |          |                  |                |          ',
+            '       |        |   "BAZ"      "Brendan Eich"     "Brendan"        "Eich"     ',
+            '       false    {"baz":"BAZ"}                                                 ',
+            ''
+        ]);
+    });
+
 });
