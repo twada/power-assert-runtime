@@ -24,9 +24,15 @@ module.exports = function(grunt) {
             unit: {
                 options: {
                     ui: 'tdd',
-                    reporter: 'spec'
+                    reporter: 'dot'
                 },
                 src: ['test/**/*.js']
+            }
+        },
+        watch: {
+            unit: {
+                files: ['test/**/*.js', 'lib/**/*.js'],
+                tasks: ['test']
             }
         }
     });
