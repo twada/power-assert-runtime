@@ -864,4 +864,106 @@ suite('power-assert-formatter', function () {
         ]);
     });
 
+
+
+
+    test('equal with UpdateExpression and Literal: assert.equal(++minusOne, 1);', function () {
+        var minusOne = -1;
+        assertPowerAssertContextFormatting(function () {
+            eval(weave('assert.equal(++minusOne, 1)'));
+        }, [
+            '# /path/to/some_test.js:1',
+            '',
+            'assert.equal(++minusOne, 1)',
+            '             |             ',
+            '             0             ',
+            ''
+        ]);
+    });
+
+
+    test('notEqual with ConditionalExpression and AssignmentExpression: assert.notEqual(truthy ? fiveInStr : tenInStr, four += 1);', function () {
+        var truthy = 3, fiveInStr = '5', tenInStr = '10', four = 4;
+        assertPowerAssertContextFormatting(function () {
+            eval(weave('assert.notEqual(truthy ? fiveInStr : tenInStr, four += 1)'));
+        }, [
+            '# /path/to/some_test.js:1',
+            '',
+            'assert.notEqual(truthy ? fiveInStr : tenInStr, four += 1)',
+            '                |        |                          |    ',
+            '                3        "5"                        5    ',
+            ''
+        ]);
+    });
+
+
+    test('strictEqual with CallExpression and BinaryExpression, Identifier: assert.strictEqual(obj.truthy(), three == threeInStr);', function () {
+        var obj = { truthy: function () { return 'true'; }}, three = 3, threeInStr = '3';
+        assertPowerAssertContextFormatting(function () {
+            eval(weave('assert.strictEqual(obj.truthy(), three == threeInStr);'));
+        }, [
+            '# /path/to/some_test.js:1',
+            '',
+            'assert.strictEqual(obj.truthy(), three == threeInStr);',
+            '                   |   |         |     |  |           ',
+            '                   |   |         |     |  "3"         ',
+            '                   {}  "true"    3     true           ',
+            ''
+        ]);
+    });
+
+
+    test('notStrictEqual with MemberExpression and UnaryExpression: assert.notStrictEqual(typeof undefinedVar, types.undef);', function () {
+        var types = { undef: 'undefined' };
+        assertPowerAssertContextFormatting(function () {
+            eval(weave('assert.notStrictEqual(typeof undefinedVar, types.undef)'));
+        }, [
+            '# /path/to/some_test.js:1',
+            '',
+            'assert.notStrictEqual(typeof undefinedVar, types.undef)',
+            '                      |                    |     |     ',
+            '                      |                    |     "undefined"',
+            '                      "undefined"          {"undef":"undefined"}',
+            ''
+        ]);
+    });
+
+
+    test('deepEqual with LogicalExpression and ObjectExpression: assert.deepEqual(alice || bob, {name: kenName, age: four});', function () {
+        var alice = {name: 'alice', age: 3}, bob = {name: 'bob', age: 5}, kenName = 'ken', four = 4;
+        assertPowerAssertContextFormatting(function () {
+            eval(weave('assert.deepEqual(alice || bob, {name: kenName, age: four});'));
+        }, [
+            '# /path/to/some_test.js:1',
+            '',
+            'assert.deepEqual(alice || bob, {name: kenName, age: four});',
+            '                 |     |              |             |      ',
+            '                 |     |              "ken"         4      ',
+            '                 |     {"name":"alice","age":3}            ',
+            '                 {"name":"alice","age":3}                  ',
+            ''
+        ]);
+    });
+
+
+    test('notDeepEqual with ArrayExpression and NewExpression: assert.notDeepEqual([foo, bar, baz], new Array(foo, bar, baz));', function () {
+        var foo = 'foo', bar = ['toto', 'tata'], baz = {name: 'hoge'};
+        assertPowerAssertContextFormatting(function () {
+            eval(weave('assert.notDeepEqual([foo, bar, baz], new Array(foo, bar, baz));'));
+        }, [
+            '# /path/to/some_test.js:1',
+            '',
+            'assert.notDeepEqual([foo, bar, baz], new Array(foo, bar, baz));',
+            '                     |    |    |     |         |    |    |     ',
+            '                     |    |    |     |         |    |    {"name":"hoge"}',
+            '                     |    |    |     |         |    ["toto","tata"]',
+            '                     |    |    |     |         "foo"           ',
+            '                     |    |    |     ["foo",["toto","tata"],{"name":"hoge"}]',
+            '                     |    |    {"name":"hoge"}                 ',
+            '                     |    ["toto","tata"]                      ',
+            '                     "foo"                                     ',
+            ''
+        ]);
+    });
+
 });

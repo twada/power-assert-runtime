@@ -1,5 +1,5 @@
 var empower = require('../lib/empower'),
-    instrument = require('../test_helper').instrument,
+    weave = require('../test_helper').weave,
     assert = require('assert');
 
 
@@ -13,6 +13,24 @@ suite('empower.defaultOptions()', function () {
     test('formatter: power-assert-formatter module', function () {
         assert.deepEqual(this.options.formatter, require('../lib/power-assert-formatter'));
     });
+    suite('targetMethods', function () {
+        setup (function () {
+            this.targetMethods = empower.defaultOptions().targetMethods;
+        });
+        test('oneArg', function () {
+            assert.deepEqual(this.targetMethods.oneArg, ['ok']);
+        });
+        test('twoArgs', function () {
+            assert.deepEqual(this.targetMethods.twoArgs, [
+                'equal',
+                'notEqual',
+                'strictEqual',
+                'notStrictEqual',
+                'deepEqual',
+                'notDeepEqual'
+            ]);
+        });
+    });
 });
 
 
@@ -23,7 +41,7 @@ suite('lineSeparator option', function () {
         test(name, function () {
             var falsyNum = 0;
             try {
-                assert(eval(instrument('assert(falsyNum);')));
+                eval(weave('assert(falsyNum);'));
             } catch (e) {
                 baseAssert.equal(e.message, [
                     '# /path/to/some_test.js:1',
@@ -101,7 +119,19 @@ suite('assert object empowerment', function () {
 
     suite('destructive: false', function () {
         setup(function () {
-            this.empoweredAssert = empower(this.fakeAssertObject, {destructive: false});
+            this.options = {
+                destructive: false,
+                targetMethods: {
+                    oneArg: [
+                        'ok'
+                    ],
+                    twoArgs: [
+                        'equal',
+                        'strictEqual'
+                    ]
+                }
+            };
+            this.empoweredAssert = empower(this.fakeAssertObject, this.options);
         });
         suite('returned assert', function () {
             sharedTestsForEmpowerFunctionReturnValue();
@@ -116,14 +146,26 @@ suite('assert object empowerment', function () {
             });
         });
         test('avoid empowering multiple times', function () {
-            var empoweredAgain = empower(this.empoweredAssert, {destructive: false});
+            var empoweredAgain = empower(this.empoweredAssert, this.options);
             assert.equal(empoweredAgain, this.empoweredAssert);
         });
     });
 
     suite('destructive: true', function () {
         setup(function () {
-            this.empoweredAssert = empower(this.fakeAssertObject, {destructive: true});
+            this.options = {
+                destructive: true,
+                targetMethods: {
+                    oneArg: [
+                        'ok'
+                    ],
+                    twoArgs: [
+                        'equal',
+                        'strictEqual'
+                    ]
+                }
+            };
+            this.empoweredAssert = empower(this.fakeAssertObject, this.options);
         });
         suite('returned assert', function () {
             sharedTestsForEmpowerFunctionReturnValue();
@@ -138,7 +180,7 @@ suite('assert object empowerment', function () {
             });
         });
         test('avoid empowering multiple times', function () {
-            var empoweredAgain = empower(this.fakeAssertObject, {destructive: true});
+            var empoweredAgain = empower(this.fakeAssertObject, this.options);
             assert.equal(empoweredAgain, this.fakeAssertObject);
         });
     });
@@ -164,7 +206,19 @@ suite('assert function empowerment', function () {
 
     suite('destructive: false', function () {
         setup(function () {
-            this.empoweredAssert = empower(this.fakeAssertFunction, {destructive: false});
+            this.options = {
+                destructive: false,
+                targetMethods: {
+                    oneArg: [
+                        'ok'
+                    ],
+                    twoArgs: [
+                        'equal',
+                        'strictEqual'
+                    ]
+                }
+            };
+            this.empoweredAssert = empower(this.fakeAssertFunction, this.options);
         });
         suite('returned assert', function () {
             sharedTestsForEmpowerFunctionReturnValue();
@@ -182,7 +236,7 @@ suite('assert function empowerment', function () {
             });
         });
         test('avoid empowering multiple times', function () {
-            var empoweredAgain = empower(this.empoweredAssert, {destructive: false});
+            var empoweredAgain = empower(this.empoweredAssert, this.options);
             assert.equal(empoweredAgain, this.empoweredAssert);
         });
     });
