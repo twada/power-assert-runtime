@@ -95,6 +95,11 @@ function sharedTestsForEmpowerFunctionReturnValue () {
             empoweredAssert.strictEqual(1, '1', 'empoweredAssert.strictEqual');
         }, /FakeAssert: assertion failed. empoweredAssert.strictEqual/);
     });
+    test('preserve return value if target assertion method returns something', function () {
+        var empoweredAssert = this.empoweredAssert,
+            ret = empoweredAssert.equal(1, '1');
+        empoweredAssert.strictEqual(ret, true);
+    });
 }
 
 
@@ -109,6 +114,7 @@ suite('assert object empowerment', function () {
             ok: assertOk,
             equal: function (actual, expected, message) {
                 this.ok(actual == expected, message);
+                return true;
             },
             strictEqual: function (actual, expected, message) {
                 this.ok(actual === expected, message);
@@ -197,6 +203,7 @@ suite('assert function empowerment', function () {
         assertOk.ok = assertOk;
         assertOk.equal = function (actual, expected, message) {
             this.ok(actual == expected, message);
+            return true;
         };
         assertOk.strictEqual = function (actual, expected, message) {
             this.ok(actual === expected, message);
