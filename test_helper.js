@@ -1,7 +1,6 @@
 var espower = require('espower'),
     esprima = require('esprima'),
-    escodegen = require('escodegen'),
-    instrument;
+    escodegen = require('escodegen');
 
 function extractBodyFrom (source) {
     var tree = esprima.parse(source, {tolerant: true, loc: true, range: true});
@@ -12,23 +11,21 @@ function extractBodyOfAssertionAsCode (node) {
     var expression;
     if (node.type === 'ExpressionStatement') {
         expression = node.expression;
-    } else if (node.type === 'ReturnStatement') {
-        expression = node.argument;
     }
     return escodegen.generate(expression.arguments[0], {format: {compact: true}});
 }
 
-instrument = function () {
-    return function (line, options) {
-        options = options || {destructive: false, source: line, path: '/path/to/some_test.js', powerAssertVariableName: 'assert'};
-        var tree = extractBodyFrom(line),
-            result = espower(tree, options),
-            instrumentedCode = extractBodyOfAssertionAsCode(result);
-        return instrumentedCode;
-    };
-}();
+function applyEspower (line, options) {
+    options = options || {destructive: false, source: line, path: '/path/to/some_test.js', powerAssertVariableName: 'assert'};
+    var tree = extractBodyFrom(line);
+    return espower(tree, options);
+}
+
+function weave (line, options) {
+    return escodegen.generate(applyEspower(line, options), {format: {compact: true}});
+}
 
 module.exports = {
-    instrument: instrument,
+    weave: weave,
     extractBodyOfAssertionAsCode: extractBodyOfAssertionAsCode
 };
