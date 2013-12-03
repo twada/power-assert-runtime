@@ -867,6 +867,21 @@ suite('power-assert-formatter', function () {
 
 
 
+    test('equal with Literal and Identifier: assert.equal(1, minusOne);', function () {
+        var minusOne = -1;
+        assertPowerAssertContextFormatting(function () {
+            eval(weave('assert.equal(1, minusOne)'));
+        }, [
+            '# /path/to/some_test.js:1',
+            '',
+            'assert.equal(1, minusOne)',
+            '                |        ',
+            '                -1       ',
+            ''
+        ]);
+    });
+
+
     test('equal with UpdateExpression and Literal: assert.equal(++minusOne, 1);', function () {
         var minusOne = -1;
         assertPowerAssertContextFormatting(function () {
