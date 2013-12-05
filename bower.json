@@ -1,0 +1,16 @@
+{
+    "name": "empower",
+    "version": "0.2.1",
+    "main": [
+        "lib/empower.js",
+        "lib/power-assert-formatter.js"
+    ],
+    "ignore": [
+        "**/.*",
+        "Gruntfile.js",
+        "node_modules",
+        "package.json",
+        "test",
+        "test_helper.js"
+    ]
+}
