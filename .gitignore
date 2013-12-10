@@ -4,3 +4,5 @@
 /js.jar
 /TODO.txt
 npm-debug.log
+/coverage.lcov
+/coverage.html

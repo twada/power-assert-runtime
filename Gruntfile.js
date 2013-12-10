@@ -42,6 +42,16 @@ module.exports = function(grunt) {
                     reporter: 'dot'
                 },
                 src: ['test/**/*.js']
+            },
+            coverage: {
+                options: {
+                    ui: 'tdd',
+                    reporter: 'mocha-lcov-reporter',
+                    require: 'coverage/blanket',
+                    quiet: true,
+                    captureFile: 'coverage.lcov'
+                },
+                src: ['test/**/*.js']
             }
         },
         watch: {
@@ -53,4 +63,5 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('test', ['jshint', 'mochaTest:unit']);
+    grunt.registerTask('coverage', ['mochaTest:coverage']);
 };
