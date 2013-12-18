@@ -2,9 +2,6 @@
 .idea*
 .travis.yml
 node_modules/
-expr.js
-js.jar
-TODO.txt
 npm-debug.log
 coverage.lcov
 coverage.html

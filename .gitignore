@@ -1,8 +1,5 @@
-/node_modules
 /.idea
-/expr.js
-/js.jar
-/TODO.txt
-npm-debug.log
+/node_modules
+/npm-debug.log
 /coverage.lcov
 /coverage.html
