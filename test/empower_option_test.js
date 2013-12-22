@@ -1,12 +1,10 @@
 var empower = require('../lib/empower'),
     assert = require('assert'),
-    fakeFormatter = {
-        format: function (context) {
-            return [
-                context.location.path,
-                context.content
-            ];
-        }
+    fakeFormatter = function (context) {
+        return [
+            context.location.path,
+            context.content
+        ].join('\n');
     };
 
 

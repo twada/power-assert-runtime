@@ -1,37 +1,11 @@
 var empower = require('../lib/empower'),
     weave = require('../test_helper').weave,
-    fakeFormatter = {
-        format: function (context) {
-            return [
-                context.location.path,
-                context.content
-            ];
-        }
+    fakeFormatter = function (context) {
+        return [
+            context.location.path,
+            context.content
+        ].join('\n');
     };
-
-
-suite('lineSeparator option', function () {
-    function lineSeparatorTest (name, option, expectedSeparator) {
-        var baseAssert = require('assert'),
-            assert = empower(baseAssert, fakeFormatter, option);
-        test(name, function () {
-            var falsyNum = 0;
-            try {
-                eval(weave('assert(falsyNum);'));
-            } catch (e) {
-                baseAssert.equal(e.name, 'AssertionError');
-                baseAssert.equal(e.message, [
-                    '/path/to/some_test.js',
-                    'assert(falsyNum);'
-                ].join(expectedSeparator));
-            }
-        });
-    }
-    lineSeparatorTest('default is LF', {}, '\n');
-    lineSeparatorTest('LF', {lineSeparator: '\n'}, '\n');
-    lineSeparatorTest('CR', {lineSeparator: '\r'}, '\r');
-    lineSeparatorTest('CRLF', {lineSeparator: '\r\n'}, '\r\n');
-});
 
 
 suite('assertion method with two arguments', function () {
