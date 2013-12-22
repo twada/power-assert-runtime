@@ -43,6 +43,7 @@ suite('lineSeparator option', function () {
             try {
                 eval(weave('assert(falsyNum);'));
             } catch (e) {
+                baseAssert.equal(e.name, 'AssertionError');
                 baseAssert.equal(e.message, [
                     '# /path/to/some_test.js:1',
                     '',
