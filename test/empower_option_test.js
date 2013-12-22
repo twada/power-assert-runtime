@@ -230,6 +230,12 @@ suite('assert function empowerment', function () {
         });
         suite('returned assert', function () {
             sharedTestsForEmpowerFunctionReturnValue();
+            test('works as assert function', function () {
+                var empoweredAssert = this.empoweredAssert;
+                assert.throws(function () {
+                    empoweredAssert(false, 'empoweredAssert');
+                }, /FakeAssert: assertion failed. empoweredAssert/);
+            });
             test('is also a function', function () {
                 assert.ok(typeof this.empoweredAssert, 'function');
             });

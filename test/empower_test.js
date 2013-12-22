@@ -8,6 +8,26 @@ var empower = require('../lib/empower'),
     };
 
 
+suite('assertion method with one argument', function () {
+    var baseAssert = require('assert'),
+        assert = empower(baseAssert, fakeFormatter);
+
+    test('Identifier', function () {
+        var falsy = 0;
+        try {
+            eval(weave('assert(falsy);'));
+            assert.ok(false, 'AssertionError should be thrown');
+        } catch (e) {
+            baseAssert.equal(e.name, 'AssertionError');
+            baseAssert.equal(e.message, [
+                '/path/to/some_test.js',
+                'assert(falsy);'
+            ].join('\n'));
+        }
+    });
+});
+
+
 suite('assertion method with two arguments', function () {
     var baseAssert = require('assert'),
         assert = empower(baseAssert, fakeFormatter);
@@ -16,6 +36,7 @@ suite('assertion method with two arguments', function () {
         var foo = 'foo', bar = 'bar';
         try {
             eval(weave('assert.equal(foo, bar);'));
+            assert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
             baseAssert.equal(e.name, 'AssertionError');
             baseAssert.equal(e.message, [
@@ -29,6 +50,7 @@ suite('assertion method with two arguments', function () {
         var bar = 'bar';
         try {
             eval(weave('assert.equal("foo", bar);'));
+            assert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
             baseAssert.equal(e.name, 'AssertionError');
             baseAssert.equal(e.message, [
@@ -42,6 +64,7 @@ suite('assertion method with two arguments', function () {
         var foo = 'foo';
         try {
             eval(weave('assert.equal(foo, "bar");'));
+            assert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
             baseAssert.equal(e.name, 'AssertionError');
             baseAssert.equal(e.message, [
