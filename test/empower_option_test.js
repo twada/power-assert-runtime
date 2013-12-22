@@ -1,6 +1,14 @@
 var empower = require('../lib/empower'),
     weave = require('../test_helper').weave,
-    assert = require('assert');
+    assert = require('assert'),
+    fakeFormatter = {
+        format: function (context) {
+            return [
+                context.location.path,
+                context.content
+            ];
+        }
+    };
 
 
 suite('empower.defaultOptions()', function () {
@@ -10,8 +18,8 @@ suite('empower.defaultOptions()', function () {
     test('destructive: false', function () {
         assert.equal(this.options.destructive, false);
     });
-    test('formatter: power-assert-formatter module', function () {
-        assert.deepEqual(this.options.formatter, require('../lib/power-assert-formatter'));
+    test('formatter: undefined', function () {
+        assert.deepEqual(typeof this.options.formatter, 'undefined');
     });
     suite('targetMethods', function () {
         setup (function () {
@@ -37,7 +45,7 @@ suite('empower.defaultOptions()', function () {
 suite('lineSeparator option', function () {
     function lineSeparatorTest (name, option, expectedSeparator) {
         var baseAssert = require('assert'),
-            assert = empower(baseAssert, option);
+            assert = empower(baseAssert, fakeFormatter, option);
         test(name, function () {
             var falsyNum = 0;
             try {
@@ -45,12 +53,8 @@ suite('lineSeparator option', function () {
             } catch (e) {
                 baseAssert.equal(e.name, 'AssertionError');
                 baseAssert.equal(e.message, [
-                    '# /path/to/some_test.js:1',
-                    '',
-                    'assert(falsyNum);',
-                    '       |         ',
-                    '       0         ',
-                    ''
+                    '/path/to/some_test.js',
+                    'assert(falsyNum);'
                 ].join(expectedSeparator));
             }
         });
@@ -138,7 +142,7 @@ suite('assert object empowerment', function () {
                     ]
                 }
             };
-            this.empoweredAssert = empower(this.fakeAssertObject, this.options);
+            this.empoweredAssert = empower(this.fakeAssertObject, fakeFormatter, this.options);
         });
         suite('returned assert', function () {
             sharedTestsForEmpowerFunctionReturnValue();
@@ -153,7 +157,7 @@ suite('assert object empowerment', function () {
             });
         });
         test('avoid empowering multiple times', function () {
-            var empoweredAgain = empower(this.empoweredAssert, this.options);
+            var empoweredAgain = empower(this.empoweredAssert, fakeFormatter, this.options);
             assert.equal(empoweredAgain, this.empoweredAssert);
         });
     });
@@ -172,7 +176,7 @@ suite('assert object empowerment', function () {
                     ]
                 }
             };
-            this.empoweredAssert = empower(this.fakeAssertObject, this.options);
+            this.empoweredAssert = empower(this.fakeAssertObject, fakeFormatter, this.options);
         });
         suite('returned assert', function () {
             sharedTestsForEmpowerFunctionReturnValue();
@@ -187,7 +191,7 @@ suite('assert object empowerment', function () {
             });
         });
         test('avoid empowering multiple times', function () {
-            var empoweredAgain = empower(this.fakeAssertObject, this.options);
+            var empoweredAgain = empower(this.fakeAssertObject, fakeFormatter, this.options);
             assert.equal(empoweredAgain, this.fakeAssertObject);
         });
     });
@@ -226,7 +230,7 @@ suite('assert function empowerment', function () {
                     ]
                 }
             };
-            this.empoweredAssert = empower(this.fakeAssertFunction, this.options);
+            this.empoweredAssert = empower(this.fakeAssertFunction, fakeFormatter, this.options);
         });
         suite('returned assert', function () {
             sharedTestsForEmpowerFunctionReturnValue();
@@ -244,7 +248,7 @@ suite('assert function empowerment', function () {
             });
         });
         test('avoid empowering multiple times', function () {
-            var empoweredAgain = empower(this.empoweredAssert, this.options);
+            var empoweredAgain = empower(this.empoweredAssert, fakeFormatter, this.options);
             assert.equal(empoweredAgain, this.empoweredAssert);
         });
     });
@@ -252,7 +256,7 @@ suite('assert function empowerment', function () {
     test('does not support destructive:true', function () {
         var func = this.fakeAssertFunction;
         assert.throws(function () {
-            empower(func, {destructive: true});
+            empower(func, fakeFormatter, {destructive: true});
         }, 'cannot use destructive:true to function\.');
     });
 });
@@ -264,7 +268,7 @@ suite('empower argument preconditions', function () {
         test(name, function () {
             assert.throws(
                 function() {
-                    empower(arg);
+                    empower(arg, fakeFormatter);
                 },
                 function(err) {
                     return ((err instanceof TypeError) && (expectedMessage === err.message));
