@@ -1,6 +1,11 @@
 var empower = require('../lib/empower'),
-    weave = require('../test_helper').weave,
-    assert = require('assert');
+    assert = require('assert'),
+    fakeFormatter = function (context) {
+        return [
+            context.location.path,
+            context.content
+        ].join('\n');
+    };
 
 
 suite('empower.defaultOptions()', function () {
@@ -10,8 +15,8 @@ suite('empower.defaultOptions()', function () {
     test('destructive: false', function () {
         assert.equal(this.options.destructive, false);
     });
-    test('formatter: power-assert-formatter module', function () {
-        assert.deepEqual(this.options.formatter, require('../lib/power-assert-formatter'));
+    test('formatter: undefined', function () {
+        assert.deepEqual(typeof this.options.formatter, 'undefined');
     });
     suite('targetMethods', function () {
         setup (function () {
@@ -34,31 +39,26 @@ suite('empower.defaultOptions()', function () {
 });
 
 
-suite('lineSeparator option', function () {
-    function lineSeparatorTest (name, option, expectedSeparator) {
-        var baseAssert = require('assert'),
-            assert = empower(baseAssert, option);
+suite('empower argument preconditions', function () {
+    function argumentTest (name, arg, expectedMessage) {
+        expectedMessage = expectedMessage || 'empower argument should be a function or object.';
         test(name, function () {
-            var falsyNum = 0;
-            try {
-                eval(weave('assert(falsyNum);'));
-            } catch (e) {
-                baseAssert.equal(e.name, 'AssertionError');
-                baseAssert.equal(e.message, [
-                    '# /path/to/some_test.js:1',
-                    '',
-                    'assert(falsyNum);',
-                    '       |         ',
-                    '       0         ',
-                    ''
-                ].join(expectedSeparator));
-            }
+            assert.throws(
+                function() {
+                    empower(arg, fakeFormatter);
+                },
+                function(err) {
+                    return ((err instanceof TypeError) && (expectedMessage === err.message));
+                },
+                "unexpected error"
+            );
         });
     }
-    lineSeparatorTest('default is LF', {}, '\n');
-    lineSeparatorTest('LF', {lineSeparator: '\n'}, '\n');
-    lineSeparatorTest('CR', {lineSeparator: '\r'}, '\r');
-    lineSeparatorTest('CRLF', {lineSeparator: '\r\n'}, '\r\n');
+    argumentTest('cannot pass null', null);
+    argumentTest('cannot pass undefined', undefined);
+    argumentTest('cannot pass number', 3);
+    argumentTest('cannot pass string', 'hoge');
+    argumentTest('should respond to "ok"', {equal: function () { return false; }}, 'empower target object should be respond to \'ok\' method.');
 });
 
 
@@ -138,7 +138,7 @@ suite('assert object empowerment', function () {
                     ]
                 }
             };
-            this.empoweredAssert = empower(this.fakeAssertObject, this.options);
+            this.empoweredAssert = empower(this.fakeAssertObject, fakeFormatter, this.options);
         });
         suite('returned assert', function () {
             sharedTestsForEmpowerFunctionReturnValue();
@@ -153,7 +153,7 @@ suite('assert object empowerment', function () {
             });
         });
         test('avoid empowering multiple times', function () {
-            var empoweredAgain = empower(this.empoweredAssert, this.options);
+            var empoweredAgain = empower(this.empoweredAssert, fakeFormatter, this.options);
             assert.equal(empoweredAgain, this.empoweredAssert);
         });
     });
@@ -172,7 +172,7 @@ suite('assert object empowerment', function () {
                     ]
                 }
             };
-            this.empoweredAssert = empower(this.fakeAssertObject, this.options);
+            this.empoweredAssert = empower(this.fakeAssertObject, fakeFormatter, this.options);
         });
         suite('returned assert', function () {
             sharedTestsForEmpowerFunctionReturnValue();
@@ -187,7 +187,7 @@ suite('assert object empowerment', function () {
             });
         });
         test('avoid empowering multiple times', function () {
-            var empoweredAgain = empower(this.fakeAssertObject, this.options);
+            var empoweredAgain = empower(this.fakeAssertObject, fakeFormatter, this.options);
             assert.equal(empoweredAgain, this.fakeAssertObject);
         });
     });
@@ -226,10 +226,16 @@ suite('assert function empowerment', function () {
                     ]
                 }
             };
-            this.empoweredAssert = empower(this.fakeAssertFunction, this.options);
+            this.empoweredAssert = empower(this.fakeAssertFunction, fakeFormatter, this.options);
         });
         suite('returned assert', function () {
             sharedTestsForEmpowerFunctionReturnValue();
+            test('works as assert function', function () {
+                var empoweredAssert = this.empoweredAssert;
+                assert.throws(function () {
+                    empoweredAssert(false, 'empoweredAssert');
+                }, /FakeAssert: assertion failed. empoweredAssert/);
+            });
             test('is also a function', function () {
                 assert.ok(typeof this.empoweredAssert, 'function');
             });
@@ -244,7 +250,7 @@ suite('assert function empowerment', function () {
             });
         });
         test('avoid empowering multiple times', function () {
-            var empoweredAgain = empower(this.empoweredAssert, this.options);
+            var empoweredAgain = empower(this.empoweredAssert, fakeFormatter, this.options);
             assert.equal(empoweredAgain, this.empoweredAssert);
         });
     });
@@ -252,30 +258,7 @@ suite('assert function empowerment', function () {
     test('does not support destructive:true', function () {
         var func = this.fakeAssertFunction;
         assert.throws(function () {
-            empower(func, {destructive: true});
+            empower(func, fakeFormatter, {destructive: true});
         }, 'cannot use destructive:true to function\.');
     });
-});
-
-
-suite('empower argument preconditions', function () {
-    function argumentTest (name, arg, expectedMessage) {
-        expectedMessage = expectedMessage || 'empower argument should be a function or object.';
-        test(name, function () {
-            assert.throws(
-                function() {
-                    empower(arg);
-                },
-                function(err) {
-                    return ((err instanceof TypeError) && (expectedMessage === err.message));
-                },
-                "unexpected error"
-            );
-        });
-    }
-    argumentTest('cannot pass null', null);
-    argumentTest('cannot pass undefined', undefined);
-    argumentTest('cannot pass number', 3);
-    argumentTest('cannot pass string', 'hoge');
-    argumentTest('should respond to "ok"', {equal: function () { return false; }}, 'empower target object should be respond to \'ok\' method.');
 });
