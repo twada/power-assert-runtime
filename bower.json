@@ -10,6 +10,7 @@
         "Gruntfile.js",
         "node_modules",
         "package.json",
+        "coverage",
         "test",
         "test_helper.js"
     ]
