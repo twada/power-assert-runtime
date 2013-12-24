@@ -37,13 +37,21 @@ module.exports = function(grunt) {
                 jshintrc: '.jshintrc'
             }
         },
+        mocha: {
+            browser: {
+                src: ['test/test-browser.html'],
+                options: {
+                    run: true
+                }
+            }
+        },
         mochaTest: {
             unit: {
                 options: {
                     ui: 'tdd',
                     reporter: 'dot'
                 },
-                src: ['test/**/*.js']
+                src: ['test/**/*_test.js']
             },
             coverage: {
                 options: {
@@ -53,17 +61,18 @@ module.exports = function(grunt) {
                     quiet: true,
                     captureFile: 'coverage.lcov'
                 },
-                src: ['test/**/*.js']
+                src: ['test/**/*_test.js']
             }
         },
         watch: {
             unit: {
                 files: ['test/**/*.js', 'lib/**/*.js'],
-                tasks: ['test']
+                tasks: ['unit']
             }
         }
     });
 
-    grunt.registerTask('test', ['jshint', 'mochaTest:unit']);
+    grunt.registerTask('unit', ['jshint', 'mochaTest:unit']);
+    grunt.registerTask('test', ['jshint', 'mochaTest:unit', 'mocha:browser']);
     grunt.registerTask('coverage', ['mochaTest:coverage']);
 };
