@@ -1,10 +1,7 @@
 {
     "name": "empower",
     "version": "0.3.1",
-    "main": [
-        "lib/empower.js",
-        "lib/power-assert-formatter.js"
-    ],
+    "main": "lib/empower.js",
     "ignore": [
         "**/.*",
         "Gruntfile.js",
@@ -19,7 +16,7 @@
     "devDependencies": {
         "espower": "~0.3.0",
         "esprima": "~1.0.4",
-        "escodegen": "~0.0.28",
+        "escodegen": "~1.0.1",
         "mocha": "~1.16.2",
         "requirejs": "~2.1.5",
         "assert": "Jxck/assert"
