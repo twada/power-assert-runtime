@@ -5,6 +5,14 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         pkg: pkg,
+        bower: {
+            all: {
+                rjsConfig: 'test/rjsconfig.js',
+                options: {
+                    baseUrl: 'test'
+                }
+            }
+        },
         bump: {
             options: {
                 files: ['package.json', 'bower.json'],
@@ -43,6 +51,12 @@ module.exports = function(grunt) {
                 options: {
                     run: true
                 }
+            },
+            amd: {
+                src: ['test/test-amd.html'],
+                options: {
+                    run: false
+                }
             }
         },
         mochaTest: {
@@ -73,6 +87,6 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('unit', ['jshint', 'mochaTest:unit']);
-    grunt.registerTask('test', ['jshint', 'mochaTest:unit', 'mocha:browser']);
+    grunt.registerTask('test', ['jshint', 'mochaTest:unit', 'mocha:browser', 'mocha:amd']);
     grunt.registerTask('coverage', ['mochaTest:coverage']);
 };
