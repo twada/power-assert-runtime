@@ -35,8 +35,8 @@
     "grunt-contrib-watch": "~0.5.3",
     "grunt-bump": "~0.0.13",
     "mocha-lcov-reporter": "~0.0.1",
-    "blanket": "~1.1.5",
-    "coveralls": "~2.6.0",
+    "blanket": "~1.1.6",
+    "coveralls": "~2.6.1",
     "load-grunt-tasks": "~0.2.1"
   },
   "licenses": [
