@@ -4,5 +4,6 @@
 node_modules/
 bower_components/
 npm-debug.log
+coverage/
 coverage.lcov
 coverage.html
