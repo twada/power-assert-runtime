@@ -1,6 +1,24 @@
-var empower = require('../lib/empower'),
-    assert = require('assert'),
-    fakeFormatter = function (context) {
+(function (root, factory) {
+    'use strict';
+
+    var dependencies = [
+        '../lib/empower',
+        'assert'
+    ];
+
+    if (typeof define === 'function' && define.amd) {
+        define(dependencies, factory);
+    } else if (typeof exports === 'object') {
+        factory.apply(root, dependencies.map(function (path) { return require(path); }));
+    } else {
+        factory.apply(root, dependencies.map(function (path) {
+            var tokens = path.split('/');
+            return root[tokens[tokens.length - 1]];
+        }));
+    }
+}(this, function (empower, assert) {
+
+    var fakeFormatter = function (context) {
         return [
             context.location.path,
             context.content
@@ -262,3 +280,5 @@ suite('assert function empowerment', function () {
         }, 'cannot use destructive:true to function\.');
     });
 });
+
+}));
