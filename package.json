@@ -14,6 +14,7 @@
     "url": "http://github.com/twada"
   },
   "scripts": {
+    "bower": "./node_modules/bower/bin/bower install",
     "test": "grunt test",
     "coveralls": "grunt coverage && cat ./coverage.lcov | ./node_modules/coveralls/bin/coveralls.js"
   },
