@@ -13,5 +13,13 @@
         "coverage",
         "test",
         "test_helper.js"
-    ]
+    ],
+    "dependencies": {
+        "es5-shim": "~2.2.0"
+    },
+    "devDependencies": {
+        "mocha": "~1.16.2",
+        "requirejs": "~2.1.5",
+        "assert": "Jxck/assert"
+    }
 }
