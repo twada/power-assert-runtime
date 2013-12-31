@@ -14,7 +14,7 @@
         "es5-shim": "~2.2.0"
     },
     "devDependencies": {
-        "espower": "~0.3.0",
+        "espower": "~0.3.1",
         "esprima": "~1.0.4",
         "escodegen": "~1.0.1",
         "mocha": "~1.16.2",
