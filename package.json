@@ -27,7 +27,7 @@
     "url": "http://github.com/twada/empower.git"
   },
   "devDependencies": {
-    "espower": "~0.3.0",
+    "espower": "~0.3.1",
     "esprima": "~1.0.4",
     "escodegen": "~1.0.1",
     "grunt": "~0.4.2",
