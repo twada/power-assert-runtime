@@ -58,24 +58,41 @@
     fakeFormatter = function (context) {
         return [
             context.location.path,
-            context.content
+            context.content,
+            JSON.stringify(context.events)
         ].join('\n');
-    };
+    },
+    assert = empower(baseAssert, fakeFormatter);
+
+
+test('empowered function also acts like an assert function', function () {
+    var falsy = 0;
+    try {
+        eval(weave('assert(falsy);'));
+        assert.ok(false, 'AssertionError should be thrown');
+    } catch (e) {
+        baseAssert.equal(e.name, 'AssertionError');
+        baseAssert.equal(e.message, [
+            '/path/to/some_test.js',
+            'assert(falsy);',
+            '[{"value":0,"kind":"ident","location":{"start":{"line":1,"column":7}}}]'
+        ].join('\n'));
+    }
+});
 
 
 suite('assertion method with one argument', function () {
-    var assert = empower(baseAssert, fakeFormatter);
-
     test('Identifier', function () {
         var falsy = 0;
         try {
-            eval(weave('assert(falsy);'));
+            eval(weave('assert.ok(falsy);'));
             assert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
             baseAssert.equal(e.name, 'AssertionError');
             baseAssert.equal(e.message, [
                 '/path/to/some_test.js',
-                'assert(falsy);'
+                'assert.ok(falsy);',
+                '[{"value":0,"kind":"ident","location":{"start":{"line":1,"column":10}}}]'
             ].join('\n'));
         }
     });
@@ -83,8 +100,6 @@ suite('assertion method with one argument', function () {
 
 
 suite('assertion method with two arguments', function () {
-    var assert = empower(baseAssert, fakeFormatter);
-
     test('both Identifier', function () {
         var foo = 'foo', bar = 'bar';
         try {
@@ -94,7 +109,8 @@ suite('assertion method with two arguments', function () {
             baseAssert.equal(e.name, 'AssertionError');
             baseAssert.equal(e.message, [
                 '/path/to/some_test.js',
-                'assert.equal(foo, bar);'
+                'assert.equal(foo, bar);',
+                '[{"value":"foo","kind":"ident","location":{"start":{"line":1,"column":13}}},{"value":"bar","kind":"ident","location":{"start":{"line":1,"column":18}}}]'
             ].join('\n'));
         }
     });
@@ -108,7 +124,8 @@ suite('assertion method with two arguments', function () {
             baseAssert.equal(e.name, 'AssertionError');
             baseAssert.equal(e.message, [
                 '/path/to/some_test.js',
-                'assert.equal("foo", bar);'
+                'assert.equal("foo", bar);',
+                '[{"value":"bar","kind":"ident","location":{"start":{"line":1,"column":20}}}]'
             ].join('\n'));
         }
     });
@@ -122,7 +139,8 @@ suite('assertion method with two arguments', function () {
             baseAssert.equal(e.name, 'AssertionError');
             baseAssert.equal(e.message, [
                 '/path/to/some_test.js',
-                'assert.equal(foo, "bar");'
+                'assert.equal(foo, "bar");',
+                '[{"value":"foo","kind":"ident","location":{"start":{"line":1,"column":13}}}]'
             ].join('\n'));
         }
     });

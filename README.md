@@ -21,6 +21,19 @@ DESCRIPTION
 Please note that `empower` is a beta version product. Pull-requests, issue reports and patches are always welcomed. See [power-assert](http://github.com/twada/power-assert) project for more documentation.
 
 
+SUPPORTED ASSERTION LIBRARIES
+---------------------------------------
+* [Node assert API](http://nodejs.org/api/assert.html)
+* [Jxck/assert](https://github.com/Jxck/assert)
+
+
+ASSERTION LIBRARIES KNOWN TO WORK
+---------------------------------------
+* [QUnit.assert](http://qunitjs.com/)
+* [nodeunit](https://github.com/caolan/nodeunit)
+* [buster-assertions](http://docs.busterjs.org/en/latest/modules/buster-assertions/)
+
+
 AUTHOR
 ---------------------------------------
 * [Takuto Wada](http://github.com/twada)
