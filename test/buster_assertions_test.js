@@ -82,6 +82,22 @@
     });
 
 
+    test('buster assertion is also an assert function', function () {
+        var falsy = 0;
+        try {
+            eval(weave('assert(falsy);'));
+            assert.ok(false, 'AssertionError should be thrown');
+        } catch (e) {
+            baseAssert.equal(e.name, 'AssertionError');
+            baseAssert.equal(e.message, [
+                '/path/to/some_test.js',
+                'assert(falsy);',
+                '[{"value":0,"kind":"ident","location":{"start":{"line":1,"column":7}}}]'
+            ].join('\n'));
+        }
+    });
+
+
     suite('buster assertion with one argument', function () {
         test('isNull method', function () {
             var falsy = 0;
