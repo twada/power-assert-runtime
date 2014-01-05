@@ -19,6 +19,7 @@
         "escodegen": "~1.0.1",
         "mocha": "~1.16.2",
         "requirejs": "~2.1.5",
-        "assert": "Jxck/assert"
+        "assert": "Jxck/assert",
+        "buster.js": "~0.7.0"
     }
 }

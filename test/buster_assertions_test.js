@@ -16,8 +16,10 @@
         factory.apply(root, dependencies.map(function (path) { return require(path); }));
     } else {
         factory.apply(root, dependencies.map(function (path) {
-            var tokens = path.split('/');
-            return root[tokens[tokens.length - 1]];
+            var tokens = path.split('/'),
+                basename = tokens[tokens.length - 1],
+                subnames = basename.split('-');
+            return root[subnames[0]];
         }));
     }
 }(this, function (
