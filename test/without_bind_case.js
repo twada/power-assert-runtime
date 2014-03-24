@@ -34,7 +34,7 @@
     }
 
     function shouldThrowErrorIfFunctionBindDoesNotExist (arg) {
-        var expectedMessage = 'empower module depends on method Function#bind that your browser does not support. Please use es5-shim.js to go on.';
+        var expectedMessage = 'empower module depends on method Function#bind that your browser does not support. Please add es5-shim.js to your dependencies.';
         assert.throws(
             function() {
                 empower(arg, fakeFormatter);
