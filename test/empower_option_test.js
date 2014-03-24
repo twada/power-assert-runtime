@@ -76,7 +76,6 @@ suite('empower argument preconditions', function () {
     argumentTest('cannot pass undefined', undefined);
     argumentTest('cannot pass number', 3);
     argumentTest('cannot pass string', 'hoge');
-    argumentTest('should respond to "ok"', {equal: function () { return false; }}, 'empower target object should be respond to \'ok\' method.');
 });
 
 
