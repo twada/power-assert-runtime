@@ -52,6 +52,12 @@ module.exports = function(grunt) {
                     run: true
                 }
             },
+            withoutBind: {
+                src: ['test/test-without-bind.html'],
+                options: {
+                    run: true
+                }
+            },
             amd: {
                 src: ['test/test-amd.html'],
                 options: {
@@ -87,6 +93,6 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('unit', ['jshint', 'mochaTest:unit']);
-    grunt.registerTask('test', ['jshint', 'mochaTest:unit', 'mocha:browser', 'mocha:amd']);
+    grunt.registerTask('test', ['jshint', 'mochaTest:unit', 'mocha:browser', 'mocha:amd', 'mocha:withoutBind']);
     grunt.registerTask('coverage', ['mochaTest:coverage']);
 };
