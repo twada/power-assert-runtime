@@ -33,6 +33,12 @@ suite('empower.defaultOptions()', function () {
     test('destructive: false', function () {
         assert.equal(this.options.destructive, false);
     });
+    test('modifyMessageOnFail: false', function () {
+        assert.equal(this.options.modifyMessageOnFail, false);
+    });
+    test('saveContextOnFail: false', function () {
+        assert.equal(this.options.saveContextOnFail, false);
+    });
     test('formatter: undefined', function () {
         assert.deepEqual(typeof this.options.formatter, 'undefined');
     });
