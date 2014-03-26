@@ -10,9 +10,6 @@
         "coverage",
         "test"
     ],
-    "dependencies": {
-        "es5-shim": "~2.3.0"
-    },
     "devDependencies": {
         "espower": "~0.3.1",
         "esprima": "~1.0.4",
