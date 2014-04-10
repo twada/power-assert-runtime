@@ -34,7 +34,7 @@
     var weave = function () {
         function applyEspower (line, options) {
             options = options || {destructive: false, source: line, path: '/path/to/some_test.js', powerAssertVariableName: 'assert'};
-            var tree = esprima.parse(line, {tolerant: true, loc: true, range: true, tokens: true});
+            var tree = esprima.parse(line, {tolerant: true, loc: true, tokens: true, raw: true});
             return espower(tree, options);
         }
 
@@ -43,10 +43,13 @@
         };
     }(),
     fakeFormatter = function (context) {
+        var events = context.args.reduce(function (accum, arg) {
+            return accum.concat(arg.events);
+        }, []);
         return [
-            context.location.path,
-            context.content,
-            JSON.stringify(context.events)
+            context.source.filepath,
+            context.source.content,
+            JSON.stringify(events)
         ].join('\n');
     };
 
@@ -55,7 +58,7 @@ function testWithOption (option) {
     var assert = empower(baseAssert, fakeFormatter, option);
 
 
-test('empowered function also acts like an assert function', function () {
+test(JSON.stringify(option) + ' empowered function also acts like an assert function', function () {
     var falsy = 0;
     try {
         eval(weave('assert(falsy);'));
@@ -66,22 +69,44 @@ test('empowered function also acts like an assert function', function () {
             baseAssert.equal(e.message, [
                 '/path/to/some_test.js',
                 'assert(falsy);',
-                '[{"value":0,"kind":"ident","location":{"start":{"line":1,"column":7}}}]'
+                '[{"value":0,"espath":""}]'
             ].join('\n'));
         }
         if (option.saveContextOnFail) {
             baseAssert.deepEqual(e.powerAssertContext, {
-                "value":0,
-                "location":{"start":{"line":1,"column":7},"path":"/path/to/some_test.js"},
-                "content":"assert(falsy);",
-                "events": [{"value":0,"kind":"ident","location":{"start":{"line":1,"column":7}}}]
+                "source":{
+                    "content": "assert(falsy);",
+                    "filepath": "/path/to/some_test.js"
+                },
+                "args":[
+                    {
+                        "value": 0,
+                        "meta": {
+                            "tree": {
+                                "type":"Identifier",
+                                "name":"falsy",
+                                "loc":{"start":{"line":1,"column":7},"end":{"line":1,"column":12}}
+                            },
+                            "tokens":[
+                                {
+                                    "type":"Identifier",
+                                    "value":"falsy",
+                                    "loc":{"start":{"line":1,"column":7},"end":{"line":1,"column":12}}
+                                }
+                            ]
+                        },
+                        "events": [
+                            {"value":0,"espath":""}
+                        ]
+                    }
+                ]
             });
         }
     }
 });
 
 
-suite('assertion method with one argument', function () {
+suite(JSON.stringify(option) + ' assertion method with one argument', function () {
     test('Identifier', function () {
         var falsy = 0;
         try {
@@ -93,15 +118,29 @@ suite('assertion method with one argument', function () {
                 baseAssert.equal(e.message, [
                     '/path/to/some_test.js',
                     'assert.ok(falsy);',
-                    '[{"value":0,"kind":"ident","location":{"start":{"line":1,"column":10}}}]'
+                    '[{"value":0,"espath":""}]'
                 ].join('\n'));
             }
             if (option.saveContextOnFail) {
                 baseAssert.deepEqual(e.powerAssertContext, {
-                    "value":0,
-                    "location":{"start":{"line":1,"column":10},"path":"/path/to/some_test.js"},
-                    "content":"assert.ok(falsy);",
-                    "events": [{"value":0,"kind":"ident","location":{"start":{"line":1,"column":10}}}]
+                    "source": {
+                        "content":"assert.ok(falsy);",
+                        "filepath":"/path/to/some_test.js"
+                    },
+                    "args":[
+                        {
+                            "value":0,
+                            "meta":{
+                                "tree":{"type":"Identifier","name":"falsy","loc":{"start":{"line":1,"column":10},"end":{"line":1,"column":15}}},
+                                "tokens":[
+                                    {"type":"Identifier","value":"falsy","loc":{"start":{"line":1,"column":10},"end":{"line":1,"column":15}}}
+                                ]
+                            },
+                            "events":[
+                                {"value":0,"espath":""}
+                            ]
+                        }
+                    ]
                 });
             }
         }
@@ -109,7 +148,7 @@ suite('assertion method with one argument', function () {
 });
 
 
-suite('assertion method with two arguments', function () {
+suite(JSON.stringify(option) + ' assertion method with two arguments', function () {
     test('both Identifier', function () {
         var foo = 'foo', bar = 'bar';
         try {
@@ -121,15 +160,37 @@ suite('assertion method with two arguments', function () {
                 baseAssert.equal(e.message, [
                     '/path/to/some_test.js',
                     'assert.equal(foo, bar);',
-                    '[{"value":"foo","kind":"ident","location":{"start":{"line":1,"column":13}}},{"value":"bar","kind":"ident","location":{"start":{"line":1,"column":18}}}]'
+                    '[{"value":"foo","espath":""},{"value":"bar","espath":""}]'
                 ].join('\n'));
             }
             if (option.saveContextOnFail) {
                 baseAssert.deepEqual(e.powerAssertContext, {
-                    "value":"foo",
-                    "location":{"start":{"line":1,"column":13},"path":"/path/to/some_test.js"},
-                    "content":"assert.equal(foo, bar);",
-                    "events": [{"value":"foo","kind":"ident","location":{"start":{"line":1,"column":13}}},{"value":"bar","kind":"ident","location":{"start":{"line":1,"column":18}}}]
+                    "source":{
+                        "content":"assert.equal(foo, bar);",
+                        "filepath":"/path/to/some_test.js"
+                    },
+                    "args":[
+                        {
+                            "value":"foo",
+                            "meta":{
+                                "tree":{"type":"Identifier","name":"foo","loc":{"start":{"line":1,"column":13},"end":{"line":1,"column":16}}},
+                                "tokens":[
+                                    {"type":"Identifier","value":"foo","loc":{"start":{"line":1,"column":13},"end":{"line":1,"column":16}}}
+                                ]
+                            },
+                            "events":[{"value":"foo","espath":""}]
+                        },
+                        {
+                            "value":"bar",
+                            "meta":{
+                                "tree":{"type":"Identifier","name":"bar","loc":{"start":{"line":1,"column":18},"end":{"line":1,"column":21}}},
+                                "tokens":[
+                                    {"type":"Identifier","value":"bar","loc":{"start":{"line":1,"column":18},"end":{"line":1,"column":21}}}
+                                ]
+                            },
+                            "events":[{"value":"bar","espath":""}]
+                        }
+                    ]
                 });
             }
         }
@@ -146,15 +207,27 @@ suite('assertion method with two arguments', function () {
                 baseAssert.equal(e.message, [
                     '/path/to/some_test.js',
                     'assert.equal("foo", bar);',
-                    '[{"value":"bar","kind":"ident","location":{"start":{"line":1,"column":20}}}]'
+                    '[{"value":"bar","espath":""}]'
                 ].join('\n'));
             }
             if (option.saveContextOnFail) {
                 baseAssert.deepEqual(e.powerAssertContext, {
-                    "value":"bar",
-                    "location":{"start":{"line":1,"column":20},"path":"/path/to/some_test.js"},
-                    "content":"assert.equal(\"foo\", bar);",
-                    "events": [{"value":"bar","kind":"ident","location":{"start":{"line":1,"column":20}}}]
+                    "source":{
+                        "content":"assert.equal(\"foo\", bar);",
+                        "filepath":"/path/to/some_test.js"
+                    },
+                    "args": [
+                        {
+                            "value": "bar",
+                            "meta": {
+                                "tree": {"type":"Identifier","name":"bar","loc":{"start":{"line":1,"column":20},"end":{"line":1,"column":23}}},
+                                "tokens": [
+                                    {"type":"Identifier","value":"bar","loc":{"start":{"line":1,"column":20},"end":{"line":1,"column":23}}}
+                                ]
+                            },
+                            "events": [{"value":"bar","espath":""}]
+                        }
+                    ]
                 });
             }
         }
@@ -171,15 +244,27 @@ suite('assertion method with two arguments', function () {
                 baseAssert.equal(e.message, [
                     '/path/to/some_test.js',
                     'assert.equal(foo, "bar");',
-                    '[{"value":"foo","kind":"ident","location":{"start":{"line":1,"column":13}}}]'
+                    '[{"value":"foo","espath":""}]'
                 ].join('\n'));
             }
             if (option.saveContextOnFail) {
                 baseAssert.deepEqual(e.powerAssertContext, {
-                    "value":"foo",
-                    "location":{"start":{"line":1,"column":13},"path":"/path/to/some_test.js"},
-                    "content":"assert.equal(foo, \"bar\");",
-                    "events": [{"value":"foo","kind":"ident","location":{"start":{"line":1,"column":13}}}]
+                    "source":{
+                        "content":"assert.equal(foo, \"bar\");",
+                        "filepath":"/path/to/some_test.js"
+                    },
+                    "args":[
+                        {
+                            "value":"foo",
+                            "meta":{
+                                "tree":{"type":"Identifier","name":"foo","loc":{"start":{"line":1,"column":13},"end":{"line":1,"column":16}}},
+                                "tokens":[
+                                    {"type":"Identifier","value":"foo","loc":{"start":{"line":1,"column":13},"end":{"line":1,"column":16}}}
+                                ]
+                            },
+                            "events":[{"value":"foo","espath":""}]
+                        }
+                    ]
                 });
             }
         }
