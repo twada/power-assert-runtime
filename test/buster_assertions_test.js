@@ -47,7 +47,7 @@
                     twoArgs: ['same']
                 }
             };
-            var tree = esprima.parse(line, {tolerant: true, loc: true, range: true, tokens: true});
+            var tree = esprima.parse(line, {tolerant: true, loc: true, tokens: true, raw: true});
             return espower(tree, options);
         }
 
@@ -56,10 +56,13 @@
         };
     }(),
     fakeFormatter = function (context) {
+        var events = context.args.reduce(function (accum, arg) {
+            return accum.concat(arg.events);
+        }, []);
         return [
-            context.location.path,
-            context.content,
-            JSON.stringify(context.events)
+            context.source.filepath,
+            context.source.content,
+            JSON.stringify(events)
         ].join('\n');
     };
 
@@ -81,7 +84,7 @@
             baseAssert.equal(e.message, [
                 '/path/to/some_test.js',
                 'assert(falsy);',
-                '[{"value":0,"kind":"ident","location":{"start":{"line":1,"column":7}}}]'
+                '[{"value":0,"espath":""}]'
             ].join('\n'));
         }
     });
@@ -98,7 +101,7 @@
                 baseAssert.equal(e.message, [
                     '[assert.isNull] /path/to/some_test.js',
                     'assert.isNull(falsy);',
-                    '[{"value":0,"kind":"ident","location":{"start":{"line":1,"column":14}}}]: Expected 0 to be null'
+                    '[{"value":0,"espath":""}]: Expected 0 to be null'
                 ].join('\n'));
             }
         });
@@ -116,7 +119,7 @@
                 baseAssert.equal(e.message, [
                     '[assert.same] /path/to/some_test.js',
                     'assert.same(foo, bar);',
-                    '[{"value":"foo","kind":"ident","location":{"start":{"line":1,"column":12}}},{"value":"bar","kind":"ident","location":{"start":{"line":1,"column":17}}}]: foo expected to be the same object as bar'
+                    '[{"value":"foo","espath":""},{"value":"bar","espath":""}]: foo expected to be the same object as bar'
                 ].join('\n'));
             }
         });
@@ -131,7 +134,7 @@
                 baseAssert.equal(e.message, [
                     '[assert.same] /path/to/some_test.js',
                     'assert.same("foo", bar);',
-                    '[{"value":"bar","kind":"ident","location":{"start":{"line":1,"column":19}}}]: foo expected to be the same object as bar'
+                    '[{"value":"bar","espath":""}]: foo expected to be the same object as bar'
                 ].join('\n'));
             }
         });
@@ -146,7 +149,7 @@
                 baseAssert.equal(e.message, [
                     '[assert.same] /path/to/some_test.js',
                     'assert.same(foo, "bar");',
-                    '[{"value":"foo","kind":"ident","location":{"start":{"line":1,"column":12}}}]: foo expected to be the same object as bar'
+                    '[{"value":"foo","espath":""}]: foo expected to be the same object as bar'
                 ].join('\n'));
             }
         });
