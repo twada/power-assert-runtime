@@ -1,9 +1,9 @@
 empower
 ================================
 
-[![Build Status](https://travis-ci.org/twada/empower.png?branch=master)](https://travis-ci.org/twada/empower)
-[![NPM version](https://badge.fury.io/js/empower.png)](http://badge.fury.io/js/empower)
-[![Dependency Status](https://gemnasium.com/twada/empower.png)](https://gemnasium.com/twada/empower)
+[![Build Status](https://travis-ci.org/twada/empower.svg?branch=master)](https://travis-ci.org/twada/empower)
+[![NPM version](https://badge.fury.io/js/empower.svg)](http://badge.fury.io/js/empower)
+[![Dependency Status](https://gemnasium.com/twada/empower.svg)](https://gemnasium.com/twada/empower)
 [![Coverage Status](https://coveralls.io/repos/twada/empower/badge.png?branch=master)](https://coveralls.io/r/twada/empower?branch=master)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 
