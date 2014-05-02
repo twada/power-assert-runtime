@@ -83,8 +83,8 @@
             baseAssert.equal(e.name, 'AssertionError');
             baseAssert.equal(e.message, [
                 '/path/to/some_test.js',
-                'assert(falsy);',
-                '[{"value":0,"espath":""}]'
+                'assert(falsy)',
+                '[{"value":0,"espath":"arguments/0"}]'
             ].join('\n'));
         }
     });
@@ -100,8 +100,8 @@
                 baseAssert.equal(e.name, 'AssertionError');
                 baseAssert.equal(e.message, [
                     '[assert.isNull] /path/to/some_test.js',
-                    'assert.isNull(falsy);',
-                    '[{"value":0,"espath":""}]: Expected 0 to be null'
+                    'assert.isNull(falsy)',
+                    '[{"value":0,"espath":"arguments/0"}]: Expected 0 to be null'
                 ].join('\n'));
             }
         });
@@ -118,8 +118,8 @@
                 baseAssert.equal(e.name, 'AssertionError');
                 baseAssert.equal(e.message, [
                     '[assert.same] /path/to/some_test.js',
-                    'assert.same(foo, bar);',
-                    '[{"value":"foo","espath":""},{"value":"bar","espath":""}]: foo expected to be the same object as bar'
+                    'assert.same(foo, bar)',
+                    '[{"value":"foo","espath":"arguments/0"},{"value":"bar","espath":"arguments/1"}]: foo expected to be the same object as bar'
                 ].join('\n'));
             }
         });
@@ -133,8 +133,8 @@
                 baseAssert.equal(e.name, 'AssertionError');
                 baseAssert.equal(e.message, [
                     '[assert.same] /path/to/some_test.js',
-                    'assert.same("foo", bar);',
-                    '[{"value":"bar","espath":""}]: foo expected to be the same object as bar'
+                    'assert.same("foo", bar)',
+                    '[{"value":"bar","espath":"arguments/1"}]: foo expected to be the same object as bar'
                 ].join('\n'));
             }
         });
@@ -148,8 +148,8 @@
                 baseAssert.equal(e.name, 'AssertionError');
                 baseAssert.equal(e.message, [
                     '[assert.same] /path/to/some_test.js',
-                    'assert.same(foo, "bar");',
-                    '[{"value":"foo","espath":""}]: foo expected to be the same object as bar'
+                    'assert.same(foo, "bar")',
+                    '[{"value":"foo","espath":"arguments/0"}]: foo expected to be the same object as bar'
                 ].join('\n'));
             }
         });

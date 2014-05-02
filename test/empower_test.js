@@ -68,35 +68,22 @@ test(JSON.stringify(option) + ' empowered function also acts like an assert func
         if (option.modifyMessageOnFail) {
             baseAssert.equal(e.message, [
                 '/path/to/some_test.js',
-                'assert(falsy);',
-                '[{"value":0,"espath":""}]'
+                'assert(falsy)',
+                '[{"value":0,"espath":"arguments/0"}]'
             ].join('\n'));
         }
         if (option.saveContextOnFail) {
             baseAssert.deepEqual(e.powerAssertContext, {
                 "source":{
-                    "content": "assert(falsy);",
-                    "filepath": "/path/to/some_test.js"
+                    "content": "assert(falsy)",
+                    "filepath": "/path/to/some_test.js",
+                    "line": 1
                 },
                 "args":[
                     {
                         "value": 0,
-                        "meta": {
-                            "tree": {
-                                "type":"Identifier",
-                                "name":"falsy",
-                                "loc":{"start":{"line":1,"column":7},"end":{"line":1,"column":12}}
-                            },
-                            "tokens":[
-                                {
-                                    "type":"Identifier",
-                                    "value":"falsy",
-                                    "loc":{"start":{"line":1,"column":7},"end":{"line":1,"column":12}}
-                                }
-                            ]
-                        },
                         "events": [
-                            {"value":0,"espath":""}
+                            {"value":0,"espath":"arguments/0"}
                         ]
                     }
                 ]
@@ -117,27 +104,22 @@ suite(JSON.stringify(option) + ' assertion method with one argument', function (
             if (option.modifyMessageOnFail) {
                 baseAssert.equal(e.message, [
                     '/path/to/some_test.js',
-                    'assert.ok(falsy);',
-                    '[{"value":0,"espath":""}]'
+                    'assert.ok(falsy)',
+                    '[{"value":0,"espath":"arguments/0"}]'
                 ].join('\n'));
             }
             if (option.saveContextOnFail) {
                 baseAssert.deepEqual(e.powerAssertContext, {
                     "source": {
-                        "content":"assert.ok(falsy);",
-                        "filepath":"/path/to/some_test.js"
+                        "content":"assert.ok(falsy)",
+                        "filepath":"/path/to/some_test.js",
+                        "line": 1
                     },
                     "args":[
                         {
                             "value":0,
-                            "meta":{
-                                "tree":{"type":"Identifier","name":"falsy","loc":{"start":{"line":1,"column":10},"end":{"line":1,"column":15}}},
-                                "tokens":[
-                                    {"type":"Identifier","value":"falsy","loc":{"start":{"line":1,"column":10},"end":{"line":1,"column":15}}}
-                                ]
-                            },
                             "events":[
-                                {"value":0,"espath":""}
+                                {"value":0,"espath":"arguments/0"}
                             ]
                         }
                     ]
@@ -159,36 +141,25 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
             if (option.modifyMessageOnFail) {
                 baseAssert.equal(e.message, [
                     '/path/to/some_test.js',
-                    'assert.equal(foo, bar);',
-                    '[{"value":"foo","espath":""},{"value":"bar","espath":""}]'
+                    'assert.equal(foo, bar)',
+                    '[{"value":"foo","espath":"arguments/0"},{"value":"bar","espath":"arguments/1"}]'
                 ].join('\n'));
             }
             if (option.saveContextOnFail) {
                 baseAssert.deepEqual(e.powerAssertContext, {
                     "source":{
-                        "content":"assert.equal(foo, bar);",
-                        "filepath":"/path/to/some_test.js"
+                        "content":"assert.equal(foo, bar)",
+                        "filepath":"/path/to/some_test.js",
+                        "line": 1
                     },
                     "args":[
                         {
                             "value":"foo",
-                            "meta":{
-                                "tree":{"type":"Identifier","name":"foo","loc":{"start":{"line":1,"column":13},"end":{"line":1,"column":16}}},
-                                "tokens":[
-                                    {"type":"Identifier","value":"foo","loc":{"start":{"line":1,"column":13},"end":{"line":1,"column":16}}}
-                                ]
-                            },
-                            "events":[{"value":"foo","espath":""}]
+                            "events":[{"value":"foo","espath":"arguments/0"}]
                         },
                         {
                             "value":"bar",
-                            "meta":{
-                                "tree":{"type":"Identifier","name":"bar","loc":{"start":{"line":1,"column":18},"end":{"line":1,"column":21}}},
-                                "tokens":[
-                                    {"type":"Identifier","value":"bar","loc":{"start":{"line":1,"column":18},"end":{"line":1,"column":21}}}
-                                ]
-                            },
-                            "events":[{"value":"bar","espath":""}]
+                            "events":[{"value":"bar","espath":"arguments/1"}]
                         }
                     ]
                 });
@@ -206,26 +177,21 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
             if (option.modifyMessageOnFail) {
                 baseAssert.equal(e.message, [
                     '/path/to/some_test.js',
-                    'assert.equal("foo", bar);',
-                    '[{"value":"bar","espath":""}]'
+                    'assert.equal("foo", bar)',
+                    '[{"value":"bar","espath":"arguments/1"}]'
                 ].join('\n'));
             }
             if (option.saveContextOnFail) {
                 baseAssert.deepEqual(e.powerAssertContext, {
                     "source":{
-                        "content":"assert.equal(\"foo\", bar);",
-                        "filepath":"/path/to/some_test.js"
+                        "content":"assert.equal(\"foo\", bar)",
+                        "filepath":"/path/to/some_test.js",
+                        "line": 1
                     },
                     "args": [
                         {
                             "value": "bar",
-                            "meta": {
-                                "tree": {"type":"Identifier","name":"bar","loc":{"start":{"line":1,"column":20},"end":{"line":1,"column":23}}},
-                                "tokens": [
-                                    {"type":"Identifier","value":"bar","loc":{"start":{"line":1,"column":20},"end":{"line":1,"column":23}}}
-                                ]
-                            },
-                            "events": [{"value":"bar","espath":""}]
+                            "events": [{"value":"bar","espath":"arguments/1"}]
                         }
                     ]
                 });
@@ -243,26 +209,21 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
             if (option.modifyMessageOnFail) {
                 baseAssert.equal(e.message, [
                     '/path/to/some_test.js',
-                    'assert.equal(foo, "bar");',
-                    '[{"value":"foo","espath":""}]'
+                    'assert.equal(foo, "bar")',
+                    '[{"value":"foo","espath":"arguments/0"}]'
                 ].join('\n'));
             }
             if (option.saveContextOnFail) {
                 baseAssert.deepEqual(e.powerAssertContext, {
                     "source":{
-                        "content":"assert.equal(foo, \"bar\");",
-                        "filepath":"/path/to/some_test.js"
+                        "content":"assert.equal(foo, \"bar\")",
+                        "filepath":"/path/to/some_test.js",
+                        "line": 1
                     },
                     "args":[
                         {
                             "value":"foo",
-                            "meta":{
-                                "tree":{"type":"Identifier","name":"foo","loc":{"start":{"line":1,"column":13},"end":{"line":1,"column":16}}},
-                                "tokens":[
-                                    {"type":"Identifier","value":"foo","loc":{"start":{"line":1,"column":13},"end":{"line":1,"column":16}}}
-                                ]
-                            },
-                            "events":[{"value":"foo","espath":""}]
+                            "events":[{"value":"foo","espath":"arguments/0"}]
                         }
                     ]
                 });
