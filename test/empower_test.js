@@ -58,6 +58,39 @@ function testWithOption (option) {
     var assert = empower(baseAssert, fakeFormatter, option);
 
 
+test('Bug reproduction. should not fail if argument is null Literal. ' + JSON.stringify(option), function () {
+    var foo = 'foo';
+    try {
+        eval(weave('assert.equal(foo, null);'));
+        assert.ok(false, 'AssertionError should be thrown');
+    } catch (e) {
+        baseAssert.equal(e.name, 'AssertionError');
+        if (option.modifyMessageOnFail) {
+            baseAssert.equal(e.message, [
+                '/path/to/some_test.js',
+                'assert.equal(foo, null)',
+                '[{"value":"foo","espath":"arguments/0"}]'
+            ].join('\n'));
+        }
+        if (option.saveContextOnFail) {
+            baseAssert.deepEqual(e.powerAssertContext, {
+                "source":{
+                    "content":"assert.equal(foo, null)",
+                    "filepath":"/path/to/some_test.js",
+                    "line": 1
+                },
+                "args":[
+                    {
+                        "value":"foo",
+                        "events":[{"value":"foo","espath":"arguments/0"}]
+                    }
+                ]
+            });
+        }
+    }
+});
+
+
 test(JSON.stringify(option) + ' empowered function also acts like an assert function', function () {
     var falsy = 0;
     try {
