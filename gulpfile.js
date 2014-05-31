@@ -6,7 +6,6 @@ var gulp = require('gulp'),
     mochaPhantomJS = require('gulp-mocha-phantomjs'),
     connect = require('gulp-connect'),
     clean = require('gulp-clean'),
-    runSequence = require('run-sequence'),
     source = require('vinyl-source-stream'),
     through = require('through2'),
     browserify = require('browserify'),
@@ -151,7 +150,7 @@ gulp.task('clean_coverage', function () {
         .pipe(clean());
 });
 
-gulp.task('bundle', function() {
+gulp.task('bundle', ['clean_bundle'], function() {
     var bundleStream = browserify(config.bundle.srcFile).bundle({standalone: config.bundle.standalone});
     return bundleStream
         .pipe(source(config.bundle.destName))
@@ -162,28 +161,22 @@ gulp.task('unit', function () {
     return runMochaSimply();
 });
 
-gulp.task('coverage', function () {
+gulp.task('coverage', ['clean_coverage'], function () {
     return runMochaWithBlanket();
 });
 
-gulp.task('test_amd', function () {
+gulp.task('test_amd', ['bundle'], function () {
     return gulp
         .src(config.test.amd)
         .pipe(mochaPhantomJS({reporter: 'dot'}));
 });
 
-gulp.task('test_browser', function () {
+gulp.task('test_browser', ['bundle'], function () {
     return gulp
         .src(config.test.browser)
         .pipe(mochaPhantomJS({reporter: 'dot'}));
 });
 
-gulp.task('test', function() {
-    runSequence(
-        ['clean'],
-        ['bundle'],
-        ['unit','test_browser','test_amd']
-    );
-});
-
 gulp.task('clean', ['clean_coverage', 'clean_bundle']);
+
+gulp.task('test', ['unit','test_browser','test_amd']);
