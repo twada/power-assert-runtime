@@ -1,47 +1,20 @@
 (function (root, factory) {
     'use strict';
-
-    var dependencies = [
-        '../lib/empower',
-        'espower',
-        'esprima',
-        'escodegen',
-        'assert'
-    ];
-
     if (typeof define === 'function' && define.amd) {
-        define(dependencies, factory);
+        define(['empower', 'espower-source', 'assert'], factory);
     } else if (typeof exports === 'object') {
-        factory.apply(root, dependencies.map(function (path) { return require(path); }));
+        factory(require('../lib/empower'), require('espower-source'), require('assert'));
     } else {
-        factory.apply(root, dependencies.map(function (path) {
-            var tokens = path.split('/');
-            return root[tokens[tokens.length - 1]];
-        }));
+        factory(root.empower, root.espowerSource, root.assert);
     }
 }(this, function (
     empower,
-    espower,
-    esprima,
-    escodegen,
+    espowerSource,
     baseAssert
 ) {
-    // see: https://github.com/Constellation/escodegen/issues/115
-    if (typeof define === 'function' && define.amd) {
-        escodegen = window.escodegen;
-    }
-
-    var weave = function () {
-        function applyEspower (line, options) {
-            options = options || {destructive: false, source: line, path: '/path/to/some_test.js', powerAssertVariableName: 'assert'};
-            var tree = esprima.parse(line, {tolerant: true, loc: true, tokens: true, raw: true});
-            return espower(tree, options);
-        }
-
-        return function (line, options) {
-            return escodegen.generate(applyEspower(line, options), {format: {compact: true}});
-        };
-    }(),
+    var weave = function (line) {
+        return espowerSource(line, '/path/to/some_test.js');
+    },
     fakeFormatter = function (context) {
         var events = context.args.reduce(function (accum, arg) {
             return accum.concat(arg.events);
