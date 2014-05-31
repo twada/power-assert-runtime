@@ -27,6 +27,9 @@
     "type": "git",
     "url": "http://github.com/twada/empower.git"
   },
+  "dependencies": {
+    "node.extend": "~1.0.10"
+  },
   "devDependencies": {
     "blanket": "~1.1.6",
     "browserify": "~4.1.6",
