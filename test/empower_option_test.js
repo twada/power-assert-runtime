@@ -1,22 +1,16 @@
 (function (root, factory) {
     'use strict';
-
-    var dependencies = [
-        '../lib/empower',
-        'assert'
-    ];
-
     if (typeof define === 'function' && define.amd) {
-        define(dependencies, factory);
+        define(['empower', 'assert'], factory);
     } else if (typeof exports === 'object') {
-        factory.apply(root, dependencies.map(function (path) { return require(path); }));
+        factory(require('../lib/empower'), require('assert'));
     } else {
-        factory.apply(root, dependencies.map(function (path) {
-            var tokens = path.split('/');
-            return root[tokens[tokens.length - 1]];
-        }));
+        factory(root.empower, root.assert);
     }
-}(this, function (empower, assert) {
+}(this, function (
+    empower,
+    assert
+) {
 
     var fakeFormatter = function (context) {
         return [
