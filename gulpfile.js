@@ -156,7 +156,7 @@ gulp.task('bundle', ['clean_bundle'], function() {
     return bundleStream
         .pipe(source(config.bundle.destName))
         .pipe(gulp.dest(config.bundle.destDir));
-})
+});
 
 gulp.task('unit', function () {
     return runMochaSimply();
