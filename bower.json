@@ -12,8 +12,8 @@
   ],
   "devDependencies": {
     "espower-source": "~0.7.3",
-    "mocha": "~1.20.0",
-    "requirejs": "~2.1.13",
+    "mocha": "~1.20.1",
+    "requirejs": "~2.1.14",
     "assert": "Jxck/assert",
     "buster.js": "~0.7.0"
   }
