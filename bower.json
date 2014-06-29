@@ -1,7 +1,8 @@
 {
   "name": "empower",
-  "version": "0.7.2",
+  "description": "Power Assert feature enhancer for assert function/object",
   "main": "build/empower.js",
+  "license": "MIT-LICENSE.txt",
   "ignore": [
     "**/.*",
     "gulpfile.js",
@@ -10,6 +11,24 @@
     "coverage",
     "test"
   ],
+  "keywords": [
+    "power-assert",
+    "test",
+    "assert",
+    "testing"
+  ],
+  "authors": [
+    {
+      "name": "Takuto Wada",
+      "email": "takuto.wada@gmail.com",
+      "homepage": "https://github.com/twada"
+    }
+  ],
+  "homepage": "https://github.com/twada/empower",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/twada/empower.git"
+  },
   "devDependencies": {
     "espower-source": "~0.7.3",
     "mocha": "~1.20.1",
