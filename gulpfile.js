@@ -1,7 +1,5 @@
 var gulp = require('gulp'),
     gutil = require('gulp-util'),
-    bump = require('gulp-bump'),
-    git = require('gulp-git'),
     mocha = require('gulp-mocha'),
     mochaPhantomJS = require('gulp-mocha-phantomjs'),
     connect = require('gulp-connect'),
@@ -11,9 +9,6 @@ var gulp = require('gulp'),
     through = require('through2'),
     browserify = require('browserify'),
     config = {
-        bump: {
-            target: ['./bower.json', './package.json']
-        },
         bundle: {
             standalone: 'empower',
             srcFile: './lib/empower.js',
@@ -86,45 +81,6 @@ function runMochaSimply() {
         }))
         .on('error', gutil.log);
 }
-
-function bumpVersion(options) {
-    return gulp
-        .src(config.bump.target)
-        .pipe(bump(options))
-        .pipe(gulp.dest('./'));
-}
-
-gulp.task('git_add', function(){
-    return gulp
-        .src(config.bump.target)
-        .pipe(git.add());
-});
-
-gulp.task('git_commit', function(){
-    var pkg = require('./package.json');
-    return gulp
-        .src(config.bump.target)
-        .pipe(git.commit(pkg.version));
-});
-
-gulp.task('git_tag', function(done) {
-    var pkg = require('./package.json');
-    git.tag('v' + pkg.version, pkg.version, null, done);
-});
-
-['patch', 'minor', 'major'].forEach(function (v) {
-    gulp.task('bump_' + v, function(){
-        return bumpVersion({type: v});
-    });
-    gulp.task('release_' + v, function(){
-        runSequence(
-            'bump_' + v,
-            'git_add',
-            'git_commit',
-            'git_tag'
-        );
-    });
-});
 
 gulp.task('connect', function() {
     connect.server({
