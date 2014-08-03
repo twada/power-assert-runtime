@@ -2,7 +2,7 @@ var gulp = require('gulp'),
     gutil = require('gulp-util'),
     mocha = require('gulp-mocha'),
     mochaPhantomJS = require('gulp-mocha-phantomjs'),
-    connect = require('gulp-connect'),
+    webserver = require('gulp-webserver'),
     clean = require('gulp-clean'),
     runSequence = require('run-sequence'),
     source = require('vinyl-source-stream'),
@@ -83,12 +83,12 @@ function runMochaSimply() {
         .on('error', gutil.log);
 }
 
-gulp.task('connect', function() {
-    connect.server({
-        root: [__dirname],
-        port: 9001,
-        keepalive: true
-    });
+gulp.task('webserver', function() {
+    gulp.src(__dirname)
+        .pipe(webserver({
+            port: 9001,
+            directoryListing: true
+        }));
 });
 
 gulp.task('watch', function () {
