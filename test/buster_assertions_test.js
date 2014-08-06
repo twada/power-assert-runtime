@@ -22,7 +22,12 @@
             targetMethods: {
                 oneArg: ['isNull'],
                 twoArgs: ['same']
-            }
+            },
+            patterns: [
+                'assert(actual, [message])',
+                'assert.same(actual, expected, [message])',
+                'assert.isNull(object, [message])'
+            ]
         };
         return espowerSource(line, '/path/to/some_test.js', options);
     },
@@ -38,10 +43,11 @@
     };
 
     var assert = empower(busterAssertions.assert, fakeFormatter, {
-        targetMethods: {
-            oneArg: ['isNull'],
-            twoArgs: ['same']
-        }
+        patterns: [
+            'assert(actual, [message])',
+            'assert.same(actual, expected, [message])',
+            'assert.isNull(object, [message])'
+        ]
     });
 
 
@@ -79,7 +85,7 @@
     });
 
 
-    suite('assertion method with two arguments', function () {
+    suite('buster assertion method with two arguments', function () {
         test('both Identifier', function () {
             var foo = 'foo', bar = 'bar';
             try {
