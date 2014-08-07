@@ -1,6 +1,6 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.empower=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 /**
- * empower.js - Power Assert feature enhancer for assert function/object.
+ * empower - Power Assert feature enhancer for assert function/object.
  *
  * https://github.com/twada/empower
  *
@@ -8,13 +8,48 @@
  * Licensed under the MIT license.
  *   https://github.com/twada/empower/blob/master/MIT-LICENSE.txt
  */
+var defaultOptions = _dereq_('./lib/default-options'),
+    enhancer = _dereq_('./lib/enhancer'),
+    extend = _dereq_('node.extend');
+
+/**
+ * Enhance Power Assert feature to assert function/object.
+ * @param assert target assert function or object to enhance
+ * @param formatter power assert format function
+ * @param options enhancement options
+ * @return enhanced assert function/object
+ */
+function empower (assert, formatter, options) {
+    var typeOfAssert = (typeof assert),
+        config;
+    if ((typeOfAssert !== 'object' && typeOfAssert !== 'function') || assert === null) {
+        throw new TypeError('empower argument should be a function or object.');
+    }
+    if (isEmpowered(assert)) {
+        return assert;
+    }
+    config = extend(defaultOptions(), (options || {}));
+    switch (typeOfAssert) {
+    case 'function':
+        return enhancer.empowerAssertFunction(assert, formatter, config);
+    case 'object':
+        return enhancer.empowerAssertObject(assert, formatter, config);
+    default:
+        throw new Error('Cannot be here');
+    }
+}
+
+function isEmpowered (assertObjectOrFunction) {
+    return (typeof assertObjectOrFunction._capt === 'function') && (typeof assertObjectOrFunction._expr === 'function');
+}
+
+empower.defaultOptions = defaultOptions;
+module.exports = empower;
+
+},{"./lib/default-options":2,"./lib/enhancer":4,"node.extend":15}],2:[function(_dereq_,module,exports){
 'use strict';
 
-var extend = _dereq_('node.extend'),
-    escallmatch = _dereq_('escallmatch'),
-    isPhantom = typeof window !== 'undefined' && typeof window.callPhantom === 'function';
-
-function defaultOptions () {
+module.exports = function defaultOptions () {
     return {
         destructive: false,
         modifyMessageOnFail: false,
@@ -43,60 +78,13 @@ function defaultOptions () {
             'assert.notDeepEqual(actual, expected, [message])'
         ]
     };
-}
+};
 
+},{}],3:[function(_dereq_,module,exports){
+'use strict';
 
-/**
- * Enhance Power Assert feature to assert function/object.
- * @param assert target assert function or object to enhance
- * @param formatter power assert format function
- * @param options enhancement options
- * @return enhanced assert function/object
- */
-function empower (assert, formatter, options) {
-    var typeOfAssert = (typeof assert),
-        config;
-    if ((typeOfAssert !== 'object' && typeOfAssert !== 'function') || assert === null) {
-        throw new TypeError('empower argument should be a function or object.');
-    }
-    if (isEmpowered(assert)) {
-        return assert;
-    }
-    config = extend(defaultOptions(), (options || {}));
-    switch (typeOfAssert) {
-    case 'function':
-        return empowerAssertFunction(assert, formatter, config);
-    case 'object':
-        return empowerAssertObject(assert, formatter, config);
-    default:
-        throw new Error('Cannot be here');
-    }
-}
-
-
-function isEmpowered (assertObjectOrFunction) {
-    return (typeof assertObjectOrFunction._capt === 'function') && (typeof assertObjectOrFunction._expr === 'function');
-}
-
-
-function empowerAssertObject (assertObject, formatter, config) {
-    var enhancement = enhance(assertObject, formatter, config),
-        target = config.destructive ? assertObject : Object.create(assertObject);
-    return extend(target, enhancement);
-}
-
-
-function empowerAssertFunction (assertFunction, formatter, config) {
-    if (config.destructive) {
-        throw new Error('cannot use destructive:true to function.');
-    }
-    var enhancement = enhance(assertFunction, formatter, config),
-        powerAssert = function powerAssert (context, message) {
-            enhancement(context, message);
-        };
-    extend(powerAssert, assertFunction);
-    return extend(powerAssert, enhancement);
-}
+var escallmatch = _dereq_('escallmatch'),
+    isPhantom = typeof window !== 'undefined' && typeof window.callPhantom === 'function';
 
 
 function enhance (target, formatter, config) {
@@ -264,11 +252,38 @@ function decorateTwoArgs (target, baseAssert, doPowerAssert) {
     };
 }
 
+module.exports = enhance;
 
-empower.defaultOptions = defaultOptions;
-module.exports = empower;
+},{"escallmatch":5}],4:[function(_dereq_,module,exports){
+'use strict';
 
-},{"escallmatch":2,"node.extend":12}],2:[function(_dereq_,module,exports){
+var extend = _dereq_('node.extend'),
+    enhance = _dereq_('./enhance');
+
+function empowerAssertObject (assertObject, formatter, config) {
+    var enhancement = enhance(assertObject, formatter, config),
+        target = config.destructive ? assertObject : Object.create(assertObject);
+    return extend(target, enhancement);
+}
+
+function empowerAssertFunction (assertFunction, formatter, config) {
+    if (config.destructive) {
+        throw new Error('cannot use destructive:true to function.');
+    }
+    var enhancement = enhance(assertFunction, formatter, config),
+        powerAssert = function powerAssert (context, message) {
+            enhancement(context, message);
+        };
+    extend(powerAssert, assertFunction);
+    return extend(powerAssert, enhancement);
+}
+
+module.exports = {
+    empowerAssertObject: empowerAssertObject,
+    empowerAssertFunction: empowerAssertFunction
+};
+
+},{"./enhance":3,"node.extend":15}],5:[function(_dereq_,module,exports){
 /**
  * escallmatch:
  *   ECMAScript CallExpression matcher made from function/method signature
@@ -436,7 +451,7 @@ function extractExpressionFrom (tree) {
 
 module.exports = createMatcher;
 
-},{"deep-equal":3,"esprima":6,"espurify":7,"estraverse":11}],3:[function(_dereq_,module,exports){
+},{"deep-equal":6,"esprima":9,"espurify":10,"estraverse":14}],6:[function(_dereq_,module,exports){
 var pSlice = Array.prototype.slice;
 var objectKeys = _dereq_('./lib/keys.js');
 var isArguments = _dereq_('./lib/is_arguments.js');
@@ -532,7 +547,7 @@ function objEquiv(a, b, opts) {
   return true;
 }
 
-},{"./lib/is_arguments.js":4,"./lib/keys.js":5}],4:[function(_dereq_,module,exports){
+},{"./lib/is_arguments.js":7,"./lib/keys.js":8}],7:[function(_dereq_,module,exports){
 var supportsArgumentsClass = (function(){
   return Object.prototype.toString.call(arguments)
 })() == '[object Arguments]';
@@ -554,7 +569,7 @@ function unsupported(object){
     false;
 };
 
-},{}],5:[function(_dereq_,module,exports){
+},{}],8:[function(_dereq_,module,exports){
 exports = module.exports = typeof Object.keys === 'function'
   ? Object.keys : shim;
 
@@ -565,7 +580,7 @@ function shim (obj) {
   return keys;
 }
 
-},{}],6:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 /*
   Copyright (C) 2013 Ariya Hidayat <ariya.hidayat@gmail.com>
   Copyright (C) 2013 Thaddee Tyl <thaddee.tyl@gmail.com>
@@ -4323,7 +4338,7 @@ parseStatement: true, parseSourceElement: true */
 }));
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],7:[function(_dereq_,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 /**
  * espurify - Clone new AST without extra properties
  * 
@@ -4365,7 +4380,7 @@ function isSupportedKey (type, key) {
 
 module.exports = espurify;
 
-},{"./lib/ast-deepcopy":8,"./lib/ast-properties":9,"traverse":10}],8:[function(_dereq_,module,exports){
+},{"./lib/ast-deepcopy":11,"./lib/ast-properties":12,"traverse":13}],11:[function(_dereq_,module,exports){
 /**
  * Copyright (C) 2012 Yusuke Suzuki (twitter: @Constellation) and other contributors.
  * Released under the BSD license.
@@ -4404,7 +4419,7 @@ function deepCopy (obj) {
 
 module.exports = deepCopy;
 
-},{}],9:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 module.exports = {
     AssignmentExpression: ['type', 'operator', 'left', 'right'],
     ArrayExpression: ['type', 'elements'],
@@ -4457,7 +4472,7 @@ module.exports = {
     YieldExpression: ['type', 'argument']
 };
 
-},{}],10:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 var traverse = module.exports = function (obj) {
     return new Traverse(obj);
 };
@@ -4773,7 +4788,7 @@ var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
     return key in obj;
 };
 
-},{}],11:[function(_dereq_,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 /*
   Copyright (C) 2012-2013 Yusuke Suzuki <utatane.tea@gmail.com>
   Copyright (C) 2012 Ariya Hidayat <ariya.hidayat@gmail.com>
@@ -5464,11 +5479,11 @@ var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
 }));
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],12:[function(_dereq_,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 module.exports = _dereq_('./lib/extend');
 
 
-},{"./lib/extend":13}],13:[function(_dereq_,module,exports){
+},{"./lib/extend":16}],16:[function(_dereq_,module,exports){
 /*!
  * node.extend
  * Copyright 2011, John Resig
@@ -5552,7 +5567,7 @@ extend.version = '1.0.8';
 module.exports = extend;
 
 
-},{"is":14}],14:[function(_dereq_,module,exports){
+},{"is":17}],17:[function(_dereq_,module,exports){
 
 /**!
  * is
