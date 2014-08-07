@@ -36,23 +36,17 @@ suite('empower.defaultOptions()', function () {
     test('formatter: undefined', function () {
         assert.deepEqual(typeof this.options.formatter, 'undefined');
     });
-    suite('targetMethods', function () {
-        setup (function () {
-            this.targetMethods = empower.defaultOptions().targetMethods;
-        });
-        test('oneArg', function () {
-            assert.deepEqual(this.targetMethods.oneArg, ['ok']);
-        });
-        test('twoArgs', function () {
-            assert.deepEqual(this.targetMethods.twoArgs, [
-                'equal',
-                'notEqual',
-                'strictEqual',
-                'notStrictEqual',
-                'deepEqual',
-                'notDeepEqual'
-            ]);
-        });
+    test('patterns: Array', function () {
+        assert.deepEqual(this.options.patterns, [
+            'assert(value, [message])',
+            'assert.ok(value, [message])',
+            'assert.equal(actual, expected, [message])',
+            'assert.notEqual(actual, expected, [message])',
+            'assert.strictEqual(actual, expected, [message])',
+            'assert.notStrictEqual(actual, expected, [message])',
+            'assert.deepEqual(actual, expected, [message])',
+            'assert.notDeepEqual(actual, expected, [message])'
+        ]);
     });
 });
 
@@ -145,15 +139,11 @@ suite('assert object empowerment', function () {
         setup(function () {
             this.options = {
                 destructive: false,
-                targetMethods: {
-                    oneArg: [
-                        'ok'
-                    ],
-                    twoArgs: [
-                        'equal',
-                        'strictEqual'
-                    ]
-                }
+                patterns: [
+                    'assert.ok(value, [message])',
+                    'assert.equal(actual, expected, [message])',
+                    'assert.strictEqual(actual, expected, [message])'
+                ]
             };
             this.empoweredAssert = empower(this.fakeAssertObject, fakeFormatter, this.options);
         });
@@ -179,15 +169,11 @@ suite('assert object empowerment', function () {
         setup(function () {
             this.options = {
                 destructive: true,
-                targetMethods: {
-                    oneArg: [
-                        'ok'
-                    ],
-                    twoArgs: [
-                        'equal',
-                        'strictEqual'
-                    ]
-                }
+                patterns: [
+                    'assert.ok(value, [message])',
+                    'assert.equal(actual, expected, [message])',
+                    'assert.strictEqual(actual, expected, [message])'
+                ]
             };
             this.empoweredAssert = empower(this.fakeAssertObject, fakeFormatter, this.options);
         });
@@ -233,15 +219,12 @@ suite('assert function empowerment', function () {
         setup(function () {
             this.options = {
                 destructive: false,
-                targetMethods: {
-                    oneArg: [
-                        'ok'
-                    ],
-                    twoArgs: [
-                        'equal',
-                        'strictEqual'
-                    ]
-                }
+                patterns: [
+                    'assert(value, [message])',
+                    'assert.ok(value, [message])',
+                    'assert.equal(actual, expected, [message])',
+                    'assert.strictEqual(actual, expected, [message])'
+                ]
             };
             this.empoweredAssert = empower(this.fakeAssertFunction, fakeFormatter, this.options);
         });

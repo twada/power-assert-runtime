@@ -16,13 +16,7 @@
     var weave = function (line) {
         var options = {
             destructive: false,
-            source: line,
             path: '/path/to/some_test.js',
-            powerAssertVariableName: 'assert',
-            targetMethods: {
-                oneArg: ['isNull'],
-                twoArgs: ['same']
-            },
             patterns: [
                 'assert(actual, [message])',
                 'assert.same(actual, expected, [message])',
