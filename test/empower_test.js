@@ -64,6 +64,41 @@ test('Bug reproduction. should not fail if argument is null Literal. ' + JSON.st
 });
 
 
+test('assertion with optional message argument. ' + JSON.stringify(option), function () {
+    var falsy = 0;
+    try {
+        eval(weave('assert(falsy, "assertion message");'));
+        assert.ok(false, 'AssertionError should be thrown');
+    } catch (e) {
+        baseAssert.equal(e.name, 'AssertionError');
+        if (option.modifyMessageOnFail) {
+            baseAssert.equal(e.message, [
+                'assertion message /path/to/some_test.js',
+                'assert(falsy, "assertion message")',
+                '[{"value":0,"espath":"arguments/0"}]'
+            ].join('\n'));
+        }
+        if (option.saveContextOnFail) {
+            baseAssert.deepEqual(e.powerAssertContext, {
+                "source":{
+                    "content": "assert(falsy, \"assertion message\")",
+                    "filepath": "/path/to/some_test.js",
+                    "line": 1
+                },
+                "args":[
+                    {
+                        "value": 0,
+                        "events": [
+                            {"value":0,"espath":"arguments/0"}
+                        ]
+                    }
+                ]
+            });
+        }
+    }
+});
+
+
 test(JSON.stringify(option) + ' empowered function also acts like an assert function', function () {
     var falsy = 0;
     try {
