@@ -19,11 +19,12 @@
     "test": "gulp test",
     "coveralls": "gulp coverage && cat ./coverage.lcov | coveralls"
   },
-  "main": "./lib/empower",
+  "main": "./index.js",
   "files": [
     "gulpfile.js",
     "MIT-LICENSE.txt",
     "README.md",
+    "index.js",
     "lib",
     "package.json",
     "test"

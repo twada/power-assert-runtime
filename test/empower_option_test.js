@@ -3,7 +3,7 @@
     if (typeof define === 'function' && define.amd) {
         define(['empower', 'assert'], factory);
     } else if (typeof exports === 'object') {
-        factory(require('../lib/empower'), require('assert'));
+        factory(require('..'), require('assert'));
     } else {
         factory(root.empower, root.assert);
     }

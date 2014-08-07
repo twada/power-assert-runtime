@@ -3,7 +3,7 @@
     if (typeof define === 'function' && define.amd) {
         define(['empower', 'espower-source', 'assert', 'buster-assertions'], factory);
     } else if (typeof exports === 'object') {
-        factory(require('../lib/empower'), require('espower-source'), require('assert'), require('buster-assertions'));
+        factory(require('..'), require('espower-source'), require('assert'), require('buster-assertions'));
     } else {
         factory(root.empower, root.espowerSource, root.assert, root.buster);
     }

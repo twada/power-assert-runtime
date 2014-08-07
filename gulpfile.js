@@ -11,7 +11,7 @@ var gulp = require('gulp'),
     config = {
         bundle: {
             standalone: 'empower',
-            srcFile: './lib/empower.js',
+            srcFile: './index.js',
             destDir: './build',
             destName: 'empower.js'
         },
