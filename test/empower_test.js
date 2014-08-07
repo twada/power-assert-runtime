@@ -35,7 +35,7 @@ test('Bug reproduction. should not fail if argument is null Literal. ' + JSON.st
     var foo = 'foo';
     try {
         eval(weave('assert.equal(foo, null);'));
-        assert.ok(false, 'AssertionError should be thrown');
+        baseAssert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
         baseAssert.equal(e.name, 'AssertionError');
         if (option.modifyMessageOnFail) {
@@ -68,7 +68,7 @@ test('assertion with optional message argument. ' + JSON.stringify(option), func
     var falsy = 0;
     try {
         eval(weave('assert(falsy, "assertion message");'));
-        assert.ok(false, 'AssertionError should be thrown');
+        baseAssert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
         baseAssert.equal(e.name, 'AssertionError');
         if (option.modifyMessageOnFail) {
@@ -103,7 +103,7 @@ test(JSON.stringify(option) + ' empowered function also acts like an assert func
     var falsy = 0;
     try {
         eval(weave('assert(falsy);'));
-        assert.ok(false, 'AssertionError should be thrown');
+        baseAssert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
         baseAssert.equal(e.name, 'AssertionError');
         if (option.modifyMessageOnFail) {
@@ -139,7 +139,7 @@ suite(JSON.stringify(option) + ' assertion method with one argument', function (
         var falsy = 0;
         try {
             eval(weave('assert.ok(falsy);'));
-            assert.ok(false, 'AssertionError should be thrown');
+            baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
             baseAssert.equal(e.name, 'AssertionError');
             if (option.modifyMessageOnFail) {
@@ -176,7 +176,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
         var foo = 'foo', bar = 'bar';
         try {
             eval(weave('assert.equal(foo, bar);'));
-            assert.ok(false, 'AssertionError should be thrown');
+            baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
             baseAssert.equal(e.name, 'AssertionError');
             if (option.modifyMessageOnFail) {
@@ -212,7 +212,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
         var bar = 'bar';
         try {
             eval(weave('assert.equal("foo", bar);'));
-            assert.ok(false, 'AssertionError should be thrown');
+            baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
             baseAssert.equal(e.name, 'AssertionError');
             if (option.modifyMessageOnFail) {
@@ -244,7 +244,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
         var foo = 'foo';
         try {
             eval(weave('assert.equal(foo, "bar");'));
-            assert.ok(false, 'AssertionError should be thrown');
+            baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
             baseAssert.equal(e.name, 'AssertionError');
             if (option.modifyMessageOnFail) {

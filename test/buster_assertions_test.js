@@ -51,7 +51,7 @@
         var falsy = 0;
         try {
             eval(weave('assert(falsy);'));
-            assert.ok(false, 'AssertionError should be thrown');
+            baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
             baseAssert.equal(e.name, 'AssertionError');
             baseAssert.equal(e.message, [
@@ -68,7 +68,7 @@
             var falsy = 0;
             try {
                 eval(weave('assert.isNull(falsy);'));
-                assert.ok(false, 'AssertionError should be thrown');
+                baseAssert.ok(false, 'AssertionError should be thrown');
             } catch (e) {
                 baseAssert.equal(e.name, 'AssertionError');
                 baseAssert.equal(e.message, [
@@ -86,7 +86,7 @@
             var foo = 'foo', bar = 'bar';
             try {
                 eval(weave('assert.same(foo, bar);'));
-                assert.ok(false, 'AssertionError should be thrown');
+                baseAssert.ok(false, 'AssertionError should be thrown');
             } catch (e) {
                 baseAssert.equal(e.name, 'AssertionError');
                 baseAssert.equal(e.message, [
@@ -101,7 +101,7 @@
             var bar = 'bar';
             try {
                 eval(weave('assert.same("foo", bar);'));
-                assert.ok(false, 'AssertionError should be thrown');
+                baseAssert.ok(false, 'AssertionError should be thrown');
             } catch (e) {
                 baseAssert.equal(e.name, 'AssertionError');
                 baseAssert.equal(e.message, [
@@ -116,7 +116,7 @@
             var foo = 'foo';
             try {
                 eval(weave('assert.same(foo, "bar");'));
-                assert.ok(false, 'AssertionError should be thrown');
+                baseAssert.ok(false, 'AssertionError should be thrown');
             } catch (e) {
                 baseAssert.equal(e.name, 'AssertionError');
                 baseAssert.equal(e.message, [
@@ -134,7 +134,7 @@
             var actualVal = 10.6, expectedVal = 10, delta = 0.5;
             try {
                 eval(weave('assert.near(actualVal, expectedVal, delta);'));
-                assert.ok(false, 'AssertionError should be thrown');
+                baseAssert.ok(false, 'AssertionError should be thrown');
             } catch (e) {
                 baseAssert.equal(e.name, 'AssertionError');
                 baseAssert.equal(e.message, [
@@ -149,7 +149,7 @@
             var actualVal = 10.6, expectedVal = 10, delta = 0.5, messageStr = 'not in delta';
             try {
                 eval(weave('assert.near(actualVal, expectedVal, delta, messageStr);'));
-                assert.ok(false, 'AssertionError should be thrown');
+                baseAssert.ok(false, 'AssertionError should be thrown');
             } catch (e) {
                 baseAssert.equal(e.name, 'AssertionError');
                 baseAssert.equal(e.message, [
