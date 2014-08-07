@@ -91,7 +91,7 @@ gulp.task('webserver', function() {
 });
 
 gulp.task('watch', function () {
-    gulp.watch('{lib,test}/**/*.js', runMochaSimply);
+    gulp.watch(['index.js', '{lib,test}/**/*.js'], runMochaSimply);
     runMochaSimply();
 });
 
