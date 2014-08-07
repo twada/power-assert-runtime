@@ -19,8 +19,9 @@
             path: '/path/to/some_test.js',
             patterns: [
                 'assert(actual, [message])',
+                'assert.isNull(object, [message])',
                 'assert.same(actual, expected, [message])',
-                'assert.isNull(object, [message])'
+                'assert.near(actual, expected, delta, [message])'
             ]
         };
         return espowerSource(line, '/path/to/some_test.js', options);
@@ -39,8 +40,9 @@
     var assert = empower(busterAssertions.assert, fakeFormatter, {
         patterns: [
             'assert(actual, [message])',
+            'assert.isNull(object, [message])',
             'assert.same(actual, expected, [message])',
-            'assert.isNull(object, [message])'
+            'assert.near(actual, expected, delta, [message])'
         ]
     });
 
@@ -121,6 +123,39 @@
                     '[assert.same] /path/to/some_test.js',
                     'assert.same(foo, "bar")',
                     '[{"value":"foo","espath":"arguments/0"}]: foo expected to be the same object as bar'
+                ].join('\n'));
+            }
+        });
+    });
+
+
+    suite('buster assertion method with three arguments', function () {
+        test('when every argument is Identifier', function () {
+            var actualVal = 10.6, expectedVal = 10, delta = 0.5;
+            try {
+                eval(weave('assert.near(actualVal, expectedVal, delta);'));
+                assert.ok(false, 'AssertionError should be thrown');
+            } catch (e) {
+                baseAssert.equal(e.name, 'AssertionError');
+                baseAssert.equal(e.message, [
+                    '[assert.near] /path/to/some_test.js',
+                    'assert.near(actualVal, expectedVal, delta)',
+                    '[{"value":10.6,"espath":"arguments/0"},{"value":10,"espath":"arguments/1"},{"value":0.5,"espath":"arguments/2"}]: Expected 10.6 to be equal to 10 +/- 0.5'
+                ].join('\n'));
+            }
+        });
+
+        test('optional fourth argument', function () {
+            var actualVal = 10.6, expectedVal = 10, delta = 0.5, messageStr = 'not in delta';
+            try {
+                eval(weave('assert.near(actualVal, expectedVal, delta, messageStr);'));
+                assert.ok(false, 'AssertionError should be thrown');
+            } catch (e) {
+                baseAssert.equal(e.name, 'AssertionError');
+                baseAssert.equal(e.message, [
+                    '[assert.near] not in delta /path/to/some_test.js',
+                    'assert.near(actualVal, expectedVal, delta, messageStr)',
+                    '[{"value":10.6,"espath":"arguments/0"},{"value":10,"espath":"arguments/1"},{"value":0.5,"espath":"arguments/2"}]: Expected 10.6 to be equal to 10 +/- 0.5'
                 ].join('\n'));
             }
         });
