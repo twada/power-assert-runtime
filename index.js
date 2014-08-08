@@ -9,7 +9,7 @@
  */
 var defaultOptions = require('./lib/default-options'),
     Decorator = require('./lib/decorator'),
-    extend = require('node.extend');
+    extend = require('xtend/mutable');
 
 /**
  * Enhance Power Assert feature to assert function/object.
