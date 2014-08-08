@@ -8,7 +8,7 @@
  *   https://github.com/twada/empower/blob/master/MIT-LICENSE.txt
  */
 var defaultOptions = require('./lib/default-options'),
-    enhancer = require('./lib/enhancer'),
+    Decorator = require('./lib/decorator'),
     extend = require('node.extend');
 
 /**
@@ -30,9 +30,9 @@ function empower (assert, formatter, options) {
     config = extend(defaultOptions(), (options || {}));
     switch (typeOfAssert) {
     case 'function':
-        return enhancer.empowerAssertFunction(assert, formatter, config);
+        return empowerAssertFunction(assert, formatter, config);
     case 'object':
-        return enhancer.empowerAssertObject(assert, formatter, config);
+        return empowerAssertObject(assert, formatter, config);
     default:
         throw new Error('Cannot be here');
     }
@@ -40,6 +40,26 @@ function empower (assert, formatter, options) {
 
 function isEmpowered (assertObjectOrFunction) {
     return (typeof assertObjectOrFunction._capt === 'function') && (typeof assertObjectOrFunction._expr === 'function');
+}
+
+function empowerAssertObject (assertObject, formatter, config) {
+    var target = config.destructive ? assertObject : Object.create(assertObject);
+    var decorator = new Decorator(target, formatter, config);
+    return extend(target, decorator.decorated());
+}
+
+function empowerAssertFunction (assertFunction, formatter, config) {
+    if (config.destructive) {
+        throw new Error('cannot use destructive:true to function.');
+    }
+    var decorator = new Decorator(assertFunction, formatter, config);
+    var enhancement = decorator.decorated();
+    // check function signature
+    var powerAssert = function powerAssert (context, message) {
+        return enhancement(context, message);
+    };
+    extend(powerAssert, assertFunction);
+    return extend(powerAssert, enhancement);
 }
 
 empower.defaultOptions = defaultOptions;
