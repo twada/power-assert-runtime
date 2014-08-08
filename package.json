@@ -37,7 +37,7 @@
     "url": "http://github.com/twada/empower.git"
   },
   "dependencies": {
-    "escallmatch": "~0.2.0",
+    "escallmatch": "~0.3.0",
     "node.extend": "~1.0.10"
   },
   "devDependencies": {
