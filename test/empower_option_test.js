@@ -203,6 +203,7 @@ suite('assert function empowerment', function () {
             if (!actual) {
                 throw new Error('FakeAssert: assertion failed. ' + message);
             }
+            return true;
         };
         assertOk.ok = assertOk;
         assertOk.equal = function (actual, expected, message) {
@@ -247,6 +248,11 @@ suite('assert function empowerment', function () {
             });
             test('ok method is not refered to target assert function', function () {
                 assert.notEqual(this.empoweredAssert.ok, this.fakeAssertFunction.ok);
+            });
+            test('preserve return value if target assertion function itself returns something', function () {
+                var empoweredAssert = this.empoweredAssert,
+                    ret = empoweredAssert('truthy');
+                empoweredAssert.strictEqual(ret, true);
             });
         });
         test('avoid empowering multiple times', function () {
