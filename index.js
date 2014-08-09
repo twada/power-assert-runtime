@@ -28,7 +28,7 @@ function empower (assert, formatter, options) {
     if (isEmpowered(assert)) {
         return assert;
     }
-    config = extend(defaultOptions(), (options || {}));
+    config = extend(defaultOptions(), options);
     switch (typeOfAssert) {
     case 'function':
         return empowerAssertFunction(assert, formatter, config);
