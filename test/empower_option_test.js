@@ -117,19 +117,31 @@ function sharedTestsForEmpowerFunctionReturnValue () {
 
 suite('assert object empowerment', function () {
     setup(function () {
+        function fail(actual, expected, message, operator) {
+            throw new assert.AssertionError({
+                message: message,
+                actual: actual,
+                expected: expected,
+                operator: operator
+            });
+        }
         var assertOk = function (actual, message) {
             if (!actual) {
-                throw new Error('FakeAssert: assertion failed. ' + message);
+                fail(actual, true, 'FakeAssert: assertion failed. ' + message, '==');
             }
         };
         var fakeAssertObject = {
             ok: assertOk,
             equal: function (actual, expected, message) {
-                this.ok(actual == expected, message);
+                if (!(actual == expected)) {
+                    fail(actual, expected, 'FakeAssert: assertion failed. ' + message, '==');
+                }
                 return true;
             },
             strictEqual: function (actual, expected, message) {
-                this.ok(actual === expected, message);
+                if (!(actual === expected)) {
+                    fail(actual, expected, 'FakeAssert: assertion failed. ' + message, '===');
+                }
             }
         };
         this.fakeAssertObject = fakeAssertObject;
@@ -199,19 +211,31 @@ suite('assert object empowerment', function () {
 
 suite('assert function empowerment', function () {
     setup(function () {
+        function fail(actual, expected, message, operator) {
+            throw new assert.AssertionError({
+                message: message,
+                actual: actual,
+                expected: expected,
+                operator: operator
+            });
+        }
         var assertOk = function (actual, message) {
             if (!actual) {
-                throw new Error('FakeAssert: assertion failed. ' + message);
+                fail(actual, true, 'FakeAssert: assertion failed. ' + message, '==');
             }
             return true;
         };
         assertOk.ok = assertOk;
         assertOk.equal = function (actual, expected, message) {
-            this.ok(actual == expected, message);
+            if (!(actual == expected)) {
+                fail(actual, expected, 'FakeAssert: assertion failed. ' + message, '==');
+            }
             return true;
         };
         assertOk.strictEqual = function (actual, expected, message) {
-            this.ok(actual === expected, message);
+            if (!(actual === expected)) {
+                fail(actual, expected, 'FakeAssert: assertion failed. ' + message, '===');
+            }
         };
         this.fakeAssertFunction = assertOk;
     });
