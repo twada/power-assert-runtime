@@ -295,4 +295,32 @@ testWithOption({
     saveContextOnFail: true
 });
 
+
+
+test('the case when assertion function call is not listed in patterns (even if methods do)', function () {
+    var patterns = [
+        'assert.ok(value, [message])',
+        'assert.equal(actual, expected, [message])',
+        'assert.notEqual(actual, expected, [message])',
+        'assert.strictEqual(actual, expected, [message])',
+        'assert.notStrictEqual(actual, expected, [message])',
+        'assert.deepEqual(actual, expected, [message])',
+        'assert.notDeepEqual(actual, expected, [message])'
+    ];
+    var weave = function (line) {
+        return espowerSource(line, '/path/to/some_test.js', { patterns: patterns });
+    };
+    var assert = empower(baseAssert, fakeFormatter, { patterns: patterns });
+
+    var falsy = 0;
+    try {
+        eval(weave('assert(falsy);'));
+        baseAssert.ok(false, 'AssertionError should be thrown');
+    } catch (e) {
+        baseAssert.equal(e.name, 'AssertionError');
+        baseAssert.equal(e.message, '0 == true', 'should not be empowered');
+    }
+});
+
+
 }));

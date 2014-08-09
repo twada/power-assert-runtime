@@ -9,6 +9,7 @@
  */
 var defaultOptions = require('./lib/default-options'),
     Decorator = require('./lib/decorator'),
+    slice = Array.prototype.slice,
     extend = require('xtend/mutable');
 
 /**
@@ -54,10 +55,16 @@ function empowerAssertFunction (assertFunction, formatter, config) {
     }
     var decorator = new Decorator(assertFunction, formatter, config);
     var enhancement = decorator.decorated();
-    // check function signature
-    var powerAssert = function powerAssert (context, message) {
-        return enhancement(context, message);
-    };
+    var powerAssert;
+    if (typeof enhancement === 'function') {
+        powerAssert = function powerAssert () {
+            return enhancement.apply(null, slice.apply(arguments));
+        };
+    } else {
+        powerAssert = function powerAssert () {
+            return assertFunction.apply(null, slice.apply(arguments));
+        };
+    }
     extend(powerAssert, assertFunction);
     return extend(powerAssert, enhancement);
 }
