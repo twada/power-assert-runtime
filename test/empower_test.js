@@ -27,6 +27,27 @@
     };
 
 
+test('default options behavior', function () {
+    var weave = function (line) {
+        return espowerSource(line, '/path/to/some_test.js');
+    };
+    var assert = empower(baseAssert, fakeFormatter);
+
+    var falsy = 0;
+    try {
+        eval(weave('assert(falsy);'));
+        baseAssert.ok(false, 'AssertionError should be thrown');
+    } catch (e) {
+        baseAssert.equal(e.name, 'AssertionError');
+        baseAssert.equal(e.message, [
+            '/path/to/some_test.js',
+            'assert(falsy)',
+            '[{"value":0,"espath":"arguments/0"}]'
+        ].join('\n'));
+    }
+});
+
+
 function testWithOption (option) {
     var assert = empower(baseAssert, fakeFormatter, option);
 
