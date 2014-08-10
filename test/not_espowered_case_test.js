@@ -104,22 +104,22 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
 
 testWithOption({
     modifyMessageOnRethrow: false,
-    saveContextOnFail: false
+    saveContextOnRethrow: false
 });
 
 testWithOption({
     modifyMessageOnRethrow: true,
-    saveContextOnFail: false
+    saveContextOnRethrow: false
 });
 
 testWithOption({
     modifyMessageOnRethrow: false,
-    saveContextOnFail: true
+    saveContextOnRethrow: true
 });
 
 testWithOption({
     modifyMessageOnRethrow: true,
-    saveContextOnFail: true
+    saveContextOnRethrow: true
 });
 
 }));

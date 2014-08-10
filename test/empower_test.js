@@ -66,7 +66,7 @@ test('Bug reproduction. should not fail if argument is null Literal. ' + JSON.st
                 '[{"value":"foo","espath":"arguments/0"}]'
             ].join('\n'));
         }
-        if (option.saveContextOnFail) {
+        if (option.saveContextOnRethrow) {
             baseAssert.deepEqual(e.powerAssertContext, {
                 "source":{
                     "content":"assert.equal(foo, null)",
@@ -99,7 +99,7 @@ test('assertion with optional message argument. ' + JSON.stringify(option), func
                 '[{"value":0,"espath":"arguments/0"}]'
             ].join('\n'));
         }
-        if (option.saveContextOnFail) {
+        if (option.saveContextOnRethrow) {
             baseAssert.deepEqual(e.powerAssertContext, {
                 "source":{
                     "content": "assert(falsy, \"assertion message\")",
@@ -134,7 +134,7 @@ test(JSON.stringify(option) + ' empowered function also acts like an assert func
                 '[{"value":0,"espath":"arguments/0"}]'
             ].join('\n'));
         }
-        if (option.saveContextOnFail) {
+        if (option.saveContextOnRethrow) {
             baseAssert.deepEqual(e.powerAssertContext, {
                 "source":{
                     "content": "assert(falsy)",
@@ -170,7 +170,7 @@ suite(JSON.stringify(option) + ' assertion method with one argument', function (
                     '[{"value":0,"espath":"arguments/0"}]'
                 ].join('\n'));
             }
-            if (option.saveContextOnFail) {
+            if (option.saveContextOnRethrow) {
                 baseAssert.deepEqual(e.powerAssertContext, {
                     "source": {
                         "content":"assert.ok(falsy)",
@@ -207,7 +207,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
                     '[{"value":"foo","espath":"arguments/0"},{"value":"bar","espath":"arguments/1"}]'
                 ].join('\n'));
             }
-            if (option.saveContextOnFail) {
+            if (option.saveContextOnRethrow) {
                 baseAssert.deepEqual(e.powerAssertContext, {
                     "source":{
                         "content":"assert.equal(foo, bar)",
@@ -243,7 +243,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
                     '[{"value":"bar","espath":"arguments/1"}]'
                 ].join('\n'));
             }
-            if (option.saveContextOnFail) {
+            if (option.saveContextOnRethrow) {
                 baseAssert.deepEqual(e.powerAssertContext, {
                     "source":{
                         "content":"assert.equal(\"foo\", bar)",
@@ -275,7 +275,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
                     '[{"value":"foo","espath":"arguments/0"}]'
                 ].join('\n'));
             }
-            if (option.saveContextOnFail) {
+            if (option.saveContextOnRethrow) {
                 baseAssert.deepEqual(e.powerAssertContext, {
                     "source":{
                         "content":"assert.equal(foo, \"bar\")",
@@ -298,22 +298,22 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
 
 testWithOption({
     modifyMessageOnRethrow: false,
-    saveContextOnFail: false
+    saveContextOnRethrow: false
 });
 
 testWithOption({
     modifyMessageOnRethrow: true,
-    saveContextOnFail: false
+    saveContextOnRethrow: false
 });
 
 testWithOption({
     modifyMessageOnRethrow: false,
-    saveContextOnFail: true
+    saveContextOnRethrow: true
 });
 
 testWithOption({
     modifyMessageOnRethrow: true,
-    saveContextOnFail: true
+    saveContextOnRethrow: true
 });
 
 

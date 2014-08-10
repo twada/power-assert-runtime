@@ -30,8 +30,8 @@ suite('empower.defaultOptions()', function () {
     test('modifyMessageOnRethrow: false', function () {
         assert.equal(this.options.modifyMessageOnRethrow, false);
     });
-    test('saveContextOnFail: false', function () {
-        assert.equal(this.options.saveContextOnFail, false);
+    test('saveContextOnRethrow: false', function () {
+        assert.equal(this.options.saveContextOnRethrow, false);
     });
     test('formatter: undefined', function () {
         assert.deepEqual(typeof this.options.formatter, 'undefined');
