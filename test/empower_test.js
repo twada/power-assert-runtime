@@ -59,7 +59,7 @@ test('Bug reproduction. should not fail if argument is null Literal. ' + JSON.st
         baseAssert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
         baseAssert.equal(e.name, 'AssertionError');
-        if (option.modifyMessageOnFail) {
+        if (option.modifyMessageOnRethrow) {
             baseAssert.equal(e.message, [
                 '/path/to/some_test.js',
                 'assert.equal(foo, null)',
@@ -92,7 +92,7 @@ test('assertion with optional message argument. ' + JSON.stringify(option), func
         baseAssert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
         baseAssert.equal(e.name, 'AssertionError');
-        if (option.modifyMessageOnFail) {
+        if (option.modifyMessageOnRethrow) {
             baseAssert.equal(e.message, [
                 'assertion message /path/to/some_test.js',
                 'assert(falsy, "assertion message")',
@@ -127,7 +127,7 @@ test(JSON.stringify(option) + ' empowered function also acts like an assert func
         baseAssert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
         baseAssert.equal(e.name, 'AssertionError');
-        if (option.modifyMessageOnFail) {
+        if (option.modifyMessageOnRethrow) {
             baseAssert.equal(e.message, [
                 '/path/to/some_test.js',
                 'assert(falsy)',
@@ -163,7 +163,7 @@ suite(JSON.stringify(option) + ' assertion method with one argument', function (
             baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
             baseAssert.equal(e.name, 'AssertionError');
-            if (option.modifyMessageOnFail) {
+            if (option.modifyMessageOnRethrow) {
                 baseAssert.equal(e.message, [
                     '/path/to/some_test.js',
                     'assert.ok(falsy)',
@@ -200,7 +200,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
             baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
             baseAssert.equal(e.name, 'AssertionError');
-            if (option.modifyMessageOnFail) {
+            if (option.modifyMessageOnRethrow) {
                 baseAssert.equal(e.message, [
                     '/path/to/some_test.js',
                     'assert.equal(foo, bar)',
@@ -236,7 +236,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
             baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
             baseAssert.equal(e.name, 'AssertionError');
-            if (option.modifyMessageOnFail) {
+            if (option.modifyMessageOnRethrow) {
                 baseAssert.equal(e.message, [
                     '/path/to/some_test.js',
                     'assert.equal("foo", bar)',
@@ -268,7 +268,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
             baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
             baseAssert.equal(e.name, 'AssertionError');
-            if (option.modifyMessageOnFail) {
+            if (option.modifyMessageOnRethrow) {
                 baseAssert.equal(e.message, [
                     '/path/to/some_test.js',
                     'assert.equal(foo, "bar")',
@@ -297,22 +297,22 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
 }
 
 testWithOption({
-    modifyMessageOnFail: false,
+    modifyMessageOnRethrow: false,
     saveContextOnFail: false
 });
 
 testWithOption({
-    modifyMessageOnFail: true,
+    modifyMessageOnRethrow: true,
     saveContextOnFail: false
 });
 
 testWithOption({
-    modifyMessageOnFail: false,
+    modifyMessageOnRethrow: false,
     saveContextOnFail: true
 });
 
 testWithOption({
-    modifyMessageOnFail: true,
+    modifyMessageOnRethrow: true,
     saveContextOnFail: true
 });
 

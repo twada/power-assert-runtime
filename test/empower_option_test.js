@@ -27,8 +27,8 @@ suite('empower.defaultOptions()', function () {
     test('destructive: false', function () {
         assert.equal(this.options.destructive, false);
     });
-    test('modifyMessageOnFail: false', function () {
-        assert.equal(this.options.modifyMessageOnFail, false);
+    test('modifyMessageOnRethrow: false', function () {
+        assert.equal(this.options.modifyMessageOnRethrow, false);
     });
     test('saveContextOnFail: false', function () {
         assert.equal(this.options.saveContextOnFail, false);
