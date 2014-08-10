@@ -46,7 +46,7 @@ function isEmpowered (assertObjectOrFunction) {
 function empowerAssertObject (assertObject, formatter, config) {
     var target = config.destructive ? assertObject : Object.create(assertObject);
     var decorator = new Decorator(target, formatter, config);
-    return extend(target, decorator.decorated());
+    return extend(target, decorator.enhancement());
 }
 
 function empowerAssertFunction (assertFunction, formatter, config) {
@@ -54,7 +54,7 @@ function empowerAssertFunction (assertFunction, formatter, config) {
         throw new Error('cannot use destructive:true to function.');
     }
     var decorator = new Decorator(assertFunction, formatter, config);
-    var enhancement = decorator.decorated();
+    var enhancement = decorator.enhancement();
     var powerAssert;
     if (typeof enhancement === 'function') {
         powerAssert = function powerAssert () {
