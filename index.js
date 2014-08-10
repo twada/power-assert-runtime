@@ -39,10 +39,6 @@ function empower (assert, formatter, options) {
     }
 }
 
-function isEmpowered (assertObjectOrFunction) {
-    return (typeof assertObjectOrFunction._capt === 'function') && (typeof assertObjectOrFunction._expr === 'function');
-}
-
 function empowerAssertObject (assertObject, formatter, config) {
     var target = config.destructive ? assertObject : Object.create(assertObject);
     var decorator = new Decorator(target, formatter, config);
@@ -67,6 +63,10 @@ function empowerAssertFunction (assertFunction, formatter, config) {
     }
     extend(powerAssert, assertFunction);
     return extend(powerAssert, enhancement);
+}
+
+function isEmpowered (assertObjectOrFunction) {
+    return (typeof assertObjectOrFunction._capt === 'function') && (typeof assertObjectOrFunction._expr === 'function');
 }
 
 empower.defaultOptions = defaultOptions;
