@@ -19,11 +19,13 @@
     "test": "gulp test",
     "coveralls": "gulp coverage && cat ./coverage.lcov | coveralls"
   },
-  "main": "./lib/empower",
+  "main": "./index.js",
   "files": [
-    "gulpfile.js",
+    "CHANGELOG.md",
     "MIT-LICENSE.txt",
     "README.md",
+    "gulpfile.js",
+    "index.js",
     "lib",
     "package.json",
     "test"
@@ -36,23 +38,24 @@
     "url": "http://github.com/twada/empower.git"
   },
   "dependencies": {
-    "node.extend": "~1.0.10"
+    "escallmatch": "~0.3.0",
+    "xtend": "~4.0.0"
   },
   "devDependencies": {
     "blanket": "~1.1.6",
     "browserify": "~5.9.1",
     "buster-assertions": "~0.10.4",
     "del": "~0.1.1",
-    "espower-source": "~0.7.3",
-    "gulp": "~3.8.6",
-    "gulp-derequire": "~0.3.0",
+    "espower-source": "~0.8.0",
+    "gulp": "~3.8.7",
+    "gulp-derequire": "~0.3.1",
     "gulp-mocha": "~0.5.2",
     "gulp-mocha-phantomjs": "~0.3.0",
     "gulp-util": "~3.0.0",
-    "gulp-webserver": "~0.4.0",
-    "mocha": "~1.21.3",
+    "gulp-webserver": "~0.6.0",
+    "mocha": "~1.21.4",
     "mocha-lcov-reporter": "~0.0.1",
-    "through2": "~0.5.1",
+    "through2": "~1.0.0",
     "vinyl-source-stream": "~0.1.1"
   },
   "licenses": [

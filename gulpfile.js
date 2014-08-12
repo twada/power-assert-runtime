@@ -11,7 +11,7 @@ var gulp = require('gulp'),
     config = {
         bundle: {
             standalone: 'empower',
-            srcFile: './lib/empower.js',
+            srcFile: './index.js',
             destDir: './build',
             destName: 'empower.js'
         },
@@ -91,7 +91,7 @@ gulp.task('webserver', function() {
 });
 
 gulp.task('watch', function () {
-    gulp.watch('{lib,test}/**/*.js', runMochaSimply);
+    gulp.watch(['index.js', '{lib,test}/**/*.js'], runMochaSimply);
     runMochaSimply();
 });
 

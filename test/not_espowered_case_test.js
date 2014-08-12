@@ -3,7 +3,7 @@
     if (typeof define === 'function' && define.amd) {
         define(['empower', 'assert'], factory);
     } else if (typeof exports === 'object') {
-        factory(require('../lib/empower'), require('assert'));
+        factory(require('..'), require('assert'));
     } else {
         factory(root.empower, root.assert);
     }
@@ -103,23 +103,23 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
 }
 
 testWithOption({
-    modifyMessageOnFail: false,
-    saveContextOnFail: false
+    modifyMessageOnRethrow: false,
+    saveContextOnRethrow: false
 });
 
 testWithOption({
-    modifyMessageOnFail: true,
-    saveContextOnFail: false
+    modifyMessageOnRethrow: true,
+    saveContextOnRethrow: false
 });
 
 testWithOption({
-    modifyMessageOnFail: false,
-    saveContextOnFail: true
+    modifyMessageOnRethrow: false,
+    saveContextOnRethrow: true
 });
 
 testWithOption({
-    modifyMessageOnFail: true,
-    saveContextOnFail: true
+    modifyMessageOnRethrow: true,
+    saveContextOnRethrow: true
 });
 
 }));

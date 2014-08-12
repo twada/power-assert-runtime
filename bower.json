@@ -30,8 +30,8 @@
     "url": "git://github.com/twada/empower.git"
   },
   "devDependencies": {
-    "espower-source": "~0.7.3",
-    "mocha": "~1.21.3",
+    "espower-source": "~0.8.0",
+    "mocha": "~1.21.4",
     "requirejs": "~2.1.14",
     "assert": "Jxck/assert",
     "buster.js": "~0.7.0"

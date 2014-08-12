@@ -3,7 +3,7 @@
     if (typeof define === 'function' && define.amd) {
         define(['empower', 'assert'], factory);
     } else if (typeof exports === 'object') {
-        factory(require('../lib/empower'), require('assert'));
+        factory(require('..'), require('assert'));
     } else {
         factory(root.empower, root.assert);
     }
@@ -27,32 +27,26 @@ suite('empower.defaultOptions()', function () {
     test('destructive: false', function () {
         assert.equal(this.options.destructive, false);
     });
-    test('modifyMessageOnFail: false', function () {
-        assert.equal(this.options.modifyMessageOnFail, false);
+    test('modifyMessageOnRethrow: false', function () {
+        assert.equal(this.options.modifyMessageOnRethrow, false);
     });
-    test('saveContextOnFail: false', function () {
-        assert.equal(this.options.saveContextOnFail, false);
+    test('saveContextOnRethrow: false', function () {
+        assert.equal(this.options.saveContextOnRethrow, false);
     });
     test('formatter: undefined', function () {
         assert.deepEqual(typeof this.options.formatter, 'undefined');
     });
-    suite('targetMethods', function () {
-        setup (function () {
-            this.targetMethods = empower.defaultOptions().targetMethods;
-        });
-        test('oneArg', function () {
-            assert.deepEqual(this.targetMethods.oneArg, ['ok']);
-        });
-        test('twoArgs', function () {
-            assert.deepEqual(this.targetMethods.twoArgs, [
-                'equal',
-                'notEqual',
-                'strictEqual',
-                'notStrictEqual',
-                'deepEqual',
-                'notDeepEqual'
-            ]);
-        });
+    test('patterns: Array', function () {
+        assert.deepEqual(this.options.patterns, [
+            'assert(value, [message])',
+            'assert.ok(value, [message])',
+            'assert.equal(actual, expected, [message])',
+            'assert.notEqual(actual, expected, [message])',
+            'assert.strictEqual(actual, expected, [message])',
+            'assert.notStrictEqual(actual, expected, [message])',
+            'assert.deepEqual(actual, expected, [message])',
+            'assert.notDeepEqual(actual, expected, [message])'
+        ]);
     });
 });
 
@@ -123,19 +117,31 @@ function sharedTestsForEmpowerFunctionReturnValue () {
 
 suite('assert object empowerment', function () {
     setup(function () {
+        function fail(actual, expected, message, operator) {
+            throw new assert.AssertionError({
+                message: message,
+                actual: actual,
+                expected: expected,
+                operator: operator
+            });
+        }
         var assertOk = function (actual, message) {
             if (!actual) {
-                throw new Error('FakeAssert: assertion failed. ' + message);
+                fail(actual, true, 'FakeAssert: assertion failed. ' + message, '==');
             }
         };
         var fakeAssertObject = {
             ok: assertOk,
             equal: function (actual, expected, message) {
-                this.ok(actual == expected, message);
+                if (!(actual == expected)) {
+                    fail(actual, expected, 'FakeAssert: assertion failed. ' + message, '==');
+                }
                 return true;
             },
             strictEqual: function (actual, expected, message) {
-                this.ok(actual === expected, message);
+                if (!(actual === expected)) {
+                    fail(actual, expected, 'FakeAssert: assertion failed. ' + message, '===');
+                }
             }
         };
         this.fakeAssertObject = fakeAssertObject;
@@ -145,15 +151,11 @@ suite('assert object empowerment', function () {
         setup(function () {
             this.options = {
                 destructive: false,
-                targetMethods: {
-                    oneArg: [
-                        'ok'
-                    ],
-                    twoArgs: [
-                        'equal',
-                        'strictEqual'
-                    ]
-                }
+                patterns: [
+                    'assert.ok(value, [message])',
+                    'assert.equal(actual, expected, [message])',
+                    'assert.strictEqual(actual, expected, [message])'
+                ]
             };
             this.empoweredAssert = empower(this.fakeAssertObject, fakeFormatter, this.options);
         });
@@ -179,15 +181,11 @@ suite('assert object empowerment', function () {
         setup(function () {
             this.options = {
                 destructive: true,
-                targetMethods: {
-                    oneArg: [
-                        'ok'
-                    ],
-                    twoArgs: [
-                        'equal',
-                        'strictEqual'
-                    ]
-                }
+                patterns: [
+                    'assert.ok(value, [message])',
+                    'assert.equal(actual, expected, [message])',
+                    'assert.strictEqual(actual, expected, [message])'
+                ]
             };
             this.empoweredAssert = empower(this.fakeAssertObject, fakeFormatter, this.options);
         });
@@ -213,18 +211,31 @@ suite('assert object empowerment', function () {
 
 suite('assert function empowerment', function () {
     setup(function () {
+        function fail(actual, expected, message, operator) {
+            throw new assert.AssertionError({
+                message: message,
+                actual: actual,
+                expected: expected,
+                operator: operator
+            });
+        }
         var assertOk = function (actual, message) {
             if (!actual) {
-                throw new Error('FakeAssert: assertion failed. ' + message);
+                fail(actual, true, 'FakeAssert: assertion failed. ' + message, '==');
             }
+            return true;
         };
         assertOk.ok = assertOk;
         assertOk.equal = function (actual, expected, message) {
-            this.ok(actual == expected, message);
+            if (!(actual == expected)) {
+                fail(actual, expected, 'FakeAssert: assertion failed. ' + message, '==');
+            }
             return true;
         };
         assertOk.strictEqual = function (actual, expected, message) {
-            this.ok(actual === expected, message);
+            if (!(actual === expected)) {
+                fail(actual, expected, 'FakeAssert: assertion failed. ' + message, '===');
+            }
         };
         this.fakeAssertFunction = assertOk;
     });
@@ -233,15 +244,12 @@ suite('assert function empowerment', function () {
         setup(function () {
             this.options = {
                 destructive: false,
-                targetMethods: {
-                    oneArg: [
-                        'ok'
-                    ],
-                    twoArgs: [
-                        'equal',
-                        'strictEqual'
-                    ]
-                }
+                patterns: [
+                    'assert(value, [message])',
+                    'assert.ok(value, [message])',
+                    'assert.equal(actual, expected, [message])',
+                    'assert.strictEqual(actual, expected, [message])'
+                ]
             };
             this.empoweredAssert = empower(this.fakeAssertFunction, fakeFormatter, this.options);
         });
@@ -264,6 +272,11 @@ suite('assert function empowerment', function () {
             });
             test('ok method is not refered to target assert function', function () {
                 assert.notEqual(this.empoweredAssert.ok, this.fakeAssertFunction.ok);
+            });
+            test('preserve return value if target assertion function itself returns something', function () {
+                var empoweredAssert = this.empoweredAssert,
+                    ret = empoweredAssert('truthy');
+                empoweredAssert.strictEqual(ret, true);
             });
         });
         test('avoid empowering multiple times', function () {
