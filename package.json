@@ -1,7 +1,7 @@
 {
   "name": "empower",
   "description": "Power Assert feature enhancer for assert function/object",
-  "version": "0.7.3",
+  "version": "0.8.0",
   "keywords": [
     "power-assert",
     "test",
