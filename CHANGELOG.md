@@ -49,7 +49,7 @@ To:
 If you already customize enhancement pattern using `targetMethods`, you need to migarte. To migrate, change your code from the following:
 
 ```javascript
-var yourAssert = require('./your-assert);
+var yourAssert = require('./your-assert');
 var empower = require('empower');
 var formatter = require('power-assert-formatter')();
 var options = {
@@ -69,7 +69,7 @@ var assert = empower(yourAssert, formatter, options);
 To:
 
 ```javascript
-var yourAssert = require('./your-assert);
+var yourAssert = require('./your-assert');
 var empower = require('empower');
 var formatter = require('power-assert-formatter')();
 var options = {
