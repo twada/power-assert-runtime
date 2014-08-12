@@ -9,8 +9,9 @@
  *   https://github.com/twada/empower/blob/master/MIT-LICENSE.txt
  */
 var defaultOptions = _dereq_('./lib/default-options'),
-    enhancer = _dereq_('./lib/enhancer'),
-    extend = _dereq_('node.extend');
+    Decorator = _dereq_('./lib/decorator'),
+    slice = Array.prototype.slice,
+    extend = _dereq_('xtend/mutable');
 
 /**
  * Enhance Power Assert feature to assert function/object.
@@ -28,15 +29,41 @@ function empower (assert, formatter, options) {
     if (isEmpowered(assert)) {
         return assert;
     }
-    config = extend(defaultOptions(), (options || {}));
+    config = extend(defaultOptions(), options);
     switch (typeOfAssert) {
     case 'function':
-        return enhancer.empowerAssertFunction(assert, formatter, config);
+        return empowerAssertFunction(assert, formatter, config);
     case 'object':
-        return enhancer.empowerAssertObject(assert, formatter, config);
+        return empowerAssertObject(assert, formatter, config);
     default:
         throw new Error('Cannot be here');
     }
+}
+
+function empowerAssertObject (assertObject, formatter, config) {
+    var target = config.destructive ? assertObject : Object.create(assertObject);
+    var decorator = new Decorator(target, formatter, config);
+    return extend(target, decorator.enhancement());
+}
+
+function empowerAssertFunction (assertFunction, formatter, config) {
+    if (config.destructive) {
+        throw new Error('cannot use destructive:true to function.');
+    }
+    var decorator = new Decorator(assertFunction, formatter, config);
+    var enhancement = decorator.enhancement();
+    var powerAssert;
+    if (typeof enhancement === 'function') {
+        powerAssert = function powerAssert () {
+            return enhancement.apply(null, slice.apply(arguments));
+        };
+    } else {
+        powerAssert = function powerAssert () {
+            return assertFunction.apply(null, slice.apply(arguments));
+        };
+    }
+    extend(powerAssert, assertFunction);
+    return extend(powerAssert, enhancement);
 }
 
 function isEmpowered (assertObjectOrFunction) {
@@ -46,27 +73,246 @@ function isEmpowered (assertObjectOrFunction) {
 empower.defaultOptions = defaultOptions;
 module.exports = empower;
 
-},{"./lib/default-options":2,"./lib/enhancer":4,"node.extend":15}],2:[function(_dereq_,module,exports){
+},{"./lib/decorator":4,"./lib/default-options":5,"xtend/mutable":16}],2:[function(_dereq_,module,exports){
+'use strict';
+
+module.exports = function capturable () {
+    var events = [];
+
+    function _capt (value, espath) {
+        events.push({value: value, espath: espath});
+        return value;
+    }
+
+    function _expr (value, args) {
+        var captured = events;
+        events = [];
+        return {
+            powerAssertContext: {
+                value: value,
+                events: captured
+            },
+            source: {
+                content: args.content,
+                filepath: args.filepath,
+                line: args.line
+            }
+        };
+    }
+
+    return {
+        _capt: _capt,
+        _expr: _expr
+    };
+};
+
+},{}],3:[function(_dereq_,module,exports){
+'use strict';
+
+var slice = Array.prototype.slice;
+
+function decorate (callSpec, decorator) {
+    var func = callSpec.func,
+        thisObj = callSpec.thisObj,
+        numNonMessageArgs = callSpec.numArgsToCapture;
+
+    return function () {
+        var context, message, args = slice.apply(arguments);
+
+        if (args.every(isNotCaptured)) {
+            return func.apply(thisObj, args);
+        }
+
+        var values = args.slice(0, numNonMessageArgs).map(function (arg) {
+            if (isNotCaptured(arg)) {
+                return arg;
+            }
+            if (!context) {
+                context = {
+                    source: arg.source,
+                    args: []
+                };
+            }
+            context.args.push({
+                value: arg.powerAssertContext.value,
+                events: arg.powerAssertContext.events
+            });
+            return arg.powerAssertContext.value;
+        });
+
+        if (numNonMessageArgs === (args.length - 1)) {
+            message = args[args.length - 1];
+        }
+
+        var invocation = {
+            thisObj: thisObj,
+            func: func,
+            values: values,
+            message: message
+        };
+        return decorator.concreteAssert(invocation, context);
+    };
+}
+
+function isNotCaptured (value) {
+    return !isCaptured(value);
+}
+
+function isCaptured (value) {
+    return (typeof value === 'object') &&
+        (value !== null) &&
+        (typeof value.powerAssertContext !== 'undefined');
+}
+
+module.exports = decorate;
+
+},{}],4:[function(_dereq_,module,exports){
+'use strict';
+
+var escallmatch = _dereq_('escallmatch'),
+    extend = _dereq_('xtend/mutable'),
+    capturable = _dereq_('./capturable'),
+    decorate = _dereq_('./decorate'),
+    slice = Array.prototype.slice,
+    isPhantom = typeof window !== 'undefined' && typeof window.callPhantom === 'function';
+
+
+function Decorator (receiver, formatter, config) {
+    this.receiver = receiver;
+    this.formatter = formatter;
+    this.config = config;
+    this.matchers = config.patterns.map(escallmatch);
+    this.eagerEvaluation = !(config.modifyMessageOnRethrow || config.saveContextOnRethrow);
+}
+
+Decorator.prototype.enhancement = function () {
+    var that = this;
+    var container = this.container();
+    this.matchers.filter(methodCall).forEach(function (matcher) {
+        var methodName = detectMethodName(matcher.calleeAst());
+        if (typeof that.receiver[methodName] === 'function') {
+            var callSpec = {
+                thisObj: that.receiver,
+                func: that.receiver[methodName],
+                numArgsToCapture: numberOfArgumentsToCapture(matcher)
+            };
+            container[methodName] = decorate(callSpec, that);
+        }
+    });
+    extend(container, capturable());
+    return container;
+};
+
+Decorator.prototype.container = function () {
+    var basement = {};
+    if (typeof this.receiver === 'function') {
+        var candidates = this.matchers.filter(functionCall);
+        if (candidates.length === 1) {
+            var callSpec = {
+                thisObj: null,
+                func: this.receiver,
+                numArgsToCapture: numberOfArgumentsToCapture(candidates[0])
+            };
+            basement = decorate(callSpec, this);
+        }
+    }
+    return basement;
+};
+
+Decorator.prototype.concreteAssert = function (invocation, context) {
+    var func = invocation.func,
+        thisObj = invocation.thisObj,
+        args = invocation.values,
+        message = invocation.message;
+    if (this.eagerEvaluation) {
+        var poweredMessage = this.buildPowerAssertText(message, context);
+        return func.apply(thisObj, args.concat(poweredMessage));
+    }
+    try {
+        return func.apply(thisObj, args.concat(message));
+    } catch (e) {
+        throw this.errorToRethrow(e, message, context);
+    }
+};
+
+Decorator.prototype.errorToRethrow = function (e, originalMessage, context) {
+    var f;
+    if (e.name !== 'AssertionError') {
+        return e;
+    }
+    if (typeof this.receiver.AssertionError !== 'function') {
+        return e;
+    }
+    if (isPhantom) {
+        f = new this.receiver.AssertionError({
+            actual: e.actual,
+            expected: e.expected,
+            operator: e.operator,
+            message: e.message
+        });
+    } else {
+        f = e;
+    }
+    if (this.config.modifyMessageOnRethrow) {
+        f.message = this.buildPowerAssertText(originalMessage, context);
+        if (typeof e.generatedMessage !== 'undefined') {
+            f.generatedMessage = false;
+        }
+    }
+    if (this.config.saveContextOnRethrow) {
+        f.powerAssertContext = context;
+    }
+    return f;
+};
+
+Decorator.prototype.buildPowerAssertText = function (message, context) {
+    var powerAssertText = this.formatter(context);
+    return message ? message + ' ' + powerAssertText : powerAssertText;
+};
+
+
+function numberOfArgumentsToCapture (matcher) {
+    var argSpecs = matcher.argumentSignatures(),
+        len = argSpecs.length,
+        lastArg;
+    if (0 < len) {
+        lastArg = argSpecs[len - 1];
+        if (lastArg.name === 'message' && lastArg.kind === 'optional') {
+            len -= 1;
+        }
+    }
+    return len;
+}
+
+
+function detectMethodName (node) {
+    if (node.type === 'MemberExpression') {
+        return node.property.name;
+    }
+    return null;
+}
+
+
+function functionCall (matcher) {
+    return matcher.calleeAst().type === 'Identifier';
+}
+
+
+function methodCall (matcher) {
+    return matcher.calleeAst().type === 'MemberExpression';
+}
+
+
+module.exports = Decorator;
+
+},{"./capturable":2,"./decorate":3,"escallmatch":6,"xtend/mutable":16}],5:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function defaultOptions () {
     return {
         destructive: false,
-        modifyMessageOnFail: false,
-        saveContextOnFail: false,
-        targetMethods: {
-            oneArg: [
-                'ok'
-            ],
-            twoArgs: [
-                'equal',
-                'notEqual',
-                'strictEqual',
-                'notStrictEqual',
-                'deepEqual',
-                'notDeepEqual'
-            ]
-        },
+        modifyMessageOnRethrow: false,
+        saveContextOnRethrow: false,
         patterns: [
             'assert(value, [message])',
             'assert.ok(value, [message])',
@@ -80,210 +326,7 @@ module.exports = function defaultOptions () {
     };
 };
 
-},{}],3:[function(_dereq_,module,exports){
-'use strict';
-
-var escallmatch = _dereq_('escallmatch'),
-    isPhantom = typeof window !== 'undefined' && typeof window.callPhantom === 'function';
-
-
-function enhance (target, formatter, config) {
-    var eagerEvaluation = !(config.modifyMessageOnFail || config.saveContextOnFail),
-        doPowerAssert = function (baseAssert, args, message, context) {
-            var f;
-            if (eagerEvaluation) {
-                args.push(buildPowerAssertText(message, context));
-                return baseAssert.apply(target, args);
-            }
-            try {
-                args.push(message);
-                return baseAssert.apply(target, args);
-            } catch (e) {
-                if (e.name !== 'AssertionError') {
-                    throw e;
-                }
-                if (typeof target.AssertionError !== 'function') {
-                    throw e;
-                }
-                if (isPhantom) {
-                    f = new target.AssertionError({
-                        actual: e.actual,
-                        expected: e.expected,
-                        operator: e.operator,
-                        message: e.message
-                    });
-                } else {
-                    f = e;
-                }
-                if (config.modifyMessageOnFail) {
-                    f.message = buildPowerAssertText(message, context);
-                    if (typeof e.generatedMessage !== 'undefined') {
-                        f.generatedMessage = false;
-                    }
-                }
-                if (config.saveContextOnFail) {
-                    f.powerAssertContext = context;
-                }
-                throw f;
-            }
-        },
-        enhancement = (typeof target === 'function') ? decorateOneArg(target, target, doPowerAssert) : {},
-        events = [];
-
-    function buildPowerAssertText (message, context) {
-        var powerAssertText = formatter(context);
-        return message ? message + ' ' + powerAssertText : powerAssertText;
-    }
-
-    function _capt (value, espath) {
-        events.push({value: value, espath: espath});
-        return value;
-    }
-
-    function _expr (value, args) {
-        var captured = events;
-        events = [];
-        return { powerAssertContext: {value: value, events: captured}, source: {content: args.content, filepath: args.filepath, line: args.line} };
-    }
-
-    var matchers = config.patterns.map(function (pt) { return escallmatch(pt); });
-    matchers.forEach(function (matcher) {
-        var args = matcher.argumentSignitures();
-        var len = args.length,
-            lastArg;
-        if (0 < len) {
-            lastArg = args[len - 1];
-            if (lastArg.name === 'message' && lastArg.kind === 'optional') {
-                len -= 1;
-            }
-        }
-        var methodName = detectMethodName(matcher.calleeAst());
-        if (methodName && typeof target[methodName] === 'function') {
-            switch (len) {
-            case 1:
-                enhancement[methodName] = decorateOneArg(target, target[methodName], doPowerAssert);
-                break;
-            case 2:
-                enhancement[methodName] = decorateTwoArgs(target, target[methodName], doPowerAssert);
-                break;
-            default:
-                throw new Error('not supported');
-            }
-        }
-    });
-
-    enhancement._capt = _capt;
-    enhancement._expr = _expr;
-    return enhancement;
-}
-
-
-function detectMethodName (node) {
-    if (node.type === 'MemberExpression') {
-        return node.property.name;
-    }
-    return null;
-}
-
-
-function isEspoweredValue (value) {
-    return (typeof value === 'object') && (value !== null) && (typeof value.powerAssertContext !== 'undefined');
-}
-
-
-function decorateOneArg (target, baseAssert, doPowerAssert) {
-    return function (arg1, message) {
-        var context, val1;
-        if (! isEspoweredValue(arg1)) {
-            return baseAssert.apply(target, [arg1, message]);
-        }
-        val1 = arg1.powerAssertContext.value;
-        context = {
-            source: arg1.source,
-            args: []
-        };
-        context.args.push({
-            value: val1,
-            events: arg1.powerAssertContext.events
-        });
-        return doPowerAssert(baseAssert, [val1], message, context);
-    };
-}
-
-
-function decorateTwoArgs (target, baseAssert, doPowerAssert) {
-    return function (arg1, arg2, message) {
-        var context, val1, val2;
-        if (!(isEspoweredValue(arg1) || isEspoweredValue(arg2))) {
-            return baseAssert.apply(target, [arg1, arg2, message]);
-        }
-
-        if (isEspoweredValue(arg1)) {
-            context = {
-                source: arg1.source,
-                args: []
-            };
-            context.args.push({
-                value: arg1.powerAssertContext.value,
-                events: arg1.powerAssertContext.events
-            });
-            val1 = arg1.powerAssertContext.value;
-        } else {
-            val1 = arg1;
-        }
-
-        if (isEspoweredValue(arg2)) {
-            if (!isEspoweredValue(arg1)) {
-                context = {
-                    source: arg2.source,
-                    args: []
-                };
-            }
-            context.args.push({
-                value: arg2.powerAssertContext.value,
-                events: arg2.powerAssertContext.events
-            });
-            val2 = arg2.powerAssertContext.value;
-        } else {
-            val2 = arg2;
-        }
-
-        return doPowerAssert(baseAssert, [val1, val2], message, context);
-    };
-}
-
-module.exports = enhance;
-
-},{"escallmatch":5}],4:[function(_dereq_,module,exports){
-'use strict';
-
-var extend = _dereq_('node.extend'),
-    enhance = _dereq_('./enhance');
-
-function empowerAssertObject (assertObject, formatter, config) {
-    var enhancement = enhance(assertObject, formatter, config),
-        target = config.destructive ? assertObject : Object.create(assertObject);
-    return extend(target, enhancement);
-}
-
-function empowerAssertFunction (assertFunction, formatter, config) {
-    if (config.destructive) {
-        throw new Error('cannot use destructive:true to function.');
-    }
-    var enhancement = enhance(assertFunction, formatter, config),
-        powerAssert = function powerAssert (context, message) {
-            enhancement(context, message);
-        };
-    extend(powerAssert, assertFunction);
-    return extend(powerAssert, enhancement);
-}
-
-module.exports = {
-    empowerAssertObject: empowerAssertObject,
-    empowerAssertFunction: empowerAssertFunction
-};
-
-},{"./enhance":3,"node.extend":15}],5:[function(_dereq_,module,exports){
+},{}],6:[function(_dereq_,module,exports){
 /**
  * escallmatch:
  *   ECMAScript CallExpression matcher made from function/method signature
@@ -314,12 +357,13 @@ function createMatcher (signatureStr) {
 
 function Matcher (signatureAst) {
     this.signatureAst = signatureAst;
+    this.signatureCalleeDepth = astDepth(signatureAst.callee);
     this.numMaxArgs = this.signatureAst.arguments.length;
     this.numMinArgs = this.signatureAst.arguments.filter(identifiers).length;
 }
 
 Matcher.prototype.test = function (currentNode) {
-    var calleeMatched = isCalleeMatched(this.signatureAst, currentNode),
+    var calleeMatched = isCalleeMatched(this.signatureAst, this.signatureCalleeDepth, currentNode),
         numArgs;
     if (calleeMatched) {
         numArgs = currentNode.arguments.length;
@@ -336,7 +380,7 @@ Matcher.prototype.matchArgument = function (currentNode, parentNode) {
     if (this.test(parentNode)) {
         indexOfCurrentArg = parentNode.arguments.indexOf(currentNode);
         argNode = this.signatureAst.arguments[indexOfCurrentArg];
-        return toArgumentSigniture(argNode);
+        return toArgumentSignature(argNode);
     }
     return null;
 };
@@ -345,11 +389,11 @@ Matcher.prototype.calleeAst = function () {
     return espurify(this.signatureAst.callee);
 };
 
-Matcher.prototype.argumentSignitures = function () {
-    return this.signatureAst.arguments.map(toArgumentSigniture);
+Matcher.prototype.argumentSignatures = function () {
+    return this.signatureAst.arguments.map(toArgumentSignature);
 };
 
-function toArgumentSigniture (argSignatureNode) {
+function toArgumentSignature (argSignatureNode) {
     switch(argSignatureNode.type) {
     case syntax.Identifier:
         return {
@@ -366,14 +410,31 @@ function toArgumentSigniture (argSignatureNode) {
     }
 }
 
-function isCalleeMatched(callExp1, callExp2) {
-    if (!isCallExpression(callExp1) || !isCallExpression(callExp2)) {
+function isCalleeMatched(callSignature, signatureCalleeDepth, node) {
+    if (!isCallExpression(node)) {
         return false;
     }
-    if (astDepth(callExp1.callee) !== astDepth(callExp2.callee)) {
+    if (!isSameAstDepth(node.callee, signatureCalleeDepth)) {
         return false;
     }
-    return deepEqual(espurify(callExp1.callee), espurify(callExp2.callee));
+    return deepEqual(espurify(callSignature.callee), espurify(node.callee));
+}
+
+function isSameAstDepth (ast, depth) {
+    var currentDepth = 0;
+    estraverse.traverse(ast, {
+        enter: function (currentNode, parentNode) {
+            var path = this.path(),
+                pathDepth = path ? path.length : 0;
+            if (currentDepth < pathDepth) {
+                currentDepth = pathDepth;
+            }
+            if (depth < currentDepth) {
+                this.break();
+            }
+        }
+    });
+    return (depth === currentDepth);
 }
 
 function astDepth (ast) {
@@ -381,9 +442,9 @@ function astDepth (ast) {
     estraverse.traverse(ast, {
         enter: function (currentNode, parentNode) {
             var path = this.path(),
-                currentDepth = path ? path.length : 0;
-            if (maxDepth < currentDepth) {
-                maxDepth = currentDepth;
+                pathDepth = path ? path.length : 0;
+            if (maxDepth < pathDepth) {
+                maxDepth = pathDepth;
             }
         }
     });
@@ -451,7 +512,7 @@ function extractExpressionFrom (tree) {
 
 module.exports = createMatcher;
 
-},{"deep-equal":6,"esprima":9,"espurify":10,"estraverse":14}],6:[function(_dereq_,module,exports){
+},{"deep-equal":7,"esprima":10,"espurify":11,"estraverse":15}],7:[function(_dereq_,module,exports){
 var pSlice = Array.prototype.slice;
 var objectKeys = _dereq_('./lib/keys.js');
 var isArguments = _dereq_('./lib/is_arguments.js');
@@ -547,7 +608,7 @@ function objEquiv(a, b, opts) {
   return true;
 }
 
-},{"./lib/is_arguments.js":7,"./lib/keys.js":8}],7:[function(_dereq_,module,exports){
+},{"./lib/is_arguments.js":8,"./lib/keys.js":9}],8:[function(_dereq_,module,exports){
 var supportsArgumentsClass = (function(){
   return Object.prototype.toString.call(arguments)
 })() == '[object Arguments]';
@@ -569,7 +630,7 @@ function unsupported(object){
     false;
 };
 
-},{}],8:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 exports = module.exports = typeof Object.keys === 'function'
   ? Object.keys : shim;
 
@@ -580,7 +641,7 @@ function shim (obj) {
   return keys;
 }
 
-},{}],9:[function(_dereq_,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 /*
   Copyright (C) 2013 Ariya Hidayat <ariya.hidayat@gmail.com>
   Copyright (C) 2013 Thaddee Tyl <thaddee.tyl@gmail.com>
@@ -4338,7 +4399,7 @@ parseStatement: true, parseSourceElement: true */
 }));
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],10:[function(_dereq_,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 /**
  * espurify - Clone new AST without extra properties
  * 
@@ -4380,7 +4441,7 @@ function isSupportedKey (type, key) {
 
 module.exports = espurify;
 
-},{"./lib/ast-deepcopy":11,"./lib/ast-properties":12,"traverse":13}],11:[function(_dereq_,module,exports){
+},{"./lib/ast-deepcopy":12,"./lib/ast-properties":13,"traverse":14}],12:[function(_dereq_,module,exports){
 /**
  * Copyright (C) 2012 Yusuke Suzuki (twitter: @Constellation) and other contributors.
  * Released under the BSD license.
@@ -4419,7 +4480,7 @@ function deepCopy (obj) {
 
 module.exports = deepCopy;
 
-},{}],12:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 module.exports = {
     AssignmentExpression: ['type', 'operator', 'left', 'right'],
     ArrayExpression: ['type', 'elements'],
@@ -4472,7 +4533,7 @@ module.exports = {
     YieldExpression: ['type', 'argument']
 };
 
-},{}],13:[function(_dereq_,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 var traverse = module.exports = function (obj) {
     return new Traverse(obj);
 };
@@ -4788,7 +4849,7 @@ var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
     return key in obj;
 };
 
-},{}],14:[function(_dereq_,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 /*
   Copyright (C) 2012-2013 Yusuke Suzuki <utatane.tea@gmail.com>
   Copyright (C) 2012 Ariya Hidayat <ariya.hidayat@gmail.com>
@@ -5479,807 +5540,22 @@ var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
 }));
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],15:[function(_dereq_,module,exports){
-module.exports = _dereq_('./lib/extend');
+},{}],16:[function(_dereq_,module,exports){
+module.exports = extend
 
+function extend(target) {
+    for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i]
 
-},{"./lib/extend":16}],16:[function(_dereq_,module,exports){
-/*!
- * node.extend
- * Copyright 2011, John Resig
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * @fileoverview
- * Port of jQuery.extend that actually works on node.js
- */
-var is = _dereq_('is');
-
-function extend() {
-  var target = arguments[0] || {};
-  var i = 1;
-  var length = arguments.length;
-  var deep = false;
-  var options, name, src, copy, copy_is_array, clone;
-
-  // Handle a deep copy situation
-  if (typeof target === 'boolean') {
-    deep = target;
-    target = arguments[1] || {};
-    // skip the boolean and the target
-    i = 2;
-  }
-
-  // Handle case when target is a string or something (possible in deep copy)
-  if (typeof target !== 'object' && !is.fn(target)) {
-    target = {};
-  }
-
-  for (; i < length; i++) {
-    // Only deal with non-null/undefined values
-    options = arguments[i]
-    if (options != null) {
-      if (typeof options === 'string') {
-          options = options.split('');
-      }
-      // Extend the base object
-      for (name in options) {
-        src = target[name];
-        copy = options[name];
-
-        // Prevent never-ending loop
-        if (target === copy) {
-          continue;
+        for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+                target[key] = source[key]
+            }
         }
-
-        // Recurse if we're merging plain objects or arrays
-        if (deep && copy && (is.hash(copy) || (copy_is_array = is.array(copy)))) {
-          if (copy_is_array) {
-            copy_is_array = false;
-            clone = src && is.array(src) ? src : [];
-          } else {
-            clone = src && is.hash(src) ? src : {};
-          }
-
-          // Never move original objects, clone them
-          target[name] = extend(deep, clone, copy);
-
-        // Don't bring in undefined values
-        } else if (typeof copy !== 'undefined') {
-          target[name] = copy;
-        }
-      }
     }
-  }
 
-  // Return the modified object
-  return target;
-};
-
-/**
- * @public
- */
-extend.version = '1.0.8';
-
-/**
- * Exports module.
- */
-module.exports = extend;
-
-
-},{"is":17}],17:[function(_dereq_,module,exports){
-
-/**!
- * is
- * the definitive JavaScript type testing library
- * 
- * @copyright 2013 Enrico Marino
- * @license MIT
- */
-
-var objProto = Object.prototype;
-var owns = objProto.hasOwnProperty;
-var toString = objProto.toString;
-var isActualNaN = function (value) {
-  return value !== value;
-};
-var NON_HOST_TYPES = {
-  "boolean": 1,
-  "number": 1,
-  "string": 1,
-  "undefined": 1
-};
-
-/**
- * Expose `is`
- */
-
-var is = module.exports = {};
-
-/**
- * Test general.
- */
-
-/**
- * is.type
- * Test if `value` is a type of `type`.
- *
- * @param {Mixed} value value to test
- * @param {String} type type
- * @return {Boolean} true if `value` is a type of `type`, false otherwise
- * @api public
- */
-
-is.a =
-is.type = function (value, type) {
-  return typeof value === type;
-};
-
-/**
- * is.defined
- * Test if `value` is defined.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if 'value' is defined, false otherwise
- * @api public
- */
-
-is.defined = function (value) {
-  return value !== undefined;
-};
-
-/**
- * is.empty
- * Test if `value` is empty.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is empty, false otherwise
- * @api public
- */
-
-is.empty = function (value) {
-  var type = toString.call(value);
-  var key;
-
-  if ('[object Array]' === type || '[object Arguments]' === type) {
-    return value.length === 0;
-  }
-
-  if ('[object Object]' === type) {
-    for (key in value) if (owns.call(value, key)) return false;
-    return true;
-  }
-
-  if ('[object String]' === type) {
-    return '' === value;
-  }
-
-  return false;
-};
-
-/**
- * is.equal
- * Test if `value` is equal to `other`.
- *
- * @param {Mixed} value value to test
- * @param {Mixed} other value to compare with
- * @return {Boolean} true if `value` is equal to `other`, false otherwise
- */
-
-is.equal = function (value, other) {
-  var strictlyEqual = value === other;
-  if (strictlyEqual) {
-    return true;
-  }
-
-  var type = toString.call(value);
-  var key;
-
-  if (type !== toString.call(other)) {
-    return false;
-  }
-
-  if ('[object Object]' === type) {
-    for (key in value) {
-      if (!is.equal(value[key], other[key]) || !(key in other)) {
-        return false;
-      }
-    }
-    for (key in other) {
-      if (!is.equal(value[key], other[key]) || !(key in value)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  if ('[object Array]' === type) {
-    key = value.length;
-    if (key !== other.length) {
-      return false;
-    }
-    while (--key) {
-      if (!is.equal(value[key], other[key])) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  if ('[object Function]' === type) {
-    return value.prototype === other.prototype;
-  }
-
-  if ('[object Date]' === type) {
-    return value.getTime() === other.getTime();
-  }
-
-  return strictlyEqual;
-};
-
-/**
- * is.hosted
- * Test if `value` is hosted by `host`.
- *
- * @param {Mixed} value to test
- * @param {Mixed} host host to test with
- * @return {Boolean} true if `value` is hosted by `host`, false otherwise
- * @api public
- */
-
-is.hosted = function (value, host) {
-  var type = typeof host[value];
-  return type === 'object' ? !!host[value] : !NON_HOST_TYPES[type];
-};
-
-/**
- * is.instance
- * Test if `value` is an instance of `constructor`.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is an instance of `constructor`
- * @api public
- */
-
-is.instance = is['instanceof'] = function (value, constructor) {
-  return value instanceof constructor;
-};
-
-/**
- * is.null
- * Test if `value` is null.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is null, false otherwise
- * @api public
- */
-
-is['null'] = function (value) {
-  return value === null;
-};
-
-/**
- * is.undef
- * Test if `value` is undefined.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is undefined, false otherwise
- * @api public
- */
-
-is.undef = is['undefined'] = function (value) {
-  return value === undefined;
-};
-
-/**
- * Test arguments.
- */
-
-/**
- * is.args
- * Test if `value` is an arguments object.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is an arguments object, false otherwise
- * @api public
- */
-
-is.args = is['arguments'] = function (value) {
-  var isStandardArguments = '[object Arguments]' === toString.call(value);
-  var isOldArguments = !is.array(value) && is.arraylike(value) && is.object(value) && is.fn(value.callee);
-  return isStandardArguments || isOldArguments;
-};
-
-/**
- * Test array.
- */
-
-/**
- * is.array
- * Test if 'value' is an array.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is an array, false otherwise
- * @api public
- */
-
-is.array = function (value) {
-  return '[object Array]' === toString.call(value);
-};
-
-/**
- * is.arguments.empty
- * Test if `value` is an empty arguments object.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is an empty arguments object, false otherwise
- * @api public
- */
-is.args.empty = function (value) {
-  return is.args(value) && value.length === 0;
-};
-
-/**
- * is.array.empty
- * Test if `value` is an empty array.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is an empty array, false otherwise
- * @api public
- */
-is.array.empty = function (value) {
-  return is.array(value) && value.length === 0;
-};
-
-/**
- * is.arraylike
- * Test if `value` is an arraylike object.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is an arguments object, false otherwise
- * @api public
- */
-
-is.arraylike = function (value) {
-  return !!value && !is.boolean(value)
-    && owns.call(value, 'length')
-    && isFinite(value.length)
-    && is.number(value.length)
-    && value.length >= 0;
-};
-
-/**
- * Test boolean.
- */
-
-/**
- * is.boolean
- * Test if `value` is a boolean.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is a boolean, false otherwise
- * @api public
- */
-
-is.boolean = function (value) {
-  return '[object Boolean]' === toString.call(value);
-};
-
-/**
- * is.false
- * Test if `value` is false.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is false, false otherwise
- * @api public
- */
-
-is['false'] = function (value) {
-  return is.boolean(value) && (value === false || value.valueOf() === false);
-};
-
-/**
- * is.true
- * Test if `value` is true.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is true, false otherwise
- * @api public
- */
-
-is['true'] = function (value) {
-  return is.boolean(value) && (value === true || value.valueOf() === true);
-};
-
-/**
- * Test date.
- */
-
-/**
- * is.date
- * Test if `value` is a date.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is a date, false otherwise
- * @api public
- */
-
-is.date = function (value) {
-  return '[object Date]' === toString.call(value);
-};
-
-/**
- * Test element.
- */
-
-/**
- * is.element
- * Test if `value` is an html element.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is an HTML Element, false otherwise
- * @api public
- */
-
-is.element = function (value) {
-  return value !== undefined
-    && typeof HTMLElement !== 'undefined'
-    && value instanceof HTMLElement
-    && value.nodeType === 1;
-};
-
-/**
- * Test error.
- */
-
-/**
- * is.error
- * Test if `value` is an error object.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is an error object, false otherwise
- * @api public
- */
-
-is.error = function (value) {
-  return '[object Error]' === toString.call(value);
-};
-
-/**
- * Test function.
- */
-
-/**
- * is.fn / is.function (deprecated)
- * Test if `value` is a function.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is a function, false otherwise
- * @api public
- */
-
-is.fn = is['function'] = function (value) {
-  var isAlert = typeof window !== 'undefined' && value === window.alert;
-  return isAlert || '[object Function]' === toString.call(value);
-};
-
-/**
- * Test number.
- */
-
-/**
- * is.number
- * Test if `value` is a number.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is a number, false otherwise
- * @api public
- */
-
-is.number = function (value) {
-  return '[object Number]' === toString.call(value);
-};
-
-/**
- * is.infinite
- * Test if `value` is positive or negative infinity.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is positive or negative Infinity, false otherwise
- * @api public
- */
-is.infinite = function (value) {
-  return value === Infinity || value === -Infinity;
-};
-
-/**
- * is.decimal
- * Test if `value` is a decimal number.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is a decimal number, false otherwise
- * @api public
- */
-
-is.decimal = function (value) {
-  return is.number(value) && !isActualNaN(value) && !is.infinite(value) && value % 1 !== 0;
-};
-
-/**
- * is.divisibleBy
- * Test if `value` is divisible by `n`.
- *
- * @param {Number} value value to test
- * @param {Number} n dividend
- * @return {Boolean} true if `value` is divisible by `n`, false otherwise
- * @api public
- */
-
-is.divisibleBy = function (value, n) {
-  var isDividendInfinite = is.infinite(value);
-  var isDivisorInfinite = is.infinite(n);
-  var isNonZeroNumber = is.number(value) && !isActualNaN(value) && is.number(n) && !isActualNaN(n) && n !== 0;
-  return isDividendInfinite || isDivisorInfinite || (isNonZeroNumber && value % n === 0);
-};
-
-/**
- * is.int
- * Test if `value` is an integer.
- *
- * @param value to test
- * @return {Boolean} true if `value` is an integer, false otherwise
- * @api public
- */
-
-is.int = function (value) {
-  return is.number(value) && !isActualNaN(value) && value % 1 === 0;
-};
-
-/**
- * is.maximum
- * Test if `value` is greater than 'others' values.
- *
- * @param {Number} value value to test
- * @param {Array} others values to compare with
- * @return {Boolean} true if `value` is greater than `others` values
- * @api public
- */
-
-is.maximum = function (value, others) {
-  if (isActualNaN(value)) {
-    throw new TypeError('NaN is not a valid value');
-  } else if (!is.arraylike(others)) {
-    throw new TypeError('second argument must be array-like');
-  }
-  var len = others.length;
-
-  while (--len >= 0) {
-    if (value < others[len]) {
-      return false;
-    }
-  }
-
-  return true;
-};
-
-/**
- * is.minimum
- * Test if `value` is less than `others` values.
- *
- * @param {Number} value value to test
- * @param {Array} others values to compare with
- * @return {Boolean} true if `value` is less than `others` values
- * @api public
- */
-
-is.minimum = function (value, others) {
-  if (isActualNaN(value)) {
-    throw new TypeError('NaN is not a valid value');
-  } else if (!is.arraylike(others)) {
-    throw new TypeError('second argument must be array-like');
-  }
-  var len = others.length;
-
-  while (--len >= 0) {
-    if (value > others[len]) {
-      return false;
-    }
-  }
-
-  return true;
-};
-
-/**
- * is.nan
- * Test if `value` is not a number.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is not a number, false otherwise
- * @api public
- */
-
-is.nan = function (value) {
-  return !is.number(value) || value !== value;
-};
-
-/**
- * is.even
- * Test if `value` is an even number.
- *
- * @param {Number} value value to test
- * @return {Boolean} true if `value` is an even number, false otherwise
- * @api public
- */
-
-is.even = function (value) {
-  return is.infinite(value) || (is.number(value) && value === value && value % 2 === 0);
-};
-
-/**
- * is.odd
- * Test if `value` is an odd number.
- *
- * @param {Number} value value to test
- * @return {Boolean} true if `value` is an odd number, false otherwise
- * @api public
- */
-
-is.odd = function (value) {
-  return is.infinite(value) || (is.number(value) && value === value && value % 2 !== 0);
-};
-
-/**
- * is.ge
- * Test if `value` is greater than or equal to `other`.
- *
- * @param {Number} value value to test
- * @param {Number} other value to compare with
- * @return {Boolean}
- * @api public
- */
-
-is.ge = function (value, other) {
-  if (isActualNaN(value) || isActualNaN(other)) {
-    throw new TypeError('NaN is not a valid value');
-  }
-  return !is.infinite(value) && !is.infinite(other) && value >= other;
-};
-
-/**
- * is.gt
- * Test if `value` is greater than `other`.
- *
- * @param {Number} value value to test
- * @param {Number} other value to compare with
- * @return {Boolean}
- * @api public
- */
-
-is.gt = function (value, other) {
-  if (isActualNaN(value) || isActualNaN(other)) {
-    throw new TypeError('NaN is not a valid value');
-  }
-  return !is.infinite(value) && !is.infinite(other) && value > other;
-};
-
-/**
- * is.le
- * Test if `value` is less than or equal to `other`.
- *
- * @param {Number} value value to test
- * @param {Number} other value to compare with
- * @return {Boolean} if 'value' is less than or equal to 'other'
- * @api public
- */
-
-is.le = function (value, other) {
-  if (isActualNaN(value) || isActualNaN(other)) {
-    throw new TypeError('NaN is not a valid value');
-  }
-  return !is.infinite(value) && !is.infinite(other) && value <= other;
-};
-
-/**
- * is.lt
- * Test if `value` is less than `other`.
- *
- * @param {Number} value value to test
- * @param {Number} other value to compare with
- * @return {Boolean} if `value` is less than `other`
- * @api public
- */
-
-is.lt = function (value, other) {
-  if (isActualNaN(value) || isActualNaN(other)) {
-    throw new TypeError('NaN is not a valid value');
-  }
-  return !is.infinite(value) && !is.infinite(other) && value < other;
-};
-
-/**
- * is.within
- * Test if `value` is within `start` and `finish`.
- *
- * @param {Number} value value to test
- * @param {Number} start lower bound
- * @param {Number} finish upper bound
- * @return {Boolean} true if 'value' is is within 'start' and 'finish'
- * @api public
- */
-is.within = function (value, start, finish) {
-  if (isActualNaN(value) || isActualNaN(start) || isActualNaN(finish)) {
-    throw new TypeError('NaN is not a valid value');
-  } else if (!is.number(value) || !is.number(start) || !is.number(finish)) {
-    throw new TypeError('all arguments must be numbers');
-  }
-  var isAnyInfinite = is.infinite(value) || is.infinite(start) || is.infinite(finish);
-  return isAnyInfinite || (value >= start && value <= finish);
-};
-
-/**
- * Test object.
- */
-
-/**
- * is.object
- * Test if `value` is an object.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is an object, false otherwise
- * @api public
- */
-
-is.object = function (value) {
-  return value && '[object Object]' === toString.call(value);
-};
-
-/**
- * is.hash
- * Test if `value` is a hash - a plain object literal.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is a hash, false otherwise
- * @api public
- */
-
-is.hash = function (value) {
-  return is.object(value) && value.constructor === Object && !value.nodeType && !value.setInterval;
-};
-
-/**
- * Test regexp.
- */
-
-/**
- * is.regexp
- * Test if `value` is a regular expression.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if `value` is a regexp, false otherwise
- * @api public
- */
-
-is.regexp = function (value) {
-  return '[object RegExp]' === toString.call(value);
-};
-
-/**
- * Test string.
- */
-
-/**
- * is.string
- * Test if `value` is a string.
- *
- * @param {Mixed} value value to test
- * @return {Boolean} true if 'value' is a string, false otherwise
- * @api public
- */
-
-is.string = function (value) {
-  return '[object String]' === toString.call(value);
-};
-
+    return target
+}
 
 },{}]},{},[1])(1)
 });
