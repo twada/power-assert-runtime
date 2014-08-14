@@ -173,7 +173,6 @@ var escallmatch = _dereq_('escallmatch'),
     extend = _dereq_('xtend/mutable'),
     capturable = _dereq_('./capturable'),
     decorate = _dereq_('./decorate'),
-    slice = Array.prototype.slice,
     isPhantom = typeof window !== 'undefined' && typeof window.callPhantom === 'function';
 
 
