@@ -5,6 +5,7 @@ empower
 [![NPM version](https://badge.fury.io/js/empower.svg)](http://badge.fury.io/js/empower)
 [![Dependency Status](https://gemnasium.com/twada/empower.svg)](https://gemnasium.com/twada/empower)
 [![Coverage Status](https://coveralls.io/repos/twada/empower/badge.png?branch=master)](https://coveralls.io/r/twada/empower?branch=master)
+[![Code Climate](https://codeclimate.com/github/twada/empower/badges/gpa.svg)](https://codeclimate.com/github/twada/empower)
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/twada/empower/blob/master/MIT-LICENSE.txt)
 [![Built with Gulp](http://img.shields.io/badge/built_with-gulp-brightgreen.svg)](http://gulpjs.com/)
 
