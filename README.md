@@ -32,7 +32,7 @@ See [CHANGELOG](https://github.com/twada/empower/blob/master/CHANGELOG.md)
 API
 ---------------------------------------
 
-### var enhancedAssert = espower(originalAssert, formatter, [options])
+### var enhancedAssert = empower(originalAssert, formatter, [options])
 
 | return type            |
 |:-----------------------|
@@ -77,7 +77,7 @@ Configuration options. If not passed, default options will be used.
 
 If truthy, modify `originalAssert` destructively.
 
-If `false`, espower mimics originalAssert as new object/function, so `originalAssert` will not be changed. If `true`, `originalAssert` will be manipulated directly and returned `enhancedAssert` will be the same instance of `originalAssert`.
+If `false`, empower mimics originalAssert as new object/function, so `originalAssert` will not be changed. If `true`, `originalAssert` will be manipulated directly and returned `enhancedAssert` will be the same instance of `originalAssert`.
 
 
 #### options.modifyMessageOnRethrow
