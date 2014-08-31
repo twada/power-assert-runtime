@@ -114,7 +114,7 @@ var slice = Array.prototype.slice;
 function decorate (callSpec, decorator) {
     var func = callSpec.func,
         thisObj = callSpec.thisObj,
-        numNonMessageArgs = callSpec.numArgsToCapture;
+        numArgsToCapture = callSpec.numArgsToCapture;
 
     return function () {
         var context, message, args = slice.apply(arguments);
@@ -123,7 +123,7 @@ function decorate (callSpec, decorator) {
             return func.apply(thisObj, args);
         }
 
-        var values = args.slice(0, numNonMessageArgs).map(function (arg) {
+        var values = args.slice(0, numArgsToCapture).map(function (arg) {
             if (isNotCaptured(arg)) {
                 return arg;
             }
@@ -140,7 +140,7 @@ function decorate (callSpec, decorator) {
             return arg.powerAssertContext.value;
         });
 
-        if (numNonMessageArgs === (args.length - 1)) {
+        if (numArgsToCapture === (args.length - 1)) {
             message = args[args.length - 1];
         }
 
@@ -372,14 +372,23 @@ Matcher.prototype.test = function (currentNode) {
 };
 
 Matcher.prototype.matchArgument = function (currentNode, parentNode) {
-    var indexOfCurrentArg, argNode;
     if (isCalleeOfParent(currentNode, parentNode)) {
         return null;
     }
     if (this.test(parentNode)) {
-        indexOfCurrentArg = parentNode.arguments.indexOf(currentNode);
-        argNode = this.signatureAst.arguments[indexOfCurrentArg];
-        return toArgumentSignature(argNode);
+        var indexOfCurrentArg = parentNode.arguments.indexOf(currentNode);
+        var numOptional = parentNode.arguments.length - this.numMinArgs;
+        var matchedSignatures = this.argumentSignatures().reduce(function (accum, argSig) {
+            if (argSig.kind === 'mandatory') {
+                accum.push(argSig);
+            }
+            if (argSig.kind === 'optional' && 0 < numOptional) {
+                numOptional -= 1;
+                accum.push(argSig);
+            }
+            return accum;
+        }, []);
+        return matchedSignatures[indexOfCurrentArg];
     }
     return null;
 };
