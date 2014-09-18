@@ -47,8 +47,9 @@
   "homepage": "http://github.com/twada/empower",
   "keywords": [
     "power-assert",
-    "test",
     "assert",
+    "assertion",
+    "test",
     "testing"
   ],
   "license": {
