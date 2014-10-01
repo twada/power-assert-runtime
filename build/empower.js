@@ -172,8 +172,7 @@ module.exports = decorate;
 var escallmatch = _dereq_('escallmatch'),
     extend = _dereq_('xtend/mutable'),
     capturable = _dereq_('./capturable'),
-    decorate = _dereq_('./decorate'),
-    isPhantom = typeof window !== 'undefined' && typeof window.callPhantom === 'function';
+    decorate = _dereq_('./decorate');
 
 
 function Decorator (receiver, formatter, config) {
@@ -247,24 +246,20 @@ Decorator.prototype.errorToRethrow = function (e, originalMessage, context) {
         actual: e.actual,
         expected: e.expected,
         operator: e.operator,
-        message: e.message
+        message: e.message,
+        stackStartFunction: Decorator.prototype.concreteAssert
     };
 
     if (this.config.modifyMessageOnRethrow) {
         attrs.message = this.buildPowerAssertText(originalMessage, context);
-        attrs.stackStartFunction = Decorator.prototype.concreteAssert;
     }
 
-    if (isPhantom || this.config.modifyMessageOnRethrow) {
-        f = new this.receiver.AssertionError(attrs);
-    } else {
-        f = e;
-        f.message = attrs.message;
-    }
+    f = new this.receiver.AssertionError(attrs);
 
     if (this.config.saveContextOnRethrow) {
         f.powerAssertContext = context;
     }
+
     return f;
 };
 
