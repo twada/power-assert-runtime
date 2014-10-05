@@ -116,7 +116,7 @@ function decorate (callSpec, decorator) {
         thisObj = callSpec.thisObj,
         numArgsToCapture = callSpec.numArgsToCapture;
 
-    return function () {
+    return function decoratedAssert () {
         var context, message, args = slice.apply(arguments);
 
         if (args.every(isNotCaptured)) {
@@ -172,8 +172,7 @@ module.exports = decorate;
 var escallmatch = _dereq_('escallmatch'),
     extend = _dereq_('xtend/mutable'),
     capturable = _dereq_('./capturable'),
-    decorate = _dereq_('./decorate'),
-    isPhantom = typeof window !== 'undefined' && typeof window.callPhantom === 'function';
+    decorate = _dereq_('./decorate');
 
 
 function Decorator (receiver, formatter, config) {
@@ -235,29 +234,19 @@ Decorator.prototype.concreteAssert = function (invocation, context) {
 };
 
 Decorator.prototype.errorToRethrow = function (e, originalMessage, context) {
-    var f;
     if (e.name !== 'AssertionError') {
         return e;
     }
     if (typeof this.receiver.AssertionError !== 'function') {
         return e;
     }
-    if (isPhantom) {
-        f = new this.receiver.AssertionError({
-            actual: e.actual,
-            expected: e.expected,
-            operator: e.operator,
-            message: e.message
-        });
-    } else {
-        f = e;
-    }
-    if (this.config.modifyMessageOnRethrow) {
-        f.message = this.buildPowerAssertText(originalMessage, context);
-        if (typeof e.generatedMessage !== 'undefined') {
-            f.generatedMessage = false;
-        }
-    }
+    var f = new this.receiver.AssertionError({
+        actual: e.actual,
+        expected: e.expected,
+        operator: e.operator,
+        message: this.config.modifyMessageOnRethrow ? this.buildPowerAssertText(originalMessage, context) : e.message,
+        stackStartFunction: Decorator.prototype.concreteAssert
+    });
     if (this.config.saveContextOnRethrow) {
         f.powerAssertContext = context;
     }
