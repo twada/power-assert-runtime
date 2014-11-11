@@ -1,3 +1,10 @@
+## [0.10.0](https://github.com/twada/empower/releases/tag/v0.10.0) (2014-11-11)
+
+
+* **empower:**
+  * update escallmatch ([f7a0d970](https://github.com/twada/empower/commit/f7a0d970333cdec25aacaf3880473da5ccec24de))
+
+
 ### 0.9.1 (2014-10-07)
 
 #### Bug Fixes
