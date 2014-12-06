@@ -8,6 +8,7 @@ var gulp = require('gulp'),
     through = require('through2'),
     browserify = require('browserify'),
     derequire = require('gulp-derequire'),
+    dereserve = require('gulp-dereserve'),
     config = {
         bundle: {
             standalone: 'empower',
@@ -104,9 +105,11 @@ gulp.task('clean_coverage', function (done) {
 });
 
 gulp.task('bundle', ['clean_bundle'], function() {
-    var bundleStream = browserify({entries: config.bundle.srcFile, standalone: config.bundle.standalone}).bundle();
+    var b = browserify({entries: config.bundle.srcFile, standalone: config.bundle.standalone});
+    var bundleStream = b.bundle();
     return bundleStream
         .pipe(source(config.bundle.destName))
+        .pipe(dereserve())
         .pipe(derequire())
         .pipe(gulp.dest(config.bundle.destDir));
 });
