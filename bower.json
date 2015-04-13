@@ -2,7 +2,7 @@
   "name": "empower",
   "description": "Power Assert feature enhancer for assert function/object",
   "main": "build/empower.js",
-  "license": "MIT-LICENSE.txt",
+  "license": "MIT",
   "ignore": [
     "**/.*",
     "gulpfile.js",
