@@ -28,7 +28,7 @@ test(JSON.stringify(option) + ' argument is null Literal.', function () {
         assert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
         baseAssert.equal(e.name, 'AssertionError');
-        baseAssert.equal(e.message, '"foo" == null');
+        baseAssert((e.message === '\'foo\' == null' || e.message === '\"foo\" == null'));
         baseAssert(e.powerAssertContext === undefined);
     }
 });
@@ -70,7 +70,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
             assert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
             baseAssert.equal(e.name, 'AssertionError');
-            baseAssert.equal(e.message, '"foo" == "bar"');
+            baseAssert((e.message === '\'foo\' == \'bar\'' || e.message === '\"foo\" == \"bar\"'));
             baseAssert(e.powerAssertContext === undefined);
         }
     });
@@ -82,7 +82,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
             assert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
             baseAssert.equal(e.name, 'AssertionError');
-            baseAssert.equal(e.message, '"foo" == "bar"');
+            baseAssert((e.message === '\'foo\' == \'bar\'' || e.message === '\"foo\" == \"bar\"'));
             baseAssert(e.powerAssertContext === undefined);
         }
     });
@@ -94,7 +94,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
             assert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
             baseAssert.equal(e.name, 'AssertionError');
-            baseAssert.equal(e.message, '"foo" == "bar"');
+            baseAssert((e.message === '\'foo\' == \'bar\'' || e.message === '\"foo\" == \"bar\"'));
             baseAssert(e.powerAssertContext === undefined);
         }
     });
