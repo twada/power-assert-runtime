@@ -1,10 +1,10 @@
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.empower=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw (f.code="MODULE_NOT_FOUND", f)}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.empower = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw (f.code="MODULE_NOT_FOUND", f)}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 /**
  * empower - Power Assert feature enhancer for assert function/object.
  *
  * https://github.com/twada/empower
  *
- * Copyright (c) 2013-2014 Takuto Wada
+ * Copyright (c) 2013-2015 Takuto Wada
  * Licensed under the MIT license.
  *   https://github.com/twada/empower/blob/master/MIT-LICENSE.txt
  */
@@ -73,7 +73,7 @@ function isEmpowered (assertObjectOrFunction) {
 empower.defaultOptions = defaultOptions;
 module.exports = empower;
 
-},{"./lib/decorator":4,"./lib/default-options":5,"xtend/mutable":16}],2:[function(_dereq_,module,exports){
+},{"./lib/decorator":4,"./lib/default-options":5,"xtend/mutable":21}],2:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function capturable () {
@@ -293,7 +293,7 @@ function methodCall (matcher) {
 
 module.exports = Decorator;
 
-},{"./capturable":2,"./decorate":3,"escallmatch":6,"xtend/mutable":16}],5:[function(_dereq_,module,exports){
+},{"./capturable":2,"./decorate":3,"escallmatch":6,"xtend/mutable":21}],5:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function defaultOptions () {
@@ -321,7 +321,7 @@ module.exports = function defaultOptions () {
  * 
  * https://github.com/twada/escallmatch
  *
- * Copyright (c) 2014 Takuto Wada
+ * Copyright (c) 2014-2015 Takuto Wada
  * Licensed under the MIT license.
  *   http://twada.mit-license.org/
  */
@@ -333,6 +333,11 @@ var esprima = _dereq_('esprima'),
     espurify = _dereq_('espurify'),
     syntax = estraverse.Syntax,
     hasOwn = Object.prototype.hasOwnProperty,
+    forEach = _dereq_('array-foreach'),
+    map = _dereq_('array-map'),
+    filter = _dereq_('array-filter'),
+    reduce = _dereq_('array-reduce'),
+    indexOf = _dereq_('indexof'),
     deepEqual = _dereq_('deep-equal'),
     notCallExprMessage = 'Argument should be in the form of CallExpression',
     duplicatedArgMessage = 'Duplicate argument name: ',
@@ -347,7 +352,7 @@ function Matcher (signatureAst) {
     this.signatureAst = signatureAst;
     this.signatureCalleeDepth = astDepth(signatureAst.callee);
     this.numMaxArgs = this.signatureAst.arguments.length;
-    this.numMinArgs = this.signatureAst.arguments.filter(identifiers).length;
+    this.numMinArgs = filter(this.signatureAst.arguments, identifiers).length;
 }
 
 Matcher.prototype.test = function (currentNode) {
@@ -365,9 +370,9 @@ Matcher.prototype.matchArgument = function (currentNode, parentNode) {
         return null;
     }
     if (this.test(parentNode)) {
-        var indexOfCurrentArg = parentNode.arguments.indexOf(currentNode);
+        var indexOfCurrentArg = indexOf(parentNode.arguments, currentNode);
         var numOptional = parentNode.arguments.length - this.numMinArgs;
-        var matchedSignatures = this.argumentSignatures().reduce(function (accum, argSig) {
+        var matchedSignatures = reduce(this.argumentSignatures(), function (accum, argSig) {
             if (argSig.kind === 'mandatory') {
                 accum.push(argSig);
             }
@@ -387,7 +392,7 @@ Matcher.prototype.calleeAst = function () {
 };
 
 Matcher.prototype.argumentSignatures = function () {
-    return this.signatureAst.arguments.map(toArgumentSignature);
+    return map(this.signatureAst.arguments, toArgumentSignature);
 };
 
 function toArgumentSignature (argSignatureNode) {
@@ -427,7 +432,7 @@ function isSameAstDepth (ast, depth) {
                 currentDepth = pathDepth;
             }
             if (depth < currentDepth) {
-                this["break"]();
+                this['break']();
             }
         }
     });
@@ -467,7 +472,7 @@ function validateApiExpression (callExpression) {
         throw new Error(notCallExprMessage);
     }
     var names = {};
-    callExpression.arguments.forEach(function (arg) {
+    forEach(callExpression.arguments, function (arg) {
         var name = validateArg(arg);
         if (hasOwn.call(names, name)) {
             throw new Error(duplicatedArgMessage + name);
@@ -509,7 +514,91 @@ function extractExpressionFrom (tree) {
 
 module.exports = createMatcher;
 
-},{"deep-equal":7,"esprima":10,"espurify":11,"estraverse":15}],7:[function(_dereq_,module,exports){
+},{"array-filter":7,"array-foreach":8,"array-map":9,"array-reduce":10,"deep-equal":11,"esprima":14,"espurify":15,"estraverse":19,"indexof":20}],7:[function(_dereq_,module,exports){
+
+/**
+ * Array#filter.
+ *
+ * @param {Array} arr
+ * @param {Function} fn
+ * @param {Object=} self
+ * @return {Array}
+ * @throw TypeError
+ */
+
+module.exports = function (arr, fn, self) {
+  if (arr.filter) return arr.filter(fn);
+  if (void 0 === arr || null === arr) throw new TypeError;
+  if ('function' != typeof fn) throw new TypeError;
+  var ret = [];
+  for (var i = 0; i < arr.length; i++) {
+    if (!hasOwn.call(arr, i)) continue;
+    var val = arr[i];
+    if (fn.call(self, val, i, arr)) ret.push(val);
+  }
+  return ret;
+};
+
+var hasOwn = Object.prototype.hasOwnProperty;
+
+},{}],8:[function(_dereq_,module,exports){
+/**
+ * array-foreach
+ *   Array#forEach ponyfill for older browsers
+ *   (Ponyfill: A polyfill that doesn't overwrite the native method)
+ * 
+ * https://github.com/twada/array-foreach
+ *
+ * Copyright (c) 2015 Takuto Wada
+ * Licensed under the MIT license.
+ *   http://twada.mit-license.org/
+ */
+'use strict';
+
+module.exports = function forEach (ary, callback, thisArg) {
+    if (ary.forEach) {
+        ary.forEach(callback, thisArg);
+        return;
+    }
+    for (var i = 0; i < ary.length; i+=1) {
+        callback.call(thisArg, ary[i], i, ary);
+    }
+};
+
+},{}],9:[function(_dereq_,module,exports){
+module.exports = function (xs, f) {
+    if (xs.map) return xs.map(f);
+    var res = [];
+    for (var i = 0; i < xs.length; i++) {
+        var x = xs[i];
+        if (hasOwn.call(xs, i)) res.push(f(x, i, xs));
+    }
+    return res;
+};
+
+var hasOwn = Object.prototype.hasOwnProperty;
+
+},{}],10:[function(_dereq_,module,exports){
+var hasOwn = Object.prototype.hasOwnProperty;
+
+module.exports = function (xs, f, acc) {
+    var hasAcc = arguments.length >= 3;
+    if (hasAcc && xs.reduce) return xs.reduce(f, acc);
+    if (xs.reduce) return xs.reduce(f);
+    
+    for (var i = 0; i < xs.length; i++) {
+        if (!hasOwn.call(xs, i)) continue;
+        if (!hasAcc) {
+            acc = xs[i];
+            hasAcc = true;
+            continue;
+        }
+        acc = f(acc, xs[i], i);
+    }
+    return acc;
+};
+
+},{}],11:[function(_dereq_,module,exports){
 var pSlice = Array.prototype.slice;
 var objectKeys = _dereq_('./lib/keys.js');
 var isArguments = _dereq_('./lib/is_arguments.js');
@@ -602,10 +691,10 @@ function objEquiv(a, b, opts) {
     key = ka[i];
     if (!deepEqual(a[key], b[key], opts)) return false;
   }
-  return true;
+  return typeof a === typeof b;
 }
 
-},{"./lib/is_arguments.js":8,"./lib/keys.js":9}],8:[function(_dereq_,module,exports){
+},{"./lib/is_arguments.js":12,"./lib/keys.js":13}],12:[function(_dereq_,module,exports){
 var supportsArgumentsClass = (function(){
   return Object.prototype.toString.call(arguments)
 })() == '[object Arguments]';
@@ -627,7 +716,7 @@ function unsupported(object){
     false;
 };
 
-},{}],9:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 exports = module.exports = typeof Object.keys === 'function'
   ? Object.keys : shim;
 
@@ -638,7 +727,7 @@ function shim (obj) {
   return keys;
 }
 
-},{}],10:[function(_dereq_,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 /*
   Copyright (C) 2013 Ariya Hidayat <ariya.hidayat@gmail.com>
   Copyright (C) 2013 Thaddee Tyl <thaddee.tyl@gmail.com>
@@ -1477,6 +1566,24 @@ parseStatement: true, parseSourceElement: true */
         };
     }
 
+    function isImplicitOctalLiteral() {
+        var i, ch;
+
+        // Implicit octal, unless there is a non-octal digit.
+        // (Annex B.1.1 on Numeric Literals)
+        for (i = index + 1; i < length; ++i) {
+            ch = source[i];
+            if (ch === '8' || ch === '9') {
+                return false;
+            }
+            if (!isOctalDigit(ch)) {
+                return true;
+            }
+        }
+
+        return true;
+    }
+
     function scanNumericLiteral() {
         var number, start, ch;
 
@@ -1498,12 +1605,9 @@ parseStatement: true, parseSourceElement: true */
                     return scanHexLiteral(start);
                 }
                 if (isOctalDigit(ch)) {
-                    return scanOctalLiteral(start);
-                }
-
-                // decimal number starts with '0' such as '09' is illegal.
-                if (ch && isDecimalDigit(ch.charCodeAt(0))) {
-                    throwError({}, Messages.UnexpectedToken, 'ILLEGAL');
+                    if (isImplicitOctalLiteral()) {
+                        return scanOctalLiteral(start);
+                    }
                 }
             }
 
@@ -1901,7 +2005,7 @@ parseStatement: true, parseSourceElement: true */
             }
             return collectRegex();
         }
-        if (prevToken.type === 'Keyword') {
+        if (prevToken.type === 'Keyword' && prevToken.value !== 'this') {
             return collectRegex();
         }
         return scanPunctuator();
@@ -2586,7 +2690,8 @@ parseStatement: true, parseSourceElement: true */
     }
 
     function consumeSemicolon() {
-        var line;
+        var line, oldIndex = index, oldLineNumber = lineNumber,
+            oldLineStart = lineStart, oldLookahead = lookahead;
 
         // Catch the very common case first: immediately a semicolon (U+003B).
         if (source.charCodeAt(index) === 0x3B || match(';')) {
@@ -2597,6 +2702,10 @@ parseStatement: true, parseSourceElement: true */
         line = lineNumber;
         skipComment();
         if (lineNumber !== line) {
+            index = oldIndex;
+            lineNumber = oldLineNumber;
+            lineStart = oldLineStart;
+            lookahead = oldLookahead;
             return;
         }
 
@@ -2907,14 +3016,11 @@ parseStatement: true, parseSourceElement: true */
     }
 
     function parseLeftHandSideExpressionAllowCall() {
-        var previousAllowIn, expr, args, property, startToken;
+        var expr, args, property, startToken, previousAllowIn = state.allowIn;
 
         startToken = lookahead;
-
-        previousAllowIn = state.allowIn;
         state.allowIn = true;
         expr = matchKeyword('new') ? parseNewExpression() : parsePrimaryExpression();
-        state.allowIn = previousAllowIn;
 
         for (;;) {
             if (match('.')) {
@@ -2931,18 +3037,18 @@ parseStatement: true, parseSourceElement: true */
             }
             delegate.markEnd(expr, startToken);
         }
+        state.allowIn = previousAllowIn;
 
         return expr;
     }
 
     function parseLeftHandSideExpression() {
-        var previousAllowIn, expr, property, startToken;
+        var expr, property, startToken;
+        assert(state.allowIn, 'callee of new expression always allow in keyword.');
 
         startToken = lookahead;
 
-        previousAllowIn = state.allowIn;
         expr = matchKeyword('new') ? parseNewExpression() : parsePrimaryExpression();
-        state.allowIn = previousAllowIn;
 
         while (match('.') || match('[')) {
             if (match('[')) {
@@ -2954,7 +3060,6 @@ parseStatement: true, parseSourceElement: true */
             }
             delegate.markEnd(expr, startToken);
         }
-
         return expr;
     }
 
@@ -3457,7 +3562,7 @@ parseStatement: true, parseSourceElement: true */
     }
 
     function parseForStatement() {
-        var init, test, update, left, right, body, oldInIteration;
+        var init, test, update, left, right, body, oldInIteration, previousAllowIn = state.allowIn;
 
         init = test = update = null;
 
@@ -3471,7 +3576,7 @@ parseStatement: true, parseSourceElement: true */
             if (matchKeyword('var') || matchKeyword('let')) {
                 state.allowIn = false;
                 init = parseForVariableDeclaration();
-                state.allowIn = true;
+                state.allowIn = previousAllowIn;
 
                 if (init.declarations.length === 1 && matchKeyword('in')) {
                     lex();
@@ -3482,7 +3587,7 @@ parseStatement: true, parseSourceElement: true */
             } else {
                 state.allowIn = false;
                 init = parseExpression();
-                state.allowIn = true;
+                state.allowIn = previousAllowIn;
 
                 if (matchKeyword('in')) {
                     // LeftHandSideExpression
@@ -4365,7 +4470,7 @@ parseStatement: true, parseSourceElement: true */
     }
 
     // Sync with *.json manifests.
-    exports.version = '1.2.2';
+    exports.version = '1.2.5';
 
     exports.tokenize = tokenize;
 
@@ -4396,19 +4501,20 @@ parseStatement: true, parseSourceElement: true */
 }));
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],11:[function(_dereq_,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 /**
  * espurify - Clone new AST without extra properties
  * 
- * https://github.com/twada/espurify
+ * https://github.com/estools/espurify
  *
- * Copyright (c) 2014 Takuto Wada
+ * Copyright (c) 2014-2015 Takuto Wada
  * Licensed under the MIT license.
- *   http://twada.mit-license.org/
+ *   https://github.com/estools/espurify/blob/master/MIT-LICENSE.txt
  */
 'use strict';
 
 var traverse = _dereq_('traverse'),
+    indexOf = _dereq_('indexof'),
     deepCopy = _dereq_('./lib/ast-deepcopy'),
     astProps = _dereq_('./lib/ast-properties'),
     hasOwn = Object.prototype.hasOwnProperty;
@@ -4433,12 +4539,12 @@ function isSupportedNodeType (type) {
 }
 
 function isSupportedKey (type, key) {
-    return astProps[type].indexOf(key) !== -1;
+    return indexOf(astProps[type], key) !== -1;
 }
 
 module.exports = espurify;
 
-},{"./lib/ast-deepcopy":12,"./lib/ast-properties":13,"traverse":14}],12:[function(_dereq_,module,exports){
+},{"./lib/ast-deepcopy":16,"./lib/ast-properties":17,"indexof":20,"traverse":18}],16:[function(_dereq_,module,exports){
 /**
  * Copyright (C) 2012 Yusuke Suzuki (twitter: @Constellation) and other contributors.
  * Released under the BSD license.
@@ -4453,7 +4559,7 @@ var isArray = Array.isArray || function isArray (array) {
 function deepCopyInternal (obj, result) {
     var key, val;
     for (key in obj) {
-        if (key.lastIndexOf('__', 0) === 0) {
+        if (key.lastIndexOf('_', 0) === 0) {
             continue;
         }
         if (obj.hasOwnProperty(key)) {
@@ -4477,50 +4583,66 @@ function deepCopy (obj) {
 
 module.exports = deepCopy;
 
-},{}],13:[function(_dereq_,module,exports){
+},{}],17:[function(_dereq_,module,exports){
 module.exports = {
-    AssignmentExpression: ['type', 'operator', 'left', 'right'],
     ArrayExpression: ['type', 'elements'],
     ArrayPattern: ['type', 'elements'],
-    // ArrowFunctionExpression: ['type', 'params', 'defaults', 'rest', 'body', 'generator', 'expression'],
-    BlockStatement: ['type', 'body'],
+    ArrowFunctionExpression: ['type', 'id', 'params', 'body', 'generator', 'expression'],
+    AssignmentExpression: ['type', 'operator', 'left', 'right'],
+    AssignmentPattern: ['type', 'left', 'right'],
     BinaryExpression: ['type', 'operator', 'left', 'right'],
+    BlockStatement: ['type', 'body'],
     BreakStatement: ['type', 'label'],
     CallExpression: ['type', 'callee', 'arguments'],
     CatchClause: ['type', 'param', 'guard', 'body'],
-    // ClassBody: ['type', 'body'],
-    // ClassDeclaration: ['type', 'id', 'body', 'superClass'],
-    // ClassExpression: ['type', 'id', 'body', 'superClass'],
-    ConditionalExpression: ['type', 'test', 'consequent', 'alternate'],
+    ClassBody: ['type', 'body'],
+    ClassDeclaration: ['type', 'id', 'superClass', 'body'],
+    ClassExpression: ['type', 'id', 'superClass', 'body'],
+    ConditionalExpression: ['type', 'test', 'alternate', 'consequent'],
     ContinueStatement: ['type', 'label'],
     DebuggerStatement: ['type'],
-    // DirectiveStatement: ['type'],
     DoWhileStatement: ['type', 'body', 'test'],
     EmptyStatement: ['type'],
+    ExportAllDeclaration: ['type', 'source'],
+    ExportDefaultDeclaration: ['type', 'declaration'],
+    ExportNamedDeclaration: ['type', 'declaration', 'specifiers', 'source'],
+    ExportSpecifier: ['type', 'exported', 'local'],
     ExpressionStatement: ['type', 'expression'],
+    ForInStatement: ['type', 'left', 'right', 'body'],
+    ForOfStatement: ['type', 'left', 'right', 'body'],
     ForStatement: ['type', 'init', 'test', 'update', 'body'],
-    ForInStatement: ['type', 'left', 'right', 'body', 'each'],
-    FunctionDeclaration: ['type', 'id', 'params', 'defaults', 'rest', 'body', 'generator', 'expression'],
-    FunctionExpression: ['type', 'id', 'params', 'defaults', 'rest', 'body', 'generator', 'expression'],
+    FunctionDeclaration: ['type', 'id', 'params', 'body', 'generator'],
+    FunctionExpression: ['type', 'id', 'params', 'body', 'generator'],
     Identifier: ['type', 'name'],
     IfStatement: ['type', 'test', 'consequent', 'alternate'],
-    Literal: ['type', 'value'],
+    ImportDeclaration: ['type', 'specifiers', 'source'],
+    ImportDefaultSpecifier: ['type', 'local'],
+    ImportNamespaceSpecifier: ['type', 'local'],
+    ImportSpecifier: ['type', 'imported', 'local'],
     LabeledStatement: ['type', 'label', 'body'],
+    Literal: ['type', 'value', 'regex'],
     LogicalExpression: ['type', 'operator', 'left', 'right'],
     MemberExpression: ['type', 'object', 'property', 'computed'],
-    // MethodDefinition: ['type', 'key', 'value'],
+    MetaProperty: ['type', 'meta', 'property'],
+    MethodDefinition: ['type', 'key', 'value', 'kind', 'computed', 'static'],
     NewExpression: ['type', 'callee', 'arguments'],
     ObjectExpression: ['type', 'properties'],
     ObjectPattern: ['type', 'properties'],
-    Program: ['type', 'body'],
-    Property: ['type', 'key', 'value', 'kind'],
+    Program: ['type', 'body', 'sourceType'],
+    Property: ['type', 'key', 'value', 'kind', 'method', 'shorthand', 'computed'],
+    RestElement: ['type', 'argument'],
     ReturnStatement: ['type', 'argument'],
     SequenceExpression: ['type', 'expressions'],
-    SwitchStatement: ['type', 'discriminant', 'cases', 'lexical'],
+    SpreadElement: ['type', 'argument'],
+    Super: ['type'],
     SwitchCase: ['type', 'test', 'consequent'],
+    SwitchStatement: ['type', 'discriminant', 'cases', 'lexical'],
+    TaggedTemplateExpression: ['type', 'tag', 'quasi'],
+    TemplateElement: ['type', 'tail', 'value'],
+    TemplateLiteral: ['type', 'quasis', 'expressions'],
     ThisExpression: ['type'],
     ThrowStatement: ['type', 'argument'],
-    TryStatement: ['type', 'block', 'handlers', 'handler', 'guardedHandlers', 'finalizer'],
+    TryStatement: ['type', 'block', 'handler', 'finalizer'],
     UnaryExpression: ['type', 'operator', 'prefix', 'argument'],
     UpdateExpression: ['type', 'operator', 'argument', 'prefix'],
     VariableDeclaration: ['type', 'declarations', 'kind'],
@@ -4530,7 +4652,7 @@ module.exports = {
     YieldExpression: ['type', 'argument']
 };
 
-},{}],14:[function(_dereq_,module,exports){
+},{}],18:[function(_dereq_,module,exports){
 var traverse = module.exports = function (obj) {
     return new Traverse(obj);
 };
@@ -4846,7 +4968,7 @@ var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
     return key in obj;
 };
 
-},{}],15:[function(_dereq_,module,exports){
+},{}],19:[function(_dereq_,module,exports){
 /*
   Copyright (C) 2012-2013 Yusuke Suzuki <utatane.tea@gmail.com>
   Copyright (C) 2012 Ariya Hidayat <ariya.hidayat@gmail.com>
@@ -4886,7 +5008,7 @@ var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
     } else {
         factory((root.estraverse = {}));
     }
-}(this, function (exports) {
+}(this, function clone(exports) {
     'use strict';
 
     var Syntax,
@@ -4994,9 +5116,11 @@ var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
     };
 
     function extend(to, from) {
-        objectKeys(from).forEach(function (key) {
+        var keys = objectKeys(from), key, i, len;
+        for (i = 0, len = keys.length; i < len; i += 1) {
+            key = keys[i];
             to[key] = from[key];
-        });
+        }
         return to;
     }
 
@@ -5005,6 +5129,7 @@ var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
         ArrayExpression: 'ArrayExpression',
         ArrayPattern: 'ArrayPattern',
         ArrowFunctionExpression: 'ArrowFunctionExpression',
+        AwaitExpression: 'AwaitExpression', // CAUTION: It's deferred to ES7.
         BlockStatement: 'BlockStatement',
         BinaryExpression: 'BinaryExpression',
         BreakStatement: 'BreakStatement',
@@ -5073,6 +5198,7 @@ var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
         ArrayExpression: ['elements'],
         ArrayPattern: ['elements'],
         ArrowFunctionExpression: ['params', 'defaults', 'rest', 'body'],
+        AwaitExpression: ['argument'], // CAUTION: It's deferred to ES7.
         BlockStatement: ['body'],
         BinaryExpression: ['left', 'right'],
         BreakStatement: ['label'],
@@ -5203,6 +5329,13 @@ var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
         }
         addToPath(result, this.__current.path);
         return result;
+    };
+
+    // API:
+    // return type of current node
+    Controller.prototype.type = function () {
+        var node = this.current();
+        return node.type || this.__current.wrap;
     };
 
     // API:
@@ -5668,7 +5801,7 @@ var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
         return tree;
     }
 
-    exports.version = '1.7.1';
+    exports.version = '1.8.1-dev';
     exports.Syntax = Syntax;
     exports.traverse = traverse;
     exports.replace = replace;
@@ -5676,10 +5809,24 @@ var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
     exports.VisitorKeys = VisitorKeys;
     exports.VisitorOption = VisitorOption;
     exports.Controller = Controller;
+    exports.cloneEnvironment = function () { return clone({}); };
+
+    return exports;
 }));
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],16:[function(_dereq_,module,exports){
+},{}],20:[function(_dereq_,module,exports){
+
+var indexOf = [].indexOf;
+
+module.exports = function(arr, obj){
+  if (indexOf) return arr.indexOf(obj);
+  for (var i = 0; i < arr.length; ++i) {
+    if (arr[i] === obj) return i;
+  }
+  return -1;
+};
+},{}],21:[function(_dereq_,module,exports){
 module.exports = extend
 
 function extend(target) {
