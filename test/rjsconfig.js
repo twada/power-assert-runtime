@@ -1,7 +1,9 @@
 var require = {
     paths: {
         empower: "../build/empower",
-        "espower-source": "../bower_components/espower-source/build/espower-source",
+        acorn: '../node_modules/acorn/dist/acorn',
+        escodegen: '../bower_components/escodegen/escodegen.browser',
+        espower: "../node_modules/espower/build/espower",
         assert: "../bower_components/assert/assert",
         mocha: "../bower_components/mocha/mocha",
         requirejs: "../bower_components/requirejs/require",

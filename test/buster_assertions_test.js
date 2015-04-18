@@ -1,22 +1,32 @@
 (function (root, factory) {
     'use strict';
     if (typeof define === 'function' && define.amd) {
-        define(['empower', 'espower-source', 'assert', 'buster-assertions'], factory);
+        define(['empower', 'espower', 'acorn', 'escodegen', 'assert', 'buster-assertions'], factory);
     } else if (typeof exports === 'object') {
-        factory(require('..'), require('espower-source'), require('assert'), require('buster-assertions'));
+        factory(require('..'), require('espower'), require('acorn'), require('escodegen'), require('assert'), require('buster-assertions'));
     } else {
-        factory(root.empower, root.espowerSource, root.assert, root.buster);
+        factory(root.empower, root.espower, root.acorn, root.escodegen, root.assert, root.buster);
     }
 }(this, function (
     empower,
-    espowerSource,
+    espower,
+    acorn,
+    escodegen,
     baseAssert,
     busterAssertions
 ) {
+
+// see: https://github.com/Constellation/escodegen/issues/115
+if (typeof define === 'function' && define.amd) {
+    escodegen = window.escodegen;
+}
+
     var weave = function (line) {
-        var options = {
-            destructive: false,
-            path: '/path/to/some_test.js',
+        var filepath = '/path/to/some_test.js';
+        var espowerOptions = {
+            source: line,
+            path: filepath,
+            destructive: true,
             patterns: [
                 'assert(actual, [message])',
                 'assert.isNull(object, [message])',
@@ -24,7 +34,9 @@
                 'assert.near(actual, expected, delta, [message])'
             ]
         };
-        return espowerSource(line, '/path/to/some_test.js', options);
+        var jsAST = acorn.parse(line, {ecmaVersion: 6, locations: true, sourceType: 'module', sourceFile: filepath});
+        var espoweredAST = espower(jsAST, espowerOptions);
+        return escodegen.generate(espoweredAST, {format: {compact: true}});
     },
     fakeFormatter = function (context) {
         var events = context.args.reduce(function (accum, arg) {
@@ -53,12 +65,12 @@
             eval(weave('assert(falsy);'));
             baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
-            baseAssert.equal(e.name, 'AssertionError');
             baseAssert.equal(e.message, [
                 '/path/to/some_test.js',
                 'assert(falsy)',
                 '[{"value":0,"espath":"arguments/0"}]'
             ].join('\n'));
+            baseAssert.equal(e.name, 'AssertionError');
         }
     });
 
@@ -70,12 +82,12 @@
                 eval(weave('assert.isNull(falsy);'));
                 baseAssert.ok(false, 'AssertionError should be thrown');
             } catch (e) {
-                baseAssert.equal(e.name, 'AssertionError');
                 baseAssert.equal(e.message, [
                     '[assert.isNull] /path/to/some_test.js',
                     'assert.isNull(falsy)',
                     '[{"value":0,"espath":"arguments/0"}]: Expected 0 to be null'
                 ].join('\n'));
+                baseAssert.equal(e.name, 'AssertionError');
             }
         });
     });
@@ -88,12 +100,12 @@
                 eval(weave('assert.same(foo, bar);'));
                 baseAssert.ok(false, 'AssertionError should be thrown');
             } catch (e) {
-                baseAssert.equal(e.name, 'AssertionError');
                 baseAssert.equal(e.message, [
                     '[assert.same] /path/to/some_test.js',
                     'assert.same(foo, bar)',
                     '[{"value":"foo","espath":"arguments/0"},{"value":"bar","espath":"arguments/1"}]: foo expected to be the same object as bar'
                 ].join('\n'));
+                baseAssert.equal(e.name, 'AssertionError');
             }
         });
 
@@ -103,12 +115,12 @@
                 eval(weave('assert.same("foo", bar);'));
                 baseAssert.ok(false, 'AssertionError should be thrown');
             } catch (e) {
-                baseAssert.equal(e.name, 'AssertionError');
                 baseAssert.equal(e.message, [
                     '[assert.same] /path/to/some_test.js',
                     'assert.same("foo", bar)',
                     '[{"value":"bar","espath":"arguments/1"}]: foo expected to be the same object as bar'
                 ].join('\n'));
+                baseAssert.equal(e.name, 'AssertionError');
             }
         });
 
@@ -118,12 +130,12 @@
                 eval(weave('assert.same(foo, "bar");'));
                 baseAssert.ok(false, 'AssertionError should be thrown');
             } catch (e) {
-                baseAssert.equal(e.name, 'AssertionError');
                 baseAssert.equal(e.message, [
                     '[assert.same] /path/to/some_test.js',
                     'assert.same(foo, "bar")',
                     '[{"value":"foo","espath":"arguments/0"}]: foo expected to be the same object as bar'
                 ].join('\n'));
+                baseAssert.equal(e.name, 'AssertionError');
             }
         });
     });
@@ -136,12 +148,12 @@
                 eval(weave('assert.near(actualVal, expectedVal, delta);'));
                 baseAssert.ok(false, 'AssertionError should be thrown');
             } catch (e) {
-                baseAssert.equal(e.name, 'AssertionError');
                 baseAssert.equal(e.message, [
                     '[assert.near] /path/to/some_test.js',
                     'assert.near(actualVal, expectedVal, delta)',
                     '[{"value":10.6,"espath":"arguments/0"},{"value":10,"espath":"arguments/1"},{"value":0.5,"espath":"arguments/2"}]: Expected 10.6 to be equal to 10 +/- 0.5'
                 ].join('\n'));
+                baseAssert.equal(e.name, 'AssertionError');
             }
         });
 
@@ -151,12 +163,12 @@
                 eval(weave('assert.near(actualVal, expectedVal, delta, messageStr);'));
                 baseAssert.ok(false, 'AssertionError should be thrown');
             } catch (e) {
-                baseAssert.equal(e.name, 'AssertionError');
                 baseAssert.equal(e.message, [
                     '[assert.near] not in delta /path/to/some_test.js',
                     'assert.near(actualVal, expectedVal, delta, messageStr)',
                     '[{"value":10.6,"espath":"arguments/0"},{"value":10,"espath":"arguments/1"},{"value":0.5,"espath":"arguments/2"}]: Expected 10.6 to be equal to 10 +/- 0.5'
                 ].join('\n'));
+                baseAssert.equal(e.name, 'AssertionError');
             }
         });
     });

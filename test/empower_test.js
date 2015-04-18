@@ -1,19 +1,38 @@
 (function (root, factory) {
     'use strict';
     if (typeof define === 'function' && define.amd) {
-        define(['empower', 'espower-source', 'assert'], factory);
+        define(['empower', 'espower', 'acorn', 'escodegen', 'assert'], factory);
     } else if (typeof exports === 'object') {
-        factory(require('..'), require('espower-source'), require('assert'));
+        factory(require('..'), require('espower'), require('acorn'), require('escodegen'), require('assert'));
     } else {
-        factory(root.empower, root.espowerSource, root.assert);
+        factory(root.empower, root.espower, root.acorn, root.escodegen, root.assert);
     }
 }(this, function (
     empower,
-    espowerSource,
+    espower,
+    acorn,
+    escodegen,
     baseAssert
 ) {
-    var weave = function (line) {
-        return espowerSource(line, '/path/to/some_test.js');
+
+// see: https://github.com/Constellation/escodegen/issues/115
+if (typeof define === 'function' && define.amd) {
+    escodegen = window.escodegen;
+}
+
+    var weave = function (line, patterns) {
+        var filepath = '/path/to/some_test.js';
+        var espowerOptions = {
+            source: line,
+            path: filepath,
+            destructive: true
+        };
+        if (patterns) {
+            espowerOptions.patterns = patterns;
+        }
+        var jsAST = acorn.parse(line, {ecmaVersion: 6, locations: true, sourceType: 'module', sourceFile: filepath});
+        var espoweredAST = espower(jsAST, espowerOptions);
+        return escodegen.generate(espoweredAST, {format: {compact: true}});
     },
     fakeFormatter = function (context) {
         var events = context.args.reduce(function (accum, arg) {
@@ -28,9 +47,6 @@
 
 
 test('default options behavior', function () {
-    var weave = function (line) {
-        return espowerSource(line, '/path/to/some_test.js');
-    };
     var assert = empower(baseAssert, fakeFormatter);
 
     var falsy = 0;
@@ -38,12 +54,12 @@ test('default options behavior', function () {
         eval(weave('assert(falsy);'));
         baseAssert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
-        baseAssert.equal(e.name, 'AssertionError');
         baseAssert.equal(e.message, [
             '/path/to/some_test.js',
             'assert(falsy)',
             '[{"value":0,"espath":"arguments/0"}]'
         ].join('\n'));
+        baseAssert.equal(e.name, 'AssertionError');
     }
 });
 
@@ -58,7 +74,6 @@ test('Bug reproduction. should not fail if argument is null Literal. ' + JSON.st
         eval(weave('assert.equal(foo, null);'));
         baseAssert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
-        baseAssert.equal(e.name, 'AssertionError');
         if (option.modifyMessageOnRethrow) {
             baseAssert.equal(e.message, [
                 '/path/to/some_test.js',
@@ -81,6 +96,7 @@ test('Bug reproduction. should not fail if argument is null Literal. ' + JSON.st
                 ]
             });
         }
+        baseAssert.equal(e.name, 'AssertionError');
     }
 });
 
@@ -91,7 +107,6 @@ test('assertion with optional message argument. ' + JSON.stringify(option), func
         eval(weave('assert(falsy, "assertion message");'));
         baseAssert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
-        baseAssert.equal(e.name, 'AssertionError');
         if (option.modifyMessageOnRethrow) {
             baseAssert.equal(e.message, [
                 'assertion message /path/to/some_test.js',
@@ -116,6 +131,7 @@ test('assertion with optional message argument. ' + JSON.stringify(option), func
                 ]
             });
         }
+        baseAssert.equal(e.name, 'AssertionError');
     }
 });
 
@@ -126,7 +142,6 @@ test(JSON.stringify(option) + ' empowered function also acts like an assert func
         eval(weave('assert(falsy);'));
         baseAssert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
-        baseAssert.equal(e.name, 'AssertionError');
         if (option.modifyMessageOnRethrow) {
             baseAssert.equal(e.message, [
                 '/path/to/some_test.js',
@@ -151,6 +166,7 @@ test(JSON.stringify(option) + ' empowered function also acts like an assert func
                 ]
             });
         }
+        baseAssert.equal(e.name, 'AssertionError');
     }
 });
 
@@ -162,7 +178,6 @@ suite(JSON.stringify(option) + ' assertion method with one argument', function (
             eval(weave('assert.ok(falsy);'));
             baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
-            baseAssert.equal(e.name, 'AssertionError');
             if (option.modifyMessageOnRethrow) {
                 baseAssert.equal(e.message, [
                     '/path/to/some_test.js',
@@ -187,6 +202,7 @@ suite(JSON.stringify(option) + ' assertion method with one argument', function (
                     ]
                 });
             }
+            baseAssert.equal(e.name, 'AssertionError');
         }
     });
 });
@@ -199,7 +215,6 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
             eval(weave('assert.equal(foo, bar);'));
             baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
-            baseAssert.equal(e.name, 'AssertionError');
             if (option.modifyMessageOnRethrow) {
                 baseAssert.equal(e.message, [
                     '/path/to/some_test.js',
@@ -226,6 +241,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
                     ]
                 });
             }
+            baseAssert.equal(e.name, 'AssertionError');
         }
     });
 
@@ -235,7 +251,6 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
             eval(weave('assert.equal("foo", bar);'));
             baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
-            baseAssert.equal(e.name, 'AssertionError');
             if (option.modifyMessageOnRethrow) {
                 baseAssert.equal(e.message, [
                     '/path/to/some_test.js',
@@ -258,6 +273,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
                     ]
                 });
             }
+            baseAssert.equal(e.name, 'AssertionError');
         }
     });
 
@@ -267,7 +283,6 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
             eval(weave('assert.equal(foo, "bar");'));
             baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
-            baseAssert.equal(e.name, 'AssertionError');
             if (option.modifyMessageOnRethrow) {
                 baseAssert.equal(e.message, [
                     '/path/to/some_test.js',
@@ -290,6 +305,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
                     ]
                 });
             }
+            baseAssert.equal(e.name, 'AssertionError');
         }
     });
 });
@@ -328,18 +344,15 @@ test('the case when assertion function call is not listed in patterns (even if m
         'assert.deepEqual(actual, expected, [message])',
         'assert.notDeepEqual(actual, expected, [message])'
     ];
-    var weave = function (line) {
-        return espowerSource(line, '/path/to/some_test.js', { patterns: patterns });
-    };
     var assert = empower(baseAssert, fakeFormatter, { patterns: patterns });
 
     var falsy = 0;
     try {
-        eval(weave('assert(falsy);'));
+        eval(weave('assert(falsy);', patterns));
         baseAssert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
-        baseAssert.equal(e.name, 'AssertionError');
         baseAssert.equal(e.message, '0 == true', 'should not be empowered');
+        baseAssert.equal(e.name, 'AssertionError');
     }
 });
 
