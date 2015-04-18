@@ -1,13 +1,14 @@
 empower
 ================================
 
-[![Build Status](https://travis-ci.org/twada/empower.svg?branch=master)](https://travis-ci.org/twada/empower)
-[![NPM version](https://badge.fury.io/js/empower.svg)](http://badge.fury.io/js/empower)
-[![Dependency Status](https://gemnasium.com/twada/empower.svg)](https://gemnasium.com/twada/empower)
-[![Coverage Status](https://coveralls.io/repos/twada/empower/badge.png?branch=master)](https://coveralls.io/r/twada/empower?branch=master)
-[![Code Climate](https://codeclimate.com/github/twada/empower/badges/gpa.svg)](https://codeclimate.com/github/twada/empower)
-[![License](http://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/twada/empower/blob/master/MIT-LICENSE.txt)
-[![Built with Gulp](http://img.shields.io/badge/built_with-gulp-brightgreen.svg)](http://gulpjs.com/)
+[![Build Status][travis-image]][travis-url]
+[![NPM package][npm-image]][npm-url]
+[![Bower package][bower-image]][bower-url]
+[![Dependency Status][depstat-image]][depstat-url]
+[![Coverage Status][coverage-image]][coverage-url]
+[![Code Climate][codeclimate-image]][codeclimate-url]
+[![License][license-image]][license-url]
+[![Built with Gulp][gulp-image]][gulp-url]
 
 
 Power Assert feature enhancer for assert function/object.
@@ -197,3 +198,28 @@ AUTHOR
 LICENSE
 ---------------------------------------
 Licensed under the [MIT](https://github.com/twada/empower/blob/master/MIT-LICENSE.txt) license.
+
+
+[npm-url]: https://npmjs.org/package/empower
+[npm-image]: https://badge.fury.io/js/empower.svg
+
+[bower-url]: http://badge.fury.io/bo/empower
+[bower-image]: https://badge.fury.io/bo/empower.svg
+
+[travis-url]: http://travis-ci.org/twada/empower
+[travis-image]: https://secure.travis-ci.org/twada/empower.svg?branch=master
+
+[depstat-url]: https://gemnasium.com/twada/empower
+[depstat-image]: https://gemnasium.com/twada/empower.svg
+
+[license-url]: https://github.com/twada/empower/blob/master/MIT-LICENSE.txt
+[license-image]: http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat
+
+[codeclimate-url]: https://codeclimate.com/github/twada/empower
+[codeclimate-image]: https://codeclimate.com/github/twada/empower/badges/gpa.svg
+
+[coverage-url]: https://coveralls.io/r/twada/empower?branch=master
+[coverage-image]: https://coveralls.io/repos/twada/empower/badge.svg?branch=master
+
+[gulp-url]: http://gulpjs.com/
+[gulp-image]: http://img.shields.io/badge/built_with-gulp-brightgreen.svg
