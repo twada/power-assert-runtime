@@ -1,3 +1,12 @@
+## [0.11.0](https://github.com/twada/empower/releases/tag/v0.11.0) (2015-04-18)
+
+
+#### Features
+
+* **empower:**
+  * ship npm module with built bundle for browsers ([e9448d3b](https://github.com/twada/empower/commit/e9448d3bfd4b44e64810cb2d1e18d6a4e2c6ba4b))
+
+
 ## [0.10.0](https://github.com/twada/empower/releases/tag/v0.10.0) (2014-11-11)
 
 
