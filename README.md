@@ -179,6 +179,13 @@ Install
     $ npm install --save-dev empower
 
 
+#### use empower npm module on browser
+
+`empower` function is exported
+
+    <script type="text/javascript" src="./path/to/node_modules/empower/build/empower.js"></script>
+
+
 ### via bower
 
 Install
