@@ -9,6 +9,7 @@
  */
 var defaultOptions = require('./lib/default-options'),
     Decorator = require('./lib/decorator'),
+    create = require('object-create'),
     slice = Array.prototype.slice,
     extend = require('xtend/mutable');
 
@@ -40,7 +41,7 @@ function empower (assert, formatter, options) {
 }
 
 function empowerAssertObject (assertObject, formatter, config) {
-    var target = config.destructive ? assertObject : Object.create(assertObject);
+    var target = config.destructive ? assertObject : create(assertObject);
     var decorator = new Decorator(target, formatter, config);
     return extend(target, decorator.enhancement());
 }
