@@ -8,10 +8,11 @@
  * Licensed under the MIT license.
  *   https://github.com/twada/empower/blob/master/MIT-LICENSE.txt
  */
-var defaultOptions = _dereq_('./lib/default-options'),
-    Decorator = _dereq_('./lib/decorator'),
-    slice = Array.prototype.slice,
-    extend = _dereq_('xtend/mutable');
+var defaultOptions = _dereq_('./lib/default-options');
+var Decorator = _dereq_('./lib/decorator');
+var create = _dereq_('object-create');
+var slice = Array.prototype.slice;
+var extend = _dereq_('xtend/mutable');
 
 /**
  * Enhance Power Assert feature to assert function/object.
@@ -21,8 +22,8 @@ var defaultOptions = _dereq_('./lib/default-options'),
  * @return enhanced assert function/object
  */
 function empower (assert, formatter, options) {
-    var typeOfAssert = (typeof assert),
-        config;
+    var typeOfAssert = (typeof assert);
+    var config;
     if ((typeOfAssert !== 'object' && typeOfAssert !== 'function') || assert === null) {
         throw new TypeError('empower argument should be a function or object.');
     }
@@ -41,7 +42,7 @@ function empower (assert, formatter, options) {
 }
 
 function empowerAssertObject (assertObject, formatter, config) {
-    var target = config.destructive ? assertObject : Object.create(assertObject);
+    var target = config.destructive ? assertObject : create(assertObject);
     var decorator = new Decorator(target, formatter, config);
     return extend(target, decorator.enhancement());
 }
@@ -73,7 +74,7 @@ function isEmpowered (assertObjectOrFunction) {
 empower.defaultOptions = defaultOptions;
 module.exports = empower;
 
-},{"./lib/decorator":4,"./lib/default-options":5,"xtend/mutable":26}],2:[function(_dereq_,module,exports){
+},{"./lib/decorator":4,"./lib/default-options":5,"object-create":27,"xtend/mutable":33}],2:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function capturable () {
@@ -110,47 +111,48 @@ module.exports = function capturable () {
 'use strict';
 
 var slice = Array.prototype.slice;
+var map = _dereq_('array-map');
+var some = _dereq_('array-some');
 
 function decorate (callSpec, decorator) {
-    var func = callSpec.func,
-        thisObj = callSpec.thisObj,
-        numArgsToCapture = callSpec.numArgsToCapture;
+    var func = callSpec.func;
+    var thisObj = callSpec.thisObj;
+    var numArgsToCapture = callSpec.numArgsToCapture;
 
     return function decoratedAssert () {
         var context, message, args = slice.apply(arguments);
+        if (some(args, isCaptured)) {
+            var values = map(args.slice(0, numArgsToCapture), function (arg) {
+                if (isNotCaptured(arg)) {
+                    return arg;
+                }
+                if (!context) {
+                    context = {
+                        source: arg.source,
+                        args: []
+                    };
+                }
+                context.args.push({
+                    value: arg.powerAssertContext.value,
+                    events: arg.powerAssertContext.events
+                });
+                return arg.powerAssertContext.value;
+            });
 
-        if (args.every(isNotCaptured)) {
+            if (numArgsToCapture === (args.length - 1)) {
+                message = args[args.length - 1];
+            }
+
+            var invocation = {
+                thisObj: thisObj,
+                func: func,
+                values: values,
+                message: message
+            };
+            return decorator.concreteAssert(invocation, context);
+        } else {
             return func.apply(thisObj, args);
         }
-
-        var values = args.slice(0, numArgsToCapture).map(function (arg) {
-            if (isNotCaptured(arg)) {
-                return arg;
-            }
-            if (!context) {
-                context = {
-                    source: arg.source,
-                    args: []
-                };
-            }
-            context.args.push({
-                value: arg.powerAssertContext.value,
-                events: arg.powerAssertContext.events
-            });
-            return arg.powerAssertContext.value;
-        });
-
-        if (numArgsToCapture === (args.length - 1)) {
-            message = args[args.length - 1];
-        }
-
-        var invocation = {
-            thisObj: thisObj,
-            func: func,
-            values: values,
-            message: message
-        };
-        return decorator.concreteAssert(invocation, context);
     };
 }
 
@@ -166,27 +168,30 @@ function isCaptured (value) {
 
 module.exports = decorate;
 
-},{}],4:[function(_dereq_,module,exports){
+},{"array-map":8,"array-some":9}],4:[function(_dereq_,module,exports){
 'use strict';
 
-var escallmatch = _dereq_('escallmatch'),
-    extend = _dereq_('xtend/mutable'),
-    capturable = _dereq_('./capturable'),
-    decorate = _dereq_('./decorate');
+var escallmatch = _dereq_('escallmatch');
+var extend = _dereq_('xtend/mutable');
+var forEach = _dereq_('array-foreach');
+var map = _dereq_('array-map');
+var filter = _dereq_('array-filter');
+var capturable = _dereq_('./capturable');
+var decorate = _dereq_('./decorate');
 
 
 function Decorator (receiver, formatter, config) {
     this.receiver = receiver;
     this.formatter = formatter;
     this.config = config;
-    this.matchers = config.patterns.map(escallmatch);
+    this.matchers = map(config.patterns, escallmatch);
     this.eagerEvaluation = !(config.modifyMessageOnRethrow || config.saveContextOnRethrow);
 }
 
 Decorator.prototype.enhancement = function () {
     var that = this;
     var container = this.container();
-    this.matchers.filter(methodCall).forEach(function (matcher) {
+    forEach(filter(this.matchers, methodCall), function (matcher) {
         var methodName = detectMethodName(matcher.calleeAst());
         if (typeof that.receiver[methodName] === 'function') {
             var callSpec = {
@@ -204,7 +209,7 @@ Decorator.prototype.enhancement = function () {
 Decorator.prototype.container = function () {
     var basement = {};
     if (typeof this.receiver === 'function') {
-        var candidates = this.matchers.filter(functionCall);
+        var candidates = filter(this.matchers, functionCall);
         if (candidates.length === 1) {
             var callSpec = {
                 thisObj: null,
@@ -218,10 +223,10 @@ Decorator.prototype.container = function () {
 };
 
 Decorator.prototype.concreteAssert = function (invocation, context) {
-    var func = invocation.func,
-        thisObj = invocation.thisObj,
-        args = invocation.values,
-        message = invocation.message;
+    var func = invocation.func;
+    var thisObj = invocation.thisObj;
+    var args = invocation.values;
+    var message = invocation.message;
     if (this.eagerEvaluation) {
         var poweredMessage = this.buildPowerAssertText(message, context);
         return func.apply(thisObj, args.concat(poweredMessage));
@@ -260,9 +265,9 @@ Decorator.prototype.buildPowerAssertText = function (message, context) {
 
 
 function numberOfArgumentsToCapture (matcher) {
-    var argSpecs = matcher.argumentSignatures(),
-        len = argSpecs.length,
-        lastArg;
+    var argSpecs = matcher.argumentSignatures();
+    var len = argSpecs.length;
+    var lastArg;
     if (0 < len) {
         lastArg = argSpecs[len - 1];
         if (lastArg.name === 'message' && lastArg.kind === 'optional') {
@@ -293,7 +298,7 @@ function methodCall (matcher) {
 
 module.exports = Decorator;
 
-},{"./capturable":2,"./decorate":3,"escallmatch":6,"xtend/mutable":26}],5:[function(_dereq_,module,exports){
+},{"./capturable":2,"./decorate":3,"array-filter":6,"array-foreach":7,"array-map":8,"escallmatch":10,"xtend/mutable":33}],5:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function defaultOptions () {
@@ -315,6 +320,96 @@ module.exports = function defaultOptions () {
 };
 
 },{}],6:[function(_dereq_,module,exports){
+
+/**
+ * Array#filter.
+ *
+ * @param {Array} arr
+ * @param {Function} fn
+ * @param {Object=} self
+ * @return {Array}
+ * @throw TypeError
+ */
+
+module.exports = function (arr, fn, self) {
+  if (arr.filter) return arr.filter(fn);
+  if (void 0 === arr || null === arr) throw new TypeError;
+  if ('function' != typeof fn) throw new TypeError;
+  var ret = [];
+  for (var i = 0; i < arr.length; i++) {
+    if (!hasOwn.call(arr, i)) continue;
+    var val = arr[i];
+    if (fn.call(self, val, i, arr)) ret.push(val);
+  }
+  return ret;
+};
+
+var hasOwn = Object.prototype.hasOwnProperty;
+
+},{}],7:[function(_dereq_,module,exports){
+/**
+ * array-foreach
+ *   Array#forEach ponyfill for older browsers
+ *   (Ponyfill: A polyfill that doesn't overwrite the native method)
+ * 
+ * https://github.com/twada/array-foreach
+ *
+ * Copyright (c) 2015 Takuto Wada
+ * Licensed under the MIT license.
+ *   http://twada.mit-license.org/
+ */
+'use strict';
+
+module.exports = function forEach (ary, callback, thisArg) {
+    if (ary.forEach) {
+        ary.forEach(callback, thisArg);
+        return;
+    }
+    for (var i = 0; i < ary.length; i+=1) {
+        callback.call(thisArg, ary[i], i, ary);
+    }
+};
+
+},{}],8:[function(_dereq_,module,exports){
+module.exports = function (xs, f) {
+    if (xs.map) return xs.map(f);
+    var res = [];
+    for (var i = 0; i < xs.length; i++) {
+        var x = xs[i];
+        if (hasOwn.call(xs, i)) res.push(f(x, i, xs));
+    }
+    return res;
+};
+
+var hasOwn = Object.prototype.hasOwnProperty;
+
+},{}],9:[function(_dereq_,module,exports){
+/**
+ * array-some
+ *   Array#some ponyfill for older browsers
+ *   (Ponyfill: A polyfill that doesn't overwrite the native method)
+ * 
+ * https://github.com/twada/array-some
+ *
+ * Copyright (c) 2015 Takuto Wada
+ * Licensed under the MIT license.
+ *   http://twada.mit-license.org/
+ */
+'use strict';
+
+module.exports = function some (ary, callback, thisArg) {
+    if (ary.some) {
+        return ary.some(callback, thisArg);
+    }
+    for (var i = 0; i < ary.length; i+=1) {
+        if (callback.call(thisArg, ary[i], i, ary)) {
+            return true;
+        }
+    }
+    return false;
+};
+
+},{}],10:[function(_dereq_,module,exports){
 /**
  * escallmatch:
  *   ECMAScript CallExpression matcher made from function/method signature
@@ -343,20 +438,21 @@ var esprima = _dereq_('esprima'),
     duplicatedArgMessage = 'Duplicate argument name: ',
     invalidFormMessage = 'Argument should be in the form of `name` or `[name]`';
 
-function createMatcher (signatureStr) {
+function createMatcher (signatureStr, options) {
     var ast = extractExpressionFrom(esprima.parse(signatureStr));
-    return new Matcher(ast);
+    return new Matcher(ast, options || {});
 }
 
-function Matcher (signatureAst) {
+function Matcher (signatureAst, options) {
+    this.visitorKeys = options.visitorKeys || estraverse.VisitorKeys;
     this.signatureAst = signatureAst;
-    this.signatureCalleeDepth = astDepth(signatureAst.callee);
+    this.signatureCalleeDepth = astDepth(signatureAst.callee, this.visitorKeys);
     this.numMaxArgs = this.signatureAst.arguments.length;
     this.numMinArgs = filter(this.signatureAst.arguments, identifiers).length;
 }
 
 Matcher.prototype.test = function (currentNode) {
-    var calleeMatched = isCalleeMatched(this.signatureAst, this.signatureCalleeDepth, currentNode),
+    var calleeMatched = this.isCalleeMatched(currentNode),
         numArgs;
     if (calleeMatched) {
         numArgs = currentNode.arguments.length;
@@ -395,6 +491,35 @@ Matcher.prototype.argumentSignatures = function () {
     return map(this.signatureAst.arguments, toArgumentSignature);
 };
 
+Matcher.prototype.isCalleeMatched = function (node) {
+    if (!isCallExpression(node)) {
+        return false;
+    }
+    if (!this.isSameDepthAsSignatureCallee(node.callee)) {
+        return false;
+    }
+    return deepEqual(espurify(this.signatureAst.callee), espurify(node.callee));
+};
+
+Matcher.prototype.isSameDepthAsSignatureCallee = function (ast) {
+    var depth = this.signatureCalleeDepth;
+    var currentDepth = 0;
+    estraverse.traverse(ast, {
+        keys: this.visitorKeys,
+        enter: function (currentNode, parentNode) {
+            var path = this.path(),
+                pathDepth = path ? path.length : 0;
+            if (currentDepth < pathDepth) {
+                currentDepth = pathDepth;
+            }
+            if (depth < currentDepth) {
+                this['break']();
+            }
+        }
+    });
+    return (depth === currentDepth);
+};
+
 function toArgumentSignature (argSignatureNode) {
     switch(argSignatureNode.type) {
     case syntax.Identifier:
@@ -412,36 +537,10 @@ function toArgumentSignature (argSignatureNode) {
     }
 }
 
-function isCalleeMatched(callSignature, signatureCalleeDepth, node) {
-    if (!isCallExpression(node)) {
-        return false;
-    }
-    if (!isSameAstDepth(node.callee, signatureCalleeDepth)) {
-        return false;
-    }
-    return deepEqual(espurify(callSignature.callee), espurify(node.callee));
-}
-
-function isSameAstDepth (ast, depth) {
-    var currentDepth = 0;
-    estraverse.traverse(ast, {
-        enter: function (currentNode, parentNode) {
-            var path = this.path(),
-                pathDepth = path ? path.length : 0;
-            if (currentDepth < pathDepth) {
-                currentDepth = pathDepth;
-            }
-            if (depth < currentDepth) {
-                this['break']();
-            }
-        }
-    });
-    return (depth === currentDepth);
-}
-
-function astDepth (ast) {
+function astDepth (ast, visitorKeys) {
     var maxDepth = 0;
     estraverse.traverse(ast, {
+        keys: visitorKeys,
         enter: function (currentNode, parentNode) {
             var path = this.path(),
                 pathDepth = path ? path.length : 0;
@@ -514,71 +613,7 @@ function extractExpressionFrom (tree) {
 
 module.exports = createMatcher;
 
-},{"array-filter":7,"array-foreach":8,"array-map":9,"array-reduce":10,"deep-equal":11,"esprima":14,"espurify":15,"estraverse":22,"indexof":24}],7:[function(_dereq_,module,exports){
-
-/**
- * Array#filter.
- *
- * @param {Array} arr
- * @param {Function} fn
- * @param {Object=} self
- * @return {Array}
- * @throw TypeError
- */
-
-module.exports = function (arr, fn, self) {
-  if (arr.filter) return arr.filter(fn);
-  if (void 0 === arr || null === arr) throw new TypeError;
-  if ('function' != typeof fn) throw new TypeError;
-  var ret = [];
-  for (var i = 0; i < arr.length; i++) {
-    if (!hasOwn.call(arr, i)) continue;
-    var val = arr[i];
-    if (fn.call(self, val, i, arr)) ret.push(val);
-  }
-  return ret;
-};
-
-var hasOwn = Object.prototype.hasOwnProperty;
-
-},{}],8:[function(_dereq_,module,exports){
-/**
- * array-foreach
- *   Array#forEach ponyfill for older browsers
- *   (Ponyfill: A polyfill that doesn't overwrite the native method)
- * 
- * https://github.com/twada/array-foreach
- *
- * Copyright (c) 2015 Takuto Wada
- * Licensed under the MIT license.
- *   http://twada.mit-license.org/
- */
-'use strict';
-
-module.exports = function forEach (ary, callback, thisArg) {
-    if (ary.forEach) {
-        ary.forEach(callback, thisArg);
-        return;
-    }
-    for (var i = 0; i < ary.length; i+=1) {
-        callback.call(thisArg, ary[i], i, ary);
-    }
-};
-
-},{}],9:[function(_dereq_,module,exports){
-module.exports = function (xs, f) {
-    if (xs.map) return xs.map(f);
-    var res = [];
-    for (var i = 0; i < xs.length; i++) {
-        var x = xs[i];
-        if (hasOwn.call(xs, i)) res.push(f(x, i, xs));
-    }
-    return res;
-};
-
-var hasOwn = Object.prototype.hasOwnProperty;
-
-},{}],10:[function(_dereq_,module,exports){
+},{"array-filter":6,"array-foreach":7,"array-map":8,"array-reduce":11,"deep-equal":12,"esprima":15,"espurify":16,"estraverse":23,"indexof":25}],11:[function(_dereq_,module,exports){
 var hasOwn = Object.prototype.hasOwnProperty;
 
 module.exports = function (xs, f, acc) {
@@ -598,7 +633,7 @@ module.exports = function (xs, f, acc) {
     return acc;
 };
 
-},{}],11:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 var pSlice = Array.prototype.slice;
 var objectKeys = _dereq_('./lib/keys.js');
 var isArguments = _dereq_('./lib/is_arguments.js');
@@ -694,7 +729,7 @@ function objEquiv(a, b, opts) {
   return typeof a === typeof b;
 }
 
-},{"./lib/is_arguments.js":12,"./lib/keys.js":13}],12:[function(_dereq_,module,exports){
+},{"./lib/is_arguments.js":13,"./lib/keys.js":14}],13:[function(_dereq_,module,exports){
 var supportsArgumentsClass = (function(){
   return Object.prototype.toString.call(arguments)
 })() == '[object Arguments]';
@@ -716,7 +751,7 @@ function unsupported(object){
     false;
 };
 
-},{}],13:[function(_dereq_,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 exports = module.exports = typeof Object.keys === 'function'
   ? Object.keys : shim;
 
@@ -727,7 +762,7 @@ function shim (obj) {
   return keys;
 }
 
-},{}],14:[function(_dereq_,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 /*
   Copyright (C) 2013 Ariya Hidayat <ariya.hidayat@gmail.com>
   Copyright (C) 2013 Thaddee Tyl <thaddee.tyl@gmail.com>
@@ -6050,7 +6085,7 @@ function shim (obj) {
 }));
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],15:[function(_dereq_,module,exports){
+},{}],16:[function(_dereq_,module,exports){
 /**
  * espurify - Clone new AST without extra properties
  * 
@@ -6073,7 +6108,7 @@ var espurify = createCloneFunction();
 espurify.customize = createCloneFunction;
 module.exports = espurify;
 
-},{"./lib/clone-ast":17,"./lib/create-whitelist":18}],16:[function(_dereq_,module,exports){
+},{"./lib/clone-ast":18,"./lib/create-whitelist":19}],17:[function(_dereq_,module,exports){
 module.exports = {
     ArrayExpression: ['type', 'elements'],
     ArrayPattern: ['type', 'elements'],
@@ -6142,7 +6177,7 @@ module.exports = {
     YieldExpression: ['type', 'argument']
 };
 
-},{}],17:[function(_dereq_,module,exports){
+},{}],18:[function(_dereq_,module,exports){
 'use strict';
 
 var isArray = _dereq_('isarray');
@@ -6208,7 +6243,7 @@ module.exports = function cloneWithWhitelist (whitelist) {
     return cloneRoot;
 };
 
-},{"isarray":19}],18:[function(_dereq_,module,exports){
+},{"isarray":20}],19:[function(_dereq_,module,exports){
 'use strict';
 
 var defaultProps = _dereq_('./ast-properties');
@@ -6227,12 +6262,12 @@ module.exports = function createWhitelist (options) {
     return result;
 };
 
-},{"./ast-properties":16,"object-keys":20,"xtend":25}],19:[function(_dereq_,module,exports){
+},{"./ast-properties":17,"object-keys":21,"xtend":32}],20:[function(_dereq_,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
 
-},{}],20:[function(_dereq_,module,exports){
+},{}],21:[function(_dereq_,module,exports){
 'use strict';
 
 // modified from https://github.com/es-shims/es5-shim
@@ -6303,7 +6338,7 @@ keysShim.shim = function shimObjectKeys() {
 
 module.exports = keysShim;
 
-},{"./isArguments":21}],21:[function(_dereq_,module,exports){
+},{"./isArguments":22}],22:[function(_dereq_,module,exports){
 'use strict';
 
 var toStr = Object.prototype.toString;
@@ -6322,7 +6357,7 @@ module.exports = function isArguments(value) {
 	return isArgs;
 };
 
-},{}],22:[function(_dereq_,module,exports){
+},{}],23:[function(_dereq_,module,exports){
 /*
   Copyright (C) 2012-2013 Yusuke Suzuki <utatane.tea@gmail.com>
   Copyright (C) 2012 Ariya Hidayat <ariya.hidayat@gmail.com>
@@ -6521,7 +6556,7 @@ module.exports = function isArguments(value) {
         ReturnStatement: 'ReturnStatement',
         SequenceExpression: 'SequenceExpression',
         SpreadElement: 'SpreadElement',
-        SuperExpression: 'SuperExpression',
+        Super: 'Super',
         SwitchStatement: 'SwitchStatement',
         SwitchCase: 'SwitchCase',
         TaggedTemplateExpression: 'TaggedTemplateExpression',
@@ -6594,7 +6629,7 @@ module.exports = function isArguments(value) {
         ReturnStatement: ['argument'],
         SequenceExpression: ['expressions'],
         SpreadElement: ['argument'],
-        SuperExpression: ['super'],
+        Super: [],
         SwitchStatement: ['discriminant', 'cases'],
         SwitchCase: ['test', 'consequent'],
         TaggedTemplateExpression: ['tag', 'quasi'],
@@ -7165,13 +7200,13 @@ module.exports = function isArguments(value) {
 }(exports));
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{"./package.json":23}],23:[function(_dereq_,module,exports){
+},{"./package.json":24}],24:[function(_dereq_,module,exports){
 module.exports={
   "name": "estraverse",
   "description": "ECMAScript JS AST traversal functions",
   "homepage": "https://github.com/estools/estraverse",
   "main": "estraverse.js",
-  "version": "3.1.0",
+  "version": "4.0.0",
   "engines": {
     "node": ">=0.10.0"
   },
@@ -7212,28 +7247,29 @@ module.exports={
     "lint": "jshint estraverse.js",
     "unit-test": "mocha --compilers coffee:coffee-script/register"
   },
-  "gitHead": "166ebbe0a8d45ceb2391b6f5ef5d1bab6bfb267a",
+  "gitHead": "a5535660496d54a708ed4810e4c3b6c1f2761d81",
   "bugs": {
     "url": "https://github.com/estools/estraverse/issues"
   },
-  "_id": "estraverse@3.1.0",
-  "_shasum": "15e28a446b8b82bc700ccc8b96c78af4da0d6cba",
-  "_from": "estraverse@>=3.1.0 <4.0.0",
-  "_npmVersion": "2.0.0-alpha-5",
+  "_id": "estraverse@4.0.0",
+  "_shasum": "ab96dd6bef5dc7958cec1d7d45085dd5c8f1eda1",
+  "_from": "estraverse@>=4.0.0 <5.0.0",
+  "_npmVersion": "2.7.4",
+  "_nodeVersion": "0.12.2",
   "_npmUser": {
     "name": "constellation",
     "email": "utatane.tea@gmail.com"
   },
   "dist": {
-    "shasum": "15e28a446b8b82bc700ccc8b96c78af4da0d6cba",
-    "tarball": "http://registry.npmjs.org/estraverse/-/estraverse-3.1.0.tgz"
+    "shasum": "ab96dd6bef5dc7958cec1d7d45085dd5c8f1eda1",
+    "tarball": "http://registry.npmjs.org/estraverse/-/estraverse-4.0.0.tgz"
   },
   "directories": {},
-  "_resolved": "https://registry.npmjs.org/estraverse/-/estraverse-3.1.0.tgz",
+  "_resolved": "https://registry.npmjs.org/estraverse/-/estraverse-4.0.0.tgz",
   "readme": "ERROR: No README data found!"
 }
 
-},{}],24:[function(_dereq_,module,exports){
+},{}],25:[function(_dereq_,module,exports){
 
 var indexOf = [].indexOf;
 
@@ -7244,7 +7280,302 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}],25:[function(_dereq_,module,exports){
+},{}],26:[function(_dereq_,module,exports){
+var objectCreate = Object.create;
+
+
+module.exports = function create(prototype, properties) {
+  return objectCreate.call(Object, prototype, properties);
+};
+
+},{}],27:[function(_dereq_,module,exports){
+/* jshint proto: true, scripturl: true */
+
+var objectCreate = Object.create;
+var defineProperties = _dereq_('object-define-property').defineProperties;
+
+// Contributed by Brandon Benvie, October, 2012
+var createEmpty;
+var supportsProto = Object.prototype.__proto__ === null;
+if (supportsProto || typeof document === 'undefined') {
+  createEmpty = function () {
+    return { "__proto__": null };
+  };
+} else {
+  // In old IE __proto__ can't be used to manually set `null`, nor does
+  // any other method exist to make an object that inherits from nothing,
+  // aside from Object.prototype itself. Instead, create a new global
+  // object and *steal* its Object.prototype and strip it bare. This is
+  // used as the prototype to create nullary objects.
+  createEmpty = function () {
+    var iframe = document.createElement('iframe');
+    var parent = document.body || document.documentElement;
+    iframe.style.display = 'none';
+    parent.appendChild(iframe);
+    iframe.src = 'javascript:';
+    var empty = iframe.contentWindow.Object.prototype;
+    parent.removeChild(iframe);
+    iframe = null;
+    delete empty.constructor;
+    delete empty.hasOwnProperty;
+    delete empty.propertyIsEnumerable;
+    delete empty.isPrototypeOf;
+    delete empty.toLocaleString;
+    delete empty.toString;
+    delete empty.valueOf;
+    empty.__proto__ = null;
+
+    function Empty() {}
+    Empty.prototype = empty;
+    // short-circuit future calls
+    createEmpty = function () {
+      return new Empty();
+    };
+    return new Empty();
+  };
+}
+
+function create(prototype, properties) {
+  var object;
+  function Type() {}  // An empty constructor.
+
+  if (prototype === null) {
+    object = createEmpty();
+  } else {
+    if (typeof prototype !== "object" && typeof prototype !== "function") {
+      // In the native implementation `parent` can be `null` OR *any*
+      // `instanceof Object`  (Object|Function|Array|RegExp|etc) Use `typeof`
+      // tho, b/c in old IE, DOM elements are not `instanceof Object` like
+      // they are in modern browsers. Using `Object.create` on DOM elements
+      // is...err...probably inappropriate, but the native version allows for
+      // it.
+      // same msg as Chrome
+      throw new TypeError("Object prototype may only be an Object or null"); 
+    }
+    Type.prototype = prototype;
+    object = new Type();
+    // IE has no built-in implementation of `Object.getPrototypeOf`
+    // neither `__proto__`, but this manually setting `__proto__` will
+    // guarantee that `Object.getPrototypeOf` will work as expected with
+    // objects created using `Object.create`
+    object.__proto__ = prototype;
+  }
+
+  if (properties !== void 0) {
+    defineProperties(object, properties);
+  }
+
+  return object;
+}
+
+
+if (!objectCreate) {
+  module.exports = create;
+} else {
+  module.exports = _dereq_('./index');
+}
+
+},{"./index":26,"object-define-property":29}],28:[function(_dereq_,module,exports){
+var defProp = Object.defineProperty, defProps = Object.defineProperties;
+
+
+module.exports = {
+  defineProperty: function defineProperty(object, property, descriptor) {
+    defProp.call(Object, object, property, descriptor);
+  },
+  defineProperties: function defineProperties(object, properties) {
+    defProps.call(Object, object, properties);
+  }
+};
+
+},{}],29:[function(_dereq_,module,exports){
+/* jshint proto:true */
+// ES5 15.2.3.6
+// http://es5.github.com/#x15.2.3.6
+
+// Patch for WebKit and IE8 standard mode
+// Designed by hax <hax.github.com>
+// related issue: https://github.com/es-shims/es5-shim/issues#issue/5
+// IE8 Reference:
+//     http://msdn.microsoft.com/en-us/library/dd282900.aspx
+//     http://msdn.microsoft.com/en-us/library/dd229916.aspx
+// WebKit Bugs:
+//     https://bugs.webkit.org/show_bug.cgi?id=36423
+
+var has = _dereq_('has');
+var bind = _dereq_('function-bind');
+
+var ERR_NON_OBJECT_DESCRIPTOR = "Property description must be an object: ";
+var ERR_NON_OBJECT_TARGET = "Object.defineProperty called on non-object: ";
+var ERR_ACCESSORS_NOT_SUPPORTED = "getters & setters can not be defined " +
+  "on this javascript engine";
+
+var defProp = Object.defineProperty, defProps = Object.defineProperties;
+var call = Function.prototype.call;
+var prototypeOfObject = Object.prototype;
+
+
+// If JS engine supports accessors creating shortcuts.
+var defineGetter;
+var defineSetter;
+var lookupGetter;
+var lookupSetter;
+var supportsAccessors;
+if ((supportsAccessors = has(prototypeOfObject, "__defineGetter__"))) {
+  defineGetter = bind.call(call, prototypeOfObject.__defineGetter__);
+  defineSetter = bind.call(call, prototypeOfObject.__defineSetter__);
+  lookupGetter = bind.call(call, prototypeOfObject.__lookupGetter__);
+  lookupSetter = bind.call(call, prototypeOfObject.__lookupSetter__);
+}
+
+function doesDefinePropertyWork(object) {
+  try {
+    defProp.call(Object, object, "sentinel", {});
+    return "sentinel" in object;
+  } catch (exception) {
+    // returns falsy
+  }
+}
+
+// check whether defineProperty works if it's given. Otherwise,
+// shim partially.
+if (defProp) {
+  var definePropertyWorksOnObject = doesDefinePropertyWork({});
+  var definePropertyWorksOnDom = typeof document === "undefined" ||
+    doesDefinePropertyWork(document.createElement("div"));
+  if (!definePropertyWorksOnObject || !definePropertyWorksOnDom) {
+    var definePropertyFallback = defProp, definePropertiesFallback = defProps;
+  }
+}
+
+
+function defineProperty(object, property, descriptor) {
+  if ((typeof object !== "object" && typeof object !== "function") || object === null) {
+    throw new TypeError(ERR_NON_OBJECT_TARGET + object);
+  }
+  if ((typeof descriptor !== "object" && typeof descriptor !== "function") || descriptor === null) {
+    throw new TypeError(ERR_NON_OBJECT_DESCRIPTOR + descriptor);
+  }
+  // make a valiant attempt to use the real defineProperty
+  // for I8's DOM elements.
+  if (definePropertyFallback) {
+    try {
+      return definePropertyFallback.call(Object, object, property, descriptor);
+    } catch (exception) {
+      // try the shim if the real one doesn't work
+    }
+  }
+
+  // If it's a data property.
+  if (has(descriptor, "value")) {
+    // fail silently if "writable", "enumerable", or "configurable"
+    // are requested but not supported
+    if (supportsAccessors && (lookupGetter(object, property) ||
+                              lookupSetter(object, property)))
+      {
+        // As accessors are supported only on engines implementing
+        // `__proto__` we can safely override `__proto__` while defining
+        // a property to make sure that we don't hit an inherited
+        // accessor.
+        var prototype = object.__proto__;
+        object.__proto__ = prototypeOfObject;
+        // Deleting a property anyway since getter / setter may be
+        // defined on object itself.
+        delete object[property];
+        object[property] = descriptor.value;
+        // Setting original `__proto__` back now.
+        object.__proto__ = prototype;
+      } else {
+        object[property] = descriptor.value;
+      }
+  } else {
+    if (!supportsAccessors) {
+      throw new TypeError(ERR_ACCESSORS_NOT_SUPPORTED);
+    }
+    // If we got that far then getters and setters can be defined !!
+    if (has(descriptor, "get")) {
+      defineGetter(object, property, descriptor.get);
+    }
+    if (has(descriptor, "set")) {
+      defineSetter(object, property, descriptor.set);
+    }
+  }
+  return object;
+}
+
+
+function defineProperties(object, properties) {
+  // make a valiant attempt to use the real defineProperties
+  if (definePropertiesFallback) {
+    try {
+      return definePropertiesFallback.call(Object, object, properties);
+    } catch (exception) {
+      // try the shim if the real one doesn't work
+    }
+  }
+  for (var property in properties) {
+    if (has(properties, property) && property !== "__proto__") {
+      defineProperty(object, property, properties[property]);
+    }
+  }
+  return object;
+}
+
+
+if (!defProp || definePropertyFallback) {
+  module.exports = {
+    defineProperty: defineProperty,
+    defineProperties: defineProperties
+  };
+} else {
+  module.exports = _dereq_('./index');
+}
+
+},{"./index":28,"function-bind":30,"has":31}],30:[function(_dereq_,module,exports){
+var ERROR_MESSAGE = "Function.prototype.bind called on incompatible "
+var slice = Array.prototype.slice
+
+module.exports = bind
+
+function bind(that) {
+    var target = this
+    if (typeof target !== "function") {
+        throw new TypeError(ERROR_MESSAGE + target)
+    }
+    var args = slice.call(arguments, 1)
+
+    return function bound() {
+        if (this instanceof bound) {
+            var F = function () {}
+            F.prototype = target.prototype
+            var self = new F()
+
+            var result = target.apply(
+                self,
+                args.concat(slice.call(arguments))
+            )
+            if (Object(result) === result) {
+                return result
+            }
+            return self
+        } else {
+            return target.apply(
+                that,
+                args.concat(slice.call(arguments))
+            )
+        }
+    }
+}
+
+},{}],31:[function(_dereq_,module,exports){
+var hasOwn = Object.prototype.hasOwnProperty;
+
+
+module.exports = function has(obj, property) {
+  return hasOwn.call(obj, property);
+};
+
+},{}],32:[function(_dereq_,module,exports){
 module.exports = extend
 
 function extend() {
@@ -7263,7 +7594,7 @@ function extend() {
     return target
 }
 
-},{}],26:[function(_dereq_,module,exports){
+},{}],33:[function(_dereq_,module,exports){
 module.exports = extend
 
 function extend(target) {
