@@ -7,11 +7,11 @@
  * Licensed under the MIT license.
  *   https://github.com/twada/empower/blob/master/MIT-LICENSE.txt
  */
-var defaultOptions = require('./lib/default-options'),
-    Decorator = require('./lib/decorator'),
-    create = require('object-create'),
-    slice = Array.prototype.slice,
-    extend = require('xtend/mutable');
+var defaultOptions = require('./lib/default-options');
+var Decorator = require('./lib/decorator');
+var create = require('object-create');
+var slice = Array.prototype.slice;
+var extend = require('xtend/mutable');
 
 /**
  * Enhance Power Assert feature to assert function/object.
@@ -21,8 +21,8 @@ var defaultOptions = require('./lib/default-options'),
  * @return enhanced assert function/object
  */
 function empower (assert, formatter, options) {
-    var typeOfAssert = (typeof assert),
-        config;
+    var typeOfAssert = (typeof assert);
+    var config;
     if ((typeOfAssert !== 'object' && typeOfAssert !== 'function') || assert === null) {
         throw new TypeError('empower argument should be a function or object.');
     }
