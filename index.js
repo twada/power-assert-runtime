@@ -1,11 +1,11 @@
 /**
  * empower - Power Assert feature enhancer for assert function/object.
  *
- * https://github.com/twada/empower
+ * https://github.com/power-assert-js/empower
  *
  * Copyright (c) 2013-2015 Takuto Wada
  * Licensed under the MIT license.
- *   https://github.com/twada/empower/blob/master/MIT-LICENSE.txt
+ *   https://github.com/power-assert-js/empower/blob/master/MIT-LICENSE.txt
  */
 var defaultOptions = require('./lib/default-options');
 var Decorator = require('./lib/decorator');

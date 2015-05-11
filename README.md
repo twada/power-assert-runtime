@@ -16,18 +16,18 @@ Power Assert feature enhancer for assert function/object.
 
 DESCRIPTION
 ---------------------------------------
-`empower` is a core module of [power-assert](http://github.com/twada/power-assert) family. `empower` enhances standard `assert` function or any assert-like object to work with power-assert feature added code instrumented by [espower](http://github.com/twada/espower).
+`empower` is a core module of [power-assert](http://github.com/power-assert-js/power-assert) family. `empower` enhances standard `assert` function or any assert-like object to work with power-assert feature added code instrumented by [espower](http://github.com/power-assert-js/espower).
 
 
 `empower` works with standard `assert` function (best fit with [Mocha](http://visionmedia.github.io/mocha/)), and also supports assert-like objects/functions provided by various testing frameworks such as [QUnit](http://qunitjs.com/), [buster.js](http://docs.busterjs.org/en/latest/), and [nodeunit](https://github.com/caolan/nodeunit).
 
 
-Please note that `empower` is a beta version product. Pull-requests, issue reports and patches are always welcomed. See [power-assert](http://github.com/twada/power-assert) project for more documentation.
+Please note that `empower` is a beta version product. Pull-requests, issue reports and patches are always welcomed. See [power-assert](http://github.com/power-assert-js/power-assert) project for more documentation.
 
 
 CHANGELOG
 ---------------------------------------
-See [CHANGELOG](https://github.com/twada/empower/blob/master/CHANGELOG.md)
+See [CHANGELOG](https://github.com/power-assert-js/empower/blob/master/CHANGELOG.md)
 
 
 API
@@ -39,7 +39,7 @@ API
 |:-----------------------|
 | `function` or `object` |
 
-`empower` function takes function or object(`originalAssert`) and `formatter` function created by [power-assert-formatter](http://github.com/twada/power-assert-formatter) then returns PowerAssert feature added function/object base on `originalAssert`.
+`empower` function takes function or object(`originalAssert`) and `formatter` function created by [power-assert-formatter](http://github.com/power-assert-js/power-assert-formatter) then returns PowerAssert feature added function/object base on `originalAssert`.
 If `destructive` option is falsy, `originalAssert` will be unchanged. If `destructive` option is truthy, `originalAssert` will be manipulated directly and returned `enhancedAssert` will be the same instance of `originalAssert`.
 
 
@@ -49,7 +49,7 @@ If `destructive` option is falsy, `originalAssert` will be unchanged. If `destru
 |:-----------------------|:--------------|
 | `function` or `object` | N/A           |
 
-`originalAssert` is an instance of standard `assert` function or any assert-like object. see [SUPPORTED ASSERTION LIBRARIES](https://github.com/twada/empower#supported-assertion-libraries) and [ASSERTION LIBRARIES KNOWN TO WORK](https://github.com/twada/empower#assertion-libraries-known-to-work) section. Be careful that `originalAssert` will be manipulated directly if `destructive` option is truthy.
+`originalAssert` is an instance of standard `assert` function or any assert-like object. see [SUPPORTED ASSERTION LIBRARIES](https://github.com/power-assert-js/empower#supported-assertion-libraries) and [ASSERTION LIBRARIES KNOWN TO WORK](https://github.com/power-assert-js/empower#assertion-libraries-known-to-work) section. Be careful that `originalAssert` will be manipulated directly if `destructive` option is truthy.
 
 
 #### formatter
@@ -58,7 +58,7 @@ If `destructive` option is falsy, `originalAssert` will be unchanged. If `destru
 |:-----------|:--------------|
 | `function` | N/A           |
 
-formatter function created by [power-assert-formatter](http://github.com/twada/power-assert-formatter).
+formatter function created by [power-assert-formatter](http://github.com/power-assert-js/power-assert-formatter).
 
 
 #### options
@@ -208,7 +208,7 @@ AUTHOR
 
 LICENSE
 ---------------------------------------
-Licensed under the [MIT](https://github.com/twada/empower/blob/master/MIT-LICENSE.txt) license.
+Licensed under the [MIT](https://github.com/power-assert-js/empower/blob/master/MIT-LICENSE.txt) license.
 
 
 [npm-url]: https://npmjs.org/package/empower
@@ -217,20 +217,20 @@ Licensed under the [MIT](https://github.com/twada/empower/blob/master/MIT-LICENS
 [bower-url]: http://badge.fury.io/bo/empower
 [bower-image]: https://badge.fury.io/bo/empower.svg
 
-[travis-url]: http://travis-ci.org/twada/empower
-[travis-image]: https://secure.travis-ci.org/twada/empower.svg?branch=master
+[travis-url]: http://travis-ci.org/power-assert-js/empower
+[travis-image]: https://secure.travis-ci.org/power-assert-js/empower.svg?branch=master
 
-[depstat-url]: https://gemnasium.com/twada/empower
-[depstat-image]: https://gemnasium.com/twada/empower.svg
+[depstat-url]: https://gemnasium.com/power-assert-js/empower
+[depstat-image]: https://gemnasium.com/power-assert-js/empower.svg
 
-[license-url]: https://github.com/twada/empower/blob/master/MIT-LICENSE.txt
+[license-url]: https://github.com/power-assert-js/empower/blob/master/MIT-LICENSE.txt
 [license-image]: http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat
 
-[codeclimate-url]: https://codeclimate.com/github/twada/empower
-[codeclimate-image]: https://codeclimate.com/github/twada/empower/badges/gpa.svg
+[codeclimate-url]: https://codeclimate.com/github/power-assert-js/empower
+[codeclimate-image]: https://codeclimate.com/github/power-assert-js/empower/badges/gpa.svg
 
-[coverage-url]: https://coveralls.io/r/twada/empower?branch=master
-[coverage-image]: https://coveralls.io/repos/twada/empower/badge.svg?branch=master
+[coverage-url]: https://coveralls.io/r/power-assert-js/empower?branch=master
+[coverage-image]: https://coveralls.io/repos/power-assert-js/empower/badge.svg?branch=master
 
 [gulp-url]: http://gulpjs.com/
 [gulp-image]: http://img.shields.io/badge/built_with-gulp-brightgreen.svg

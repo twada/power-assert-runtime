@@ -1,24 +1,24 @@
-## [0.11.0](https://github.com/twada/empower/releases/tag/v0.11.0) (2015-04-18)
+## [0.11.0](https://github.com/power-assert-js/empower/releases/tag/v0.11.0) (2015-04-18)
 
 
 #### Features
 
 * **empower:**
-  * ship npm module with built bundle for browsers ([e9448d3b](https://github.com/twada/empower/commit/e9448d3bfd4b44e64810cb2d1e18d6a4e2c6ba4b))
+  * ship npm module with built bundle for browsers ([e9448d3b](https://github.com/power-assert-js/empower/commit/e9448d3bfd4b44e64810cb2d1e18d6a4e2c6ba4b))
 
 
-## [0.10.0](https://github.com/twada/empower/releases/tag/v0.10.0) (2014-11-11)
+## [0.10.0](https://github.com/power-assert-js/empower/releases/tag/v0.10.0) (2014-11-11)
 
 
 * **empower:**
-  * update escallmatch ([f7a0d970](https://github.com/twada/empower/commit/f7a0d970333cdec25aacaf3880473da5ccec24de))
+  * update escallmatch ([f7a0d970](https://github.com/power-assert-js/empower/commit/f7a0d970333cdec25aacaf3880473da5ccec24de))
 
 
 ### 0.9.1 (2014-10-07)
 
 #### Bug Fixes
 
-* **empower:** power-assert output doesn't appear in Node 0.11.x ([53e882e0](https://github.com/twada/empower/commit/53e882e00ad3dd8b45f262ab14ac782ed582b954))
+* **empower:** power-assert output doesn't appear in Node 0.11.x ([53e882e0](https://github.com/power-assert-js/empower/commit/53e882e00ad3dd8b45f262ab14ac782ed582b954))
 
 
 ## 0.9.0 (2014-09-01)
@@ -31,13 +31,13 @@
 
 
 * **empower:**
-  * [modularized by browserify](https://github.com/twada/empower/pull/12)
-  * use `escallmatch` module to describe target patterns ([533a21a0](https://github.com/twada/empower/commit/533a21a0374f23f5ca4e198c17d1e20f10d705fa))
-  * support assertion methods with three or more arguments ([d31dca86](https://github.com/twada/empower/commit/d31dca86de2b05ee88ca5df15579308368657d43))
-  * if not in patterns, do not empower assertion function itself ([1d73a756](https://github.com/twada/empower/commit/1d73a7560ef586a45a0a9259e57c143b3b60caaa))
-  * option `targetMethods` does not required any more ([8ffcc49f](https://github.com/twada/empower/commit/8ffcc49fcdb5523eb38e63a0e7cca34f752d9302))
-  * rename `saveContextOnFail` option to `saveContextOnRethrow` ([1f6133b2](https://github.com/twada/empower/commit/1f6133b24be672f32cfd3b66522a7d14ca5d22e1))
-  * rename `modifyMessageOnFail` option to `modifyMessageOnRethrow` ([0c8a88f0](https://github.com/twada/empower/commit/0c8a88f0592917ba15ac0c1bf21c8f39f39ab350))
+  * [modularized by browserify](https://github.com/power-assert-js/empower/pull/12)
+  * use `escallmatch` module to describe target patterns ([533a21a0](https://github.com/power-assert-js/empower/commit/533a21a0374f23f5ca4e198c17d1e20f10d705fa))
+  * support assertion methods with three or more arguments ([d31dca86](https://github.com/power-assert-js/empower/commit/d31dca86de2b05ee88ca5df15579308368657d43))
+  * if not in patterns, do not empower assertion function itself ([1d73a756](https://github.com/power-assert-js/empower/commit/1d73a7560ef586a45a0a9259e57c143b3b60caaa))
+  * option `targetMethods` does not required any more ([8ffcc49f](https://github.com/power-assert-js/empower/commit/8ffcc49fcdb5523eb38e63a0e7cca34f752d9302))
+  * rename `saveContextOnFail` option to `saveContextOnRethrow` ([1f6133b2](https://github.com/power-assert-js/empower/commit/1f6133b24be672f32cfd3b66522a7d14ca5d22e1))
+  * rename `modifyMessageOnFail` option to `modifyMessageOnRethrow` ([0c8a88f0](https://github.com/power-assert-js/empower/commit/0c8a88f0592917ba15ac0c1bf21c8f39f39ab350))
 
 
 #### Breaking Changes
@@ -54,7 +54,7 @@ To:
 
 `empower(originalAssert, formatter, {saveContextOnRethrow: true})`
 
- ([1f6133b2](https://github.com/twada/empower/commit/1f6133b24be672f32cfd3b66522a7d14ca5d22e1))
+ ([1f6133b2](https://github.com/power-assert-js/empower/commit/1f6133b24be672f32cfd3b66522a7d14ca5d22e1))
 
 * `modifyMessageOnFail` option is renamed to `modifyMessageOnRethrow`
 
@@ -68,7 +68,7 @@ To:
 
 `empower(originalAssert, formatter, {modifyMessageOnRethrow: true})`
 
- ([0c8a88f0](https://github.com/twada/empower/commit/0c8a88f0592917ba15ac0c1bf21c8f39f39ab350))
+ ([0c8a88f0](https://github.com/power-assert-js/empower/commit/0c8a88f0592917ba15ac0c1bf21c8f39f39ab350))
 
 * option `targetMethods` does not required any more
 
@@ -109,4 +109,4 @@ var options = {
 var assert = empower(yourAssert, formatter, options);
 ```
 
-([8ffcc49f](https://github.com/twada/empower/commit/8ffcc49fcdb5523eb38e63a0e7cca34f752d9302))
+([8ffcc49f](https://github.com/power-assert-js/empower/commit/8ffcc49fcdb5523eb38e63a0e7cca34f752d9302))

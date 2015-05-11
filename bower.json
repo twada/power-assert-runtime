@@ -24,10 +24,10 @@
       "homepage": "https://github.com/twada"
     }
   ],
-  "homepage": "https://github.com/twada/empower",
+  "homepage": "https://github.com/power-assert-js/empower",
   "repository": {
     "type": "git",
-    "url": "git://github.com/twada/empower.git"
+    "url": "git://github.com/power-assert-js/empower.git"
   },
   "devDependencies": {
     "escodegen": "1.4.1",
