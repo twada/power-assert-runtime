@@ -124,7 +124,9 @@ If truthy, add `powerAssertContext` property to AssertionError on rethrow.
     'assert.strictEqual(actual, expected, [message])',
     'assert.notStrictEqual(actual, expected, [message])',
     'assert.deepEqual(actual, expected, [message])',
-    'assert.notDeepEqual(actual, expected, [message])'
+    'assert.notDeepEqual(actual, expected, [message])',
+    'assert.deepStrictEqual(actual, expected, [message])',
+    'assert.notDeepStrictEqual(actual, expected, [message])'
 ]
 ```
 
@@ -150,7 +152,9 @@ Returns default options object for `empower` function. In other words, returns
         'assert.strictEqual(actual, expected, [message])',
         'assert.notStrictEqual(actual, expected, [message])',
         'assert.deepEqual(actual, expected, [message])',
-        'assert.notDeepEqual(actual, expected, [message])'
+        'assert.notDeepEqual(actual, expected, [message])',
+        'assert.deepStrictEqual(actual, expected, [message])',
+        'assert.notDeepStrictEqual(actual, expected, [message])'
     ]
 }
 ```
