@@ -11,7 +11,7 @@
     "url": "http://github.com/power-assert-js/empower/issues"
   },
   "dependencies": {
-    "array-filter": "^0.2.0",
+    "array-filter": "^1.0.0",
     "array-foreach": "^1.0.1",
     "array-map": "0.0.0",
     "array-some": "^1.0.0",
