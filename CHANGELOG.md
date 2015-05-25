@@ -1,3 +1,13 @@
+## [1.0.0](https://github.com/power-assert-js/empower/releases/tag/v1.0.0) (2015-05-25)
+
+
+#### Features
+
+  * transfer to power-assert-js organization ([0cd9a89a](https://github.com/power-assert-js/empower/commit/0cd9a89ad3964c863e7f448ba46d565735850539))
+  * support `deepStrictEqual` and `notDeepStrictEqual` ([bbaa9121](https://github.com/power-assert-js/empower/commit/bbaa91211bc7779a94934165b0d827ec89df6c5c))
+  * use ponyfills for older browsers ([efea6e17](https://github.com/power-assert-js/empower/commit/efea6e173e28922eae7342d7e9f1f832992a99fd))
+
+
 ## [0.11.0](https://github.com/power-assert-js/empower/releases/tag/v0.11.0) (2015-04-18)
 
 
