@@ -96,12 +96,12 @@ gulp.task('watch', function () {
     runMochaSimply();
 });
 
-gulp.task('clean_bundle', function (done) {
-    del([config.bundle.destDir], done);
+gulp.task('clean_bundle', function () {
+    del.sync([config.bundle.destDir]);
 });
 
-gulp.task('clean_coverage', function (done) {
-    del([config.coverage.filename], done);
+gulp.task('clean_coverage', function () {
+    del.sync([config.coverage.filename]);
 });
 
 gulp.task('bundle', ['clean_bundle'], function() {
