@@ -21,10 +21,11 @@ if (typeof define === 'function' && define.amd) {
 }
 
     var weave = function (line, patterns) {
-        var filepath = '/path/to/some_test.js';
+        var filepath = '/absolute/path/to/project/test/some_test.js';
         var espowerOptions = {
             source: line,
             path: filepath,
+            sourceRoot: '/absolute/path/to/project/',
             destructive: true
         };
         if (patterns) {
@@ -55,7 +56,7 @@ test('default options behavior', function () {
         baseAssert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
         baseAssert.equal(e.message, [
-            '/path/to/some_test.js',
+            'test/some_test.js',
             'assert(falsy)',
             '[{"value":0,"espath":"arguments/0"}]'
         ].join('\n'));
@@ -76,7 +77,7 @@ test('Bug reproduction. should not fail if argument is null Literal. ' + JSON.st
     } catch (e) {
         if (option.modifyMessageOnRethrow) {
             baseAssert.equal(e.message, [
-                '/path/to/some_test.js',
+                'test/some_test.js',
                 'assert.equal(foo, null)',
                 '[{"value":"foo","espath":"arguments/0"}]'
             ].join('\n'));
@@ -85,7 +86,7 @@ test('Bug reproduction. should not fail if argument is null Literal. ' + JSON.st
             baseAssert.deepEqual(e.powerAssertContext, {
                 "source":{
                     "content":"assert.equal(foo, null)",
-                    "filepath":"/path/to/some_test.js",
+                    "filepath":"test/some_test.js",
                     "line": 1
                 },
                 "args":[
@@ -109,7 +110,7 @@ test('assertion with optional message argument. ' + JSON.stringify(option), func
     } catch (e) {
         if (option.modifyMessageOnRethrow) {
             baseAssert.equal(e.message, [
-                'assertion message /path/to/some_test.js',
+                'assertion message test/some_test.js',
                 'assert(falsy, "assertion message")',
                 '[{"value":0,"espath":"arguments/0"}]'
             ].join('\n'));
@@ -118,7 +119,7 @@ test('assertion with optional message argument. ' + JSON.stringify(option), func
             baseAssert.deepEqual(e.powerAssertContext, {
                 "source":{
                     "content": "assert(falsy, \"assertion message\")",
-                    "filepath": "/path/to/some_test.js",
+                    "filepath": "test/some_test.js",
                     "line": 1
                 },
                 "args":[
@@ -144,7 +145,7 @@ test(JSON.stringify(option) + ' empowered function also acts like an assert func
     } catch (e) {
         if (option.modifyMessageOnRethrow) {
             baseAssert.equal(e.message, [
-                '/path/to/some_test.js',
+                'test/some_test.js',
                 'assert(falsy)',
                 '[{"value":0,"espath":"arguments/0"}]'
             ].join('\n'));
@@ -153,7 +154,7 @@ test(JSON.stringify(option) + ' empowered function also acts like an assert func
             baseAssert.deepEqual(e.powerAssertContext, {
                 "source":{
                     "content": "assert(falsy)",
-                    "filepath": "/path/to/some_test.js",
+                    "filepath": "test/some_test.js",
                     "line": 1
                 },
                 "args":[
@@ -180,7 +181,7 @@ suite(JSON.stringify(option) + ' assertion method with one argument', function (
         } catch (e) {
             if (option.modifyMessageOnRethrow) {
                 baseAssert.equal(e.message, [
-                    '/path/to/some_test.js',
+                    'test/some_test.js',
                     'assert.ok(falsy)',
                     '[{"value":0,"espath":"arguments/0"}]'
                 ].join('\n'));
@@ -189,7 +190,7 @@ suite(JSON.stringify(option) + ' assertion method with one argument', function (
                 baseAssert.deepEqual(e.powerAssertContext, {
                     "source": {
                         "content":"assert.ok(falsy)",
-                        "filepath":"/path/to/some_test.js",
+                        "filepath":"test/some_test.js",
                         "line": 1
                     },
                     "args":[
@@ -217,7 +218,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
         } catch (e) {
             if (option.modifyMessageOnRethrow) {
                 baseAssert.equal(e.message, [
-                    '/path/to/some_test.js',
+                    'test/some_test.js',
                     'assert.equal(foo, bar)',
                     '[{"value":"foo","espath":"arguments/0"},{"value":"bar","espath":"arguments/1"}]'
                 ].join('\n'));
@@ -226,7 +227,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
                 baseAssert.deepEqual(e.powerAssertContext, {
                     "source":{
                         "content":"assert.equal(foo, bar)",
-                        "filepath":"/path/to/some_test.js",
+                        "filepath":"test/some_test.js",
                         "line": 1
                     },
                     "args":[
@@ -253,7 +254,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
         } catch (e) {
             if (option.modifyMessageOnRethrow) {
                 baseAssert.equal(e.message, [
-                    '/path/to/some_test.js',
+                    'test/some_test.js',
                     'assert.equal("foo", bar)',
                     '[{"value":"bar","espath":"arguments/1"}]'
                 ].join('\n'));
@@ -262,7 +263,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
                 baseAssert.deepEqual(e.powerAssertContext, {
                     "source":{
                         "content":"assert.equal(\"foo\", bar)",
-                        "filepath":"/path/to/some_test.js",
+                        "filepath":"test/some_test.js",
                         "line": 1
                     },
                     "args": [
@@ -285,7 +286,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
         } catch (e) {
             if (option.modifyMessageOnRethrow) {
                 baseAssert.equal(e.message, [
-                    '/path/to/some_test.js',
+                    'test/some_test.js',
                     'assert.equal(foo, "bar")',
                     '[{"value":"foo","espath":"arguments/0"}]'
                 ].join('\n'));
@@ -294,7 +295,7 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
                 baseAssert.deepEqual(e.powerAssertContext, {
                     "source":{
                         "content":"assert.equal(foo, \"bar\")",
-                        "filepath":"/path/to/some_test.js",
+                        "filepath":"test/some_test.js",
                         "line": 1
                     },
                     "args":[

@@ -22,10 +22,11 @@ if (typeof define === 'function' && define.amd) {
 }
 
     var weave = function (line) {
-        var filepath = '/path/to/some_test.js';
+        var filepath = '/absolute/path/to/project/test/some_test.js';
         var espowerOptions = {
             source: line,
             path: filepath,
+            sourceRoot: '/absolute/path/to/project/',
             destructive: true,
             patterns: [
                 'assert(actual, [message])',
@@ -66,7 +67,7 @@ if (typeof define === 'function' && define.amd) {
             baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
             baseAssert.equal(e.message, [
-                '/path/to/some_test.js',
+                'test/some_test.js',
                 'assert(falsy)',
                 '[{"value":0,"espath":"arguments/0"}]'
             ].join('\n'));
@@ -83,7 +84,7 @@ if (typeof define === 'function' && define.amd) {
                 baseAssert.ok(false, 'AssertionError should be thrown');
             } catch (e) {
                 baseAssert.equal(e.message, [
-                    '[assert.isNull] /path/to/some_test.js',
+                    '[assert.isNull] test/some_test.js',
                     'assert.isNull(falsy)',
                     '[{"value":0,"espath":"arguments/0"}]: Expected 0 to be null'
                 ].join('\n'));
@@ -101,7 +102,7 @@ if (typeof define === 'function' && define.amd) {
                 baseAssert.ok(false, 'AssertionError should be thrown');
             } catch (e) {
                 baseAssert.equal(e.message, [
-                    '[assert.same] /path/to/some_test.js',
+                    '[assert.same] test/some_test.js',
                     'assert.same(foo, bar)',
                     '[{"value":"foo","espath":"arguments/0"},{"value":"bar","espath":"arguments/1"}]: foo expected to be the same object as bar'
                 ].join('\n'));
@@ -116,7 +117,7 @@ if (typeof define === 'function' && define.amd) {
                 baseAssert.ok(false, 'AssertionError should be thrown');
             } catch (e) {
                 baseAssert.equal(e.message, [
-                    '[assert.same] /path/to/some_test.js',
+                    '[assert.same] test/some_test.js',
                     'assert.same("foo", bar)',
                     '[{"value":"bar","espath":"arguments/1"}]: foo expected to be the same object as bar'
                 ].join('\n'));
@@ -131,7 +132,7 @@ if (typeof define === 'function' && define.amd) {
                 baseAssert.ok(false, 'AssertionError should be thrown');
             } catch (e) {
                 baseAssert.equal(e.message, [
-                    '[assert.same] /path/to/some_test.js',
+                    '[assert.same] test/some_test.js',
                     'assert.same(foo, "bar")',
                     '[{"value":"foo","espath":"arguments/0"}]: foo expected to be the same object as bar'
                 ].join('\n'));
@@ -149,7 +150,7 @@ if (typeof define === 'function' && define.amd) {
                 baseAssert.ok(false, 'AssertionError should be thrown');
             } catch (e) {
                 baseAssert.equal(e.message, [
-                    '[assert.near] /path/to/some_test.js',
+                    '[assert.near] test/some_test.js',
                     'assert.near(actualVal, expectedVal, delta)',
                     '[{"value":10.6,"espath":"arguments/0"},{"value":10,"espath":"arguments/1"},{"value":0.5,"espath":"arguments/2"}]: Expected 10.6 to be equal to 10 +/- 0.5'
                 ].join('\n'));
@@ -164,7 +165,7 @@ if (typeof define === 'function' && define.amd) {
                 baseAssert.ok(false, 'AssertionError should be thrown');
             } catch (e) {
                 baseAssert.equal(e.message, [
-                    '[assert.near] not in delta /path/to/some_test.js',
+                    '[assert.near] not in delta test/some_test.js',
                     'assert.near(actualVal, expectedVal, delta, messageStr)',
                     '[{"value":10.6,"espath":"arguments/0"},{"value":10,"espath":"arguments/1"},{"value":0.5,"espath":"arguments/2"}]: Expected 10.6 to be equal to 10 +/- 0.5'
                 ].join('\n'));
