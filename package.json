@@ -70,6 +70,7 @@
   },
   "scripts": {
     "bower": "bower install --config.interactive=false",
+    "build": "npm prune && npm dedupe && gulp bundle",
     "test": "gulp test",
     "unit": "gulp unit",
     "watch": "gulp watch",
