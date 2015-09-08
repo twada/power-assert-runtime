@@ -1,3 +1,9 @@
+### [1.0.1](https://github.com/power-assert-js/empower/releases/tag/v1.0.1) (2015-09-08)
+
+
+  * apply licensify on build ([282259b](https://github.com/power-assert-js/empower/commit/282259b632333c62e02113e374baa76dd7cd2890))
+
+
 ## [1.0.0](https://github.com/power-assert-js/empower/releases/tag/v1.0.0) (2015-05-25)
 
 
