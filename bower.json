@@ -30,10 +30,8 @@
     "url": "git://github.com/power-assert-js/empower.git"
   },
   "devDependencies": {
-    "escodegen": "1.4.1",
     "mocha": "~2.2.4",
     "requirejs": "~2.1.17",
-    "assert": "Jxck/assert",
     "buster.js": "~0.7.0"
   }
 }

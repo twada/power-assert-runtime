@@ -16,11 +16,6 @@
     busterAssertions
 ) {
 
-// see: https://github.com/Constellation/escodegen/issues/115
-if (typeof define === 'function' && define.amd) {
-    escodegen = window.escodegen;
-}
-
     var weave = function (line) {
         var filepath = '/absolute/path/to/project/test/some_test.js';
         var espowerOptions = {

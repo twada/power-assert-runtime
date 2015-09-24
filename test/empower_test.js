@@ -15,11 +15,6 @@
     baseAssert
 ) {
 
-// see: https://github.com/Constellation/escodegen/issues/115
-if (typeof define === 'function' && define.amd) {
-    escodegen = window.escodegen;
-}
-
     var weave = function (line, patterns) {
         var filepath = '/absolute/path/to/project/test/some_test.js';
         var espowerOptions = {

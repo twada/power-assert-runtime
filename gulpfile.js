@@ -4,6 +4,7 @@ var mocha = require('gulp-mocha');
 var mochaPhantomJS = require('gulp-mocha-phantomjs');
 var webserver = require('gulp-webserver');
 var del = require('del');
+var path = require('path');
 var source = require('vinyl-source-stream');
 var through = require('through2');
 var browserify = require('browserify');
@@ -17,6 +18,18 @@ var config = {
         destDir: './build',
         destName: 'empower.js'
     },
+    assert_bundle: {
+        standalone: 'assert',
+        require: 'assert',
+        destDir: './build',
+        destName: 'assert.js'
+    },
+    escodegen_bundle: {
+        standalone: 'escodegen',
+        srcFile: './node_modules/escodegen/escodegen.js',
+        destDir: './build',
+        destName: 'escodegen.js'
+    },
     coverage: {
         filename: 'coverage.lcov'
     },
@@ -27,6 +40,7 @@ var config = {
         browser: 'test/test-browser.html'
     }
 };
+var BUILDS = ['assert', 'escodegen'];
 
 function captureStdout (filespec) {
     var orig, log = '';
@@ -116,6 +130,27 @@ gulp.task('bundle', ['clean_bundle'], function() {
         .pipe(gulp.dest(config.bundle.destDir));
 });
 
+BUILDS.forEach(function (name) {
+    gulp.task('clean_' + name + '_bundle', function () {
+        del.sync([path.join(config[name + '_bundle'].destDir, config[name + '_bundle'].destName)]);
+    });
+    gulp.task(name + '_bundle', ['clean_' + name + '_bundle'], function() {
+        var b = browserify({standalone: config[name + '_bundle'].standalone});
+        if (config[name + '_bundle'].srcFile) {
+            b.add(config[name + '_bundle'].srcFile);
+        }
+        if (config[name + '_bundle'].require) {
+            b.require(config[name + '_bundle'].require);
+        }
+        return b.bundle()
+            .pipe(source(config[name + '_bundle'].destName))
+            .pipe(derequire())
+            .pipe(gulp.dest(config[name + '_bundle'].destDir));
+    });
+});
+gulp.task('clean_deps', BUILDS.map(function (name) { return 'clean_' + name + '_bundle'; }));
+gulp.task('build_deps', BUILDS.map(function (name) { return name + '_bundle'; }));
+
 gulp.task('unit', function () {
     return runMochaSimply();
 });
@@ -124,18 +159,18 @@ gulp.task('coverage', ['clean_coverage'], function () {
     return runMochaWithBlanket();
 });
 
-gulp.task('test_amd', ['bundle'], function () {
+gulp.task('test_amd', ['bundle', 'build_deps'], function () {
     return gulp
         .src(config.test.amd)
         .pipe(mochaPhantomJS({reporter: 'dot'}));
 });
 
-gulp.task('test_browser', ['bundle'], function () {
+gulp.task('test_browser', ['bundle', 'build_deps'], function () {
     return gulp
         .src(config.test.browser)
         .pipe(mochaPhantomJS({reporter: 'dot'}));
 });
 
-gulp.task('clean', ['clean_coverage', 'clean_bundle']);
+gulp.task('clean', ['clean_coverage', 'clean_bundle', 'clean_deps']);
 
 gulp.task('test', ['unit','test_browser','test_amd']);
