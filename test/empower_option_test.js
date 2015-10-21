@@ -82,8 +82,22 @@ function sharedTestsForEmpowerFunctionReturnValue () {
     test('has _capt method', function () {
         assert.equal(typeof this.empoweredAssert._capt, 'function');
     });
+    test('_capt method should not be enumerable', function () {
+        var key, enumerated = {};
+        for (key in this.empoweredAssert) {
+            enumerated[key] = this.empoweredAssert[key];
+        }
+        assert.equal(typeof enumerated['_capt'], 'undefined');
+    });
     test('has _expr method', function () {
         assert.equal(typeof this.empoweredAssert._expr, 'function');
+    });
+    test('_expr method should not be enumerable', function () {
+        var key, enumerated = {};
+        for (key in this.empoweredAssert) {
+            enumerated[key] = this.empoweredAssert[key];
+        }
+        assert.equal(typeof enumerated['_expr'], 'undefined');
     });
     test('has equal method', function () {
         assert.equal(typeof this.empoweredAssert.equal, 'function');
