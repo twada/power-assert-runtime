@@ -13,6 +13,7 @@ var capturable = require('./lib/capturable');
 var create = require('object-create');
 var slice = Array.prototype.slice;
 var extend = require('xtend/mutable');
+var define = require('define-properties');
 
 /**
  * Enhance Power Assert feature to assert function/object.
@@ -40,7 +41,7 @@ function empower (assert, formatter, options) {
     default:
         throw new Error('Cannot be here');
     }
-    extend(enhancedAssert, capturable());
+    define(enhancedAssert, capturable());
     return enhancedAssert;
 }
 
