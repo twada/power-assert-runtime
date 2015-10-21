@@ -9,6 +9,7 @@
  */
 var defaultOptions = require('./lib/default-options');
 var Decorator = require('./lib/decorator');
+var capturable = require('./lib/capturable');
 var create = require('object-create');
 var slice = Array.prototype.slice;
 var extend = require('xtend/mutable');
@@ -22,31 +23,36 @@ var extend = require('xtend/mutable');
  */
 function empower (assert, formatter, options) {
     var typeOfAssert = (typeof assert);
-    var config;
+    var enhancedAssert;
     if ((typeOfAssert !== 'object' && typeOfAssert !== 'function') || assert === null) {
         throw new TypeError('empower argument should be a function or object.');
     }
     if (isEmpowered(assert)) {
         return assert;
     }
-    config = extend(defaultOptions(), options);
     switch (typeOfAssert) {
     case 'function':
-        return empowerAssertFunction(assert, formatter, config);
+        enhancedAssert = empowerAssertFunction(assert, formatter, options);
+        break;
     case 'object':
-        return empowerAssertObject(assert, formatter, config);
+        enhancedAssert = empowerAssertObject(assert, formatter, options);
+        break;
     default:
         throw new Error('Cannot be here');
     }
+    extend(enhancedAssert, capturable());
+    return enhancedAssert;
 }
 
-function empowerAssertObject (assertObject, formatter, config) {
+function empowerAssertObject (assertObject, formatter, options) {
+    var config = extend(defaultOptions(), options);
     var target = config.destructive ? assertObject : create(assertObject);
     var decorator = new Decorator(target, formatter, config);
     return extend(target, decorator.enhancement());
 }
 
-function empowerAssertFunction (assertFunction, formatter, config) {
+function empowerAssertFunction (assertFunction, formatter, options) {
+    var config = extend(defaultOptions(), options);
     if (config.destructive) {
         throw new Error('cannot use destructive:true to function.');
     }
