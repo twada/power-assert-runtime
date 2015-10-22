@@ -1,3 +1,11 @@
+### [1.0.2](https://github.com/power-assert-js/empower/releases/tag/v1.0.2) (2015-10-22)
+
+
+#### Bug Fixes
+
+  * [make `_capt` and `_expr` methods not enumerable](https://github.com/power-assert-js/empower/pull/16)
+
+
 ### [1.0.1](https://github.com/power-assert-js/empower/releases/tag/v1.0.1) (2015-09-08)
 
 
