@@ -1,3 +1,11 @@
+## [1.1.0](https://github.com/power-assert-js/empower/releases/tag/v1.1.0) (2015-11-07)
+
+
+#### Features
+
+  * [support async-await state flags](https://github.com/power-assert-js/empower/pull/17) (by [@jamestalmage](https://github.com/jamestalmage))
+
+
 ### [1.0.2](https://github.com/power-assert-js/empower/releases/tag/v1.0.2) (2015-10-22)
 
 
