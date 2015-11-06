@@ -10,6 +10,12 @@
   "bugs": {
     "url": "http://github.com/power-assert-js/empower/issues"
   },
+  "contributors": [
+    {
+      "name": "James Talmage",
+      "url": "https://github.com/jamestalmage"
+    }
+  ],
   "dependencies": {
     "array-filter": "^1.0.0",
     "array-foreach": "^1.0.1",
