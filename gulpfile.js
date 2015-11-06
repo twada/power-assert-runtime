@@ -24,6 +24,12 @@ var config = {
         destDir: './build',
         destName: 'assert.js'
     },
+    acorn_es7_plugin_bundle: {
+        standalone: 'acornEs7Plugin',
+        require: 'acorn-es7-plugin',
+        destDir: './build',
+        destName: 'acorn-es7-plugin.js'
+    },
     escodegen_bundle: {
         standalone: 'escodegen',
         srcFile: './node_modules/escodegen/escodegen.js',
@@ -40,7 +46,7 @@ var config = {
         browser: 'test/test-browser.html'
     }
 };
-var BUILDS = ['assert', 'escodegen'];
+var BUILDS = ['assert', 'escodegen', 'acorn_es7_plugin'];
 
 function captureStdout (filespec) {
     var orig, log = '';
@@ -81,7 +87,8 @@ function runMochaWithBlanket() {
         .pipe(capt.start)
         .pipe(mocha({
             ui: 'tdd',
-            reporter: 'mocha-lcov-reporter'
+            reporter: 'mocha-lcov-reporter',
+            require: ['babel-core/polyfill']
         }))
         .pipe(capt.finish)
         .pipe(gulp.dest('.'))
@@ -93,7 +100,8 @@ function runMochaSimply() {
         .src(config.test.base + config.test.pattern, {read: false})
         .pipe(mocha({
             ui: 'tdd',
-            reporter: 'dot'
+            reporter: 'dot',
+            require: ['babel-core/polyfill']
         }))
         .on('error', gutil.log);
 }
