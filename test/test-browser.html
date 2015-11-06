@@ -9,13 +9,17 @@
   </head>
   <body>
     <div id="mocha"></div>
+    <script type="text/javascript" src="../bower_components/mocha/mocha.js"></script>
     <script type="text/javascript" src="../bower_components/buster.js/buster-test.js"></script>
     <script type="text/javascript" src="../build/assert.js"></script>
+    <script type="text/javascript" src="../node_modules/babel-core/browser-polyfill.js"></script>
+    <script type="text/javascript" src="../node_modules/babel-core/external-helpers.js"></script>
+    <script type="text/javascript" src="../node_modules/babel-core/browser.js"></script>
     <script type="text/javascript" src="../node_modules/acorn/dist/acorn.js"></script>
+    <script type="text/javascript" src="../build/acorn-es7-plugin.js"></script>
     <script type="text/javascript" src="../build/escodegen.js"></script>
     <script type="text/javascript" src="../node_modules/espower/build/espower.js"></script>
     <script type="text/javascript" src="../build/empower.js"></script>
-    <script type="text/javascript" src="../bower_components/mocha/mocha.js"></script>
     <script type="text/javascript">
       mocha.setup('tdd');
     </script>
@@ -23,7 +27,11 @@
     <script type="text/javascript" src="./empower_test.js"></script>
     <script type="text/javascript" src="./buster_assertions_test.js"></script>
     <script type="text/javascript">
+      if (typeof initMochaPhantomJS === 'function') {
+        initMochaPhantomJS()
+      }
       mocha.checkLeaks();
+      mocha.globals(['script*']);
       if (window.mochaPhantomJS) {
         mochaPhantomJS.run();
       } else {
