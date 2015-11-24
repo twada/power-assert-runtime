@@ -21,8 +21,8 @@
     "array-foreach": "^1.0.1",
     "array-map": "0.0.0",
     "array-some": "^1.0.0",
+    "call-signature": "0.0.2",
     "define-properties": "^1.1.2",
-    "escallmatch": "^1.4.1",
     "object-create": "^0.1.0",
     "xtend": "^4.0.0"
   },
