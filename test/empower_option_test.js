@@ -12,14 +12,6 @@
     assert
 ) {
 
-    var fakeFormatter = function (context) {
-        return [
-            context.location.path,
-            context.content
-        ].join('\n');
-    };
-
-
 suite('empower.defaultOptions()', function () {
     setup (function () {
         this.options = empower.defaultOptions();
@@ -30,8 +22,8 @@ suite('empower.defaultOptions()', function () {
     test('modifyMessageOnRethrow: false', function () {
         assert.equal(this.options.modifyMessageOnRethrow, false);
     });
-    test('saveContextOnRethrow: false', function () {
-        assert.equal(this.options.saveContextOnRethrow, false);
+    test('saveContextOnRethrow: true', function () {
+        assert.equal(this.options.saveContextOnRethrow, true);
     });
     test('formatter: undefined', function () {
         assert.deepEqual(typeof this.options.formatter, 'undefined');
@@ -59,7 +51,7 @@ suite('empower argument preconditions', function () {
         test(name, function () {
             assert.throws(
                 function() {
-                    empower(arg, fakeFormatter);
+                    empower(arg);
                 },
                 function(err) {
                     return ((err instanceof TypeError) && (expectedMessage === err.message));
@@ -173,7 +165,7 @@ suite('assert object empowerment', function () {
                     'assert.strictEqual(actual, expected, [message])'
                 ]
             };
-            this.empoweredAssert = empower(this.fakeAssertObject, fakeFormatter, this.options);
+            this.empoweredAssert = empower(this.fakeAssertObject, this.options);
         });
         suite('returned assert', function () {
             sharedTestsForEmpowerFunctionReturnValue();
@@ -188,7 +180,7 @@ suite('assert object empowerment', function () {
             });
         });
         test('avoid empowering multiple times', function () {
-            var empoweredAgain = empower(this.empoweredAssert, fakeFormatter, this.options);
+            var empoweredAgain = empower(this.empoweredAssert, this.options);
             assert.equal(empoweredAgain, this.empoweredAssert);
         });
     });
@@ -203,7 +195,7 @@ suite('assert object empowerment', function () {
                     'assert.strictEqual(actual, expected, [message])'
                 ]
             };
-            this.empoweredAssert = empower(this.fakeAssertObject, fakeFormatter, this.options);
+            this.empoweredAssert = empower(this.fakeAssertObject, this.options);
         });
         suite('returned assert', function () {
             sharedTestsForEmpowerFunctionReturnValue();
@@ -218,7 +210,7 @@ suite('assert object empowerment', function () {
             });
         });
         test('avoid empowering multiple times', function () {
-            var empoweredAgain = empower(this.fakeAssertObject, fakeFormatter, this.options);
+            var empoweredAgain = empower(this.fakeAssertObject, this.options);
             assert.equal(empoweredAgain, this.fakeAssertObject);
         });
     });
@@ -267,7 +259,7 @@ suite('assert function empowerment', function () {
                     'assert.strictEqual(actual, expected, [message])'
                 ]
             };
-            this.empoweredAssert = empower(this.fakeAssertFunction, fakeFormatter, this.options);
+            this.empoweredAssert = empower(this.fakeAssertFunction, this.options);
         });
         suite('returned assert', function () {
             sharedTestsForEmpowerFunctionReturnValue();
@@ -296,7 +288,7 @@ suite('assert function empowerment', function () {
             });
         });
         test('avoid empowering multiple times', function () {
-            var empoweredAgain = empower(this.empoweredAssert, fakeFormatter, this.options);
+            var empoweredAgain = empower(this.empoweredAssert, this.options);
             assert.equal(empoweredAgain, this.empoweredAssert);
         });
     });
@@ -304,7 +296,7 @@ suite('assert function empowerment', function () {
     test('does not support destructive:true', function () {
         var func = this.fakeAssertFunction;
         assert.throws(function () {
-            empower(func, fakeFormatter, {destructive: true});
+            empower(func, {destructive: true});
         }, 'cannot use destructive:true to function\.');
     });
 });

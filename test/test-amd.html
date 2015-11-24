@@ -18,8 +18,7 @@
       mocha.setup('tdd');
       require([
         "./empower_option_test",
-        "./empower_test",
-        "./buster_assertions_test"
+        "./empower_test"
       ], function() {
         mocha.checkLeaks();
         if (window.mochaPhantomJS) {

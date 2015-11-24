@@ -33,48 +33,40 @@
         var jsAST = acorn.parse(line, {ecmaVersion: 7, locations: true, sourceType: 'module', sourceFile: filepath, plugins: {asyncawait: true}});
         var espoweredAST = espower(jsAST, espowerOptions);
         var code = escodegen.generate(espoweredAST, {format: {compact: true}});
-        return babel.transform(code).code
-    },
-    fakeFormatter = function (context) {
-        var events = context.args.reduce(function (accum, arg) {
-            return accum.concat(arg.events);
-        }, []);
-        var output = [
-            context.source.filepath,
-            context.source.content
-        ];
-        if (context.source.async) {
-            output.push('async:true');
-        }
-        if (context.source.generator) {
-            output.push('generator:true');
-        }
-
-        output.push(JSON.stringify(events));
-        return output.join('\n');
+        return babel.transform(code).code;
     };
 
 
 test('default options behavior', function () {
-    var assert = empower(baseAssert, fakeFormatter);
+    var assert = empower(baseAssert);
 
     var falsy = 0;
     try {
         eval(weave('assert(falsy);'));
         baseAssert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
-        baseAssert.equal(e.message, [
-            'test/some_test.js',
-            'assert(falsy)',
-            '[{"value":0,"espath":"arguments/0"}]'
-        ].join('\n'));
+        baseAssert.deepEqual(e.powerAssertContext, {
+            "source":{
+                "content": "assert(falsy)",
+                "filepath": "test/some_test.js",
+                "line": 1
+            },
+            "args":[
+                {
+                    "value": 0,
+                    "events": [
+                        {"value":0,"espath":"arguments/0"}
+                    ]
+                }
+            ]
+        });
         baseAssert.equal(e.name, 'AssertionError');
     }
 });
 
 
 function testWithOption (option) {
-    var assert = empower(baseAssert, fakeFormatter, option);
+    var assert = empower(baseAssert, option);
 
 
 test('Bug reproduction. should not fail if argument is null Literal. ' + JSON.stringify(option), function () {
@@ -83,28 +75,19 @@ test('Bug reproduction. should not fail if argument is null Literal. ' + JSON.st
         eval(weave('assert.equal(foo, null);'));
         baseAssert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
-        if (option.modifyMessageOnRethrow) {
-            baseAssert.equal(e.message, [
-                'test/some_test.js',
-                'assert.equal(foo, null)',
-                '[{"value":"foo","espath":"arguments/0"}]'
-            ].join('\n'));
-        }
-        if (option.saveContextOnRethrow) {
-            baseAssert.deepEqual(e.powerAssertContext, {
-                "source":{
-                    "content":"assert.equal(foo, null)",
-                    "filepath":"test/some_test.js",
-                    "line": 1
-                },
-                "args":[
-                    {
-                        "value":"foo",
-                        "events":[{"value":"foo","espath":"arguments/0"}]
-                    }
-                ]
-            });
-        }
+        baseAssert.deepEqual(e.powerAssertContext, {
+            "source":{
+                "content":"assert.equal(foo, null)",
+                "filepath":"test/some_test.js",
+                "line": 1
+            },
+            "args":[
+                {
+                    "value":"foo",
+                    "events":[{"value":"foo","espath":"arguments/0"}]
+                }
+            ]
+        });
         baseAssert.equal(e.name, 'AssertionError');
     }
 });
@@ -116,30 +99,21 @@ test('assertion with optional message argument. ' + JSON.stringify(option), func
         eval(weave('assert(falsy, "assertion message");'));
         baseAssert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
-        if (option.modifyMessageOnRethrow) {
-            baseAssert.equal(e.message, [
-                'assertion message test/some_test.js',
-                'assert(falsy, "assertion message")',
-                '[{"value":0,"espath":"arguments/0"}]'
-            ].join('\n'));
-        }
-        if (option.saveContextOnRethrow) {
-            baseAssert.deepEqual(e.powerAssertContext, {
-                "source":{
-                    "content": "assert(falsy, \"assertion message\")",
-                    "filepath": "test/some_test.js",
-                    "line": 1
-                },
-                "args":[
-                    {
-                        "value": 0,
-                        "events": [
-                            {"value":0,"espath":"arguments/0"}
-                        ]
-                    }
-                ]
-            });
-        }
+        baseAssert.deepEqual(e.powerAssertContext, {
+            "source":{
+                "content": "assert(falsy, \"assertion message\")",
+                "filepath": "test/some_test.js",
+                "line": 1
+            },
+            "args":[
+                {
+                    "value": 0,
+                    "events": [
+                        {"value":0,"espath":"arguments/0"}
+                    ]
+                }
+            ]
+        });
         baseAssert.equal(e.name, 'AssertionError');
     }
 });
@@ -151,30 +125,21 @@ test(JSON.stringify(option) + ' empowered function also acts like an assert func
         eval(weave('assert(falsy);'));
         baseAssert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
-        if (option.modifyMessageOnRethrow) {
-            baseAssert.equal(e.message, [
-                'test/some_test.js',
-                'assert(falsy)',
-                '[{"value":0,"espath":"arguments/0"}]'
-            ].join('\n'));
-        }
-        if (option.saveContextOnRethrow) {
-            baseAssert.deepEqual(e.powerAssertContext, {
-                "source":{
-                    "content": "assert(falsy)",
-                    "filepath": "test/some_test.js",
-                    "line": 1
-                },
-                "args":[
-                    {
-                        "value": 0,
-                        "events": [
-                            {"value":0,"espath":"arguments/0"}
-                        ]
-                    }
-                ]
-            });
-        }
+        baseAssert.deepEqual(e.powerAssertContext, {
+            "source":{
+                "content": "assert(falsy)",
+                "filepath": "test/some_test.js",
+                "line": 1
+            },
+            "args":[
+                {
+                    "value": 0,
+                    "events": [
+                        {"value":0,"espath":"arguments/0"}
+                    ]
+                }
+            ]
+        });
         baseAssert.equal(e.name, 'AssertionError');
     }
 });
@@ -187,30 +152,21 @@ suite(JSON.stringify(option) + ' assertion method with one argument', function (
             eval(weave('assert.ok(falsy);'));
             baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
-            if (option.modifyMessageOnRethrow) {
-                baseAssert.equal(e.message, [
-                    'test/some_test.js',
-                    'assert.ok(falsy)',
-                    '[{"value":0,"espath":"arguments/0"}]'
-                ].join('\n'));
-            }
-            if (option.saveContextOnRethrow) {
-                baseAssert.deepEqual(e.powerAssertContext, {
-                    "source": {
-                        "content":"assert.ok(falsy)",
-                        "filepath":"test/some_test.js",
-                        "line": 1
-                    },
-                    "args":[
-                        {
-                            "value":0,
-                            "events":[
-                                {"value":0,"espath":"arguments/0"}
-                            ]
-                        }
-                    ]
-                });
-            }
+            baseAssert.deepEqual(e.powerAssertContext, {
+                "source": {
+                    "content":"assert.ok(falsy)",
+                    "filepath":"test/some_test.js",
+                    "line": 1
+                },
+                "args":[
+                    {
+                        "value":0,
+                        "events":[
+                            {"value":0,"espath":"arguments/0"}
+                        ]
+                    }
+                ]
+            });
             baseAssert.equal(e.name, 'AssertionError');
         }
     });
@@ -224,32 +180,23 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
             eval(weave('assert.equal(foo, bar);'));
             baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
-            if (option.modifyMessageOnRethrow) {
-                baseAssert.equal(e.message, [
-                    'test/some_test.js',
-                    'assert.equal(foo, bar)',
-                    '[{"value":"foo","espath":"arguments/0"},{"value":"bar","espath":"arguments/1"}]'
-                ].join('\n'));
-            }
-            if (option.saveContextOnRethrow) {
-                baseAssert.deepEqual(e.powerAssertContext, {
-                    "source":{
-                        "content":"assert.equal(foo, bar)",
-                        "filepath":"test/some_test.js",
-                        "line": 1
+            baseAssert.deepEqual(e.powerAssertContext, {
+                "source":{
+                    "content":"assert.equal(foo, bar)",
+                    "filepath":"test/some_test.js",
+                    "line": 1
+                },
+                "args":[
+                    {
+                        "value":"foo",
+                        "events":[{"value":"foo","espath":"arguments/0"}]
                     },
-                    "args":[
-                        {
-                            "value":"foo",
-                            "events":[{"value":"foo","espath":"arguments/0"}]
-                        },
-                        {
-                            "value":"bar",
-                            "events":[{"value":"bar","espath":"arguments/1"}]
-                        }
-                    ]
-                });
-            }
+                    {
+                        "value":"bar",
+                        "events":[{"value":"bar","espath":"arguments/1"}]
+                    }
+                ]
+            });
             baseAssert.equal(e.name, 'AssertionError');
         }
     });
@@ -260,28 +207,19 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
             eval(weave('assert.equal("foo", bar);'));
             baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
-            if (option.modifyMessageOnRethrow) {
-                baseAssert.equal(e.message, [
-                    'test/some_test.js',
-                    'assert.equal("foo", bar)',
-                    '[{"value":"bar","espath":"arguments/1"}]'
-                ].join('\n'));
-            }
-            if (option.saveContextOnRethrow) {
-                baseAssert.deepEqual(e.powerAssertContext, {
-                    "source":{
-                        "content":"assert.equal(\"foo\", bar)",
-                        "filepath":"test/some_test.js",
-                        "line": 1
-                    },
-                    "args": [
-                        {
-                            "value": "bar",
-                            "events": [{"value":"bar","espath":"arguments/1"}]
-                        }
-                    ]
-                });
-            }
+            baseAssert.deepEqual(e.powerAssertContext, {
+                "source":{
+                    "content":"assert.equal(\"foo\", bar)",
+                    "filepath":"test/some_test.js",
+                    "line": 1
+                },
+                "args": [
+                    {
+                        "value": "bar",
+                        "events": [{"value":"bar","espath":"arguments/1"}]
+                    }
+                ]
+            });
             baseAssert.equal(e.name, 'AssertionError');
         }
     });
@@ -292,28 +230,19 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
             eval(weave('assert.equal(foo, "bar");'));
             baseAssert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
-            if (option.modifyMessageOnRethrow) {
-                baseAssert.equal(e.message, [
-                    'test/some_test.js',
-                    'assert.equal(foo, "bar")',
-                    '[{"value":"foo","espath":"arguments/0"}]'
-                ].join('\n'));
-            }
-            if (option.saveContextOnRethrow) {
-                baseAssert.deepEqual(e.powerAssertContext, {
-                    "source":{
-                        "content":"assert.equal(foo, \"bar\")",
-                        "filepath":"test/some_test.js",
-                        "line": 1
-                    },
-                    "args":[
-                        {
-                            "value":"foo",
-                            "events":[{"value":"foo","espath":"arguments/0"}]
-                        }
-                    ]
-                });
-            }
+            baseAssert.deepEqual(e.powerAssertContext, {
+                "source":{
+                    "content":"assert.equal(foo, \"bar\")",
+                    "filepath":"test/some_test.js",
+                    "line": 1
+                },
+                "args":[
+                    {
+                        "value":"foo",
+                        "events":[{"value":"foo","espath":"arguments/0"}]
+                    }
+                ]
+            });
             baseAssert.equal(e.name, 'AssertionError');
         }
     });
@@ -329,32 +258,22 @@ suite(JSON.stringify(option) + ' yield for assertion inside generator', function
                 if (!e) {
                     return done(new Error('Assertion Error should be thrown'));
                 }
-                if (option.modifyMessageOnRethrow) {
-                    baseAssert.equal(e.message, [
-                        'test/some_test.js',
-                        'assert.ok(yield falsy)',
-                        'generator:true',
-                        '[{"value":0,"espath":"arguments/0"}]'
-                    ].join('\n'));
-                }
-                if (option.saveContextOnRethrow) {
-                    baseAssert.deepEqual(e.powerAssertContext, {
-                        "source": {
-                            "content": "assert.ok(yield falsy)",
-                            "filepath": "test/some_test.js",
-                            "generator": true,
-                            "line": 2
-                        },
-                        "args": [
-                            {
-                                "value": 0,
-                                "events": [
-                                    {"value": 0, "espath": "arguments/0"}
-                                ]
-                            }
-                        ]
-                    });
-                }
+                baseAssert.deepEqual(e.powerAssertContext, {
+                    "source": {
+                        "content": "assert.ok(yield falsy)",
+                        "filepath": "test/some_test.js",
+                        "generator": true,
+                        "line": 2
+                    },
+                    "args": [
+                        {
+                            "value": 0,
+                            "events": [
+                                {"value": 0, "espath": "arguments/0"}
+                            ]
+                        }
+                    ]
+                });
                 baseAssert.equal(e.name, 'AssertionError');
             } catch (e) {
                 return done (e);
@@ -392,32 +311,22 @@ suite(JSON.stringify(option) + ' await assertion inside async async function', f
                 if (!e) {
                     return done(new Error('Assertion Error should be thrown'));
                 }
-                if (option.modifyMessageOnRethrow) {
-                    baseAssert.equal(e.message, [
-                        'test/some_test.js',
-                        'assert.ok(await falsy)',
-                        'async:true',
-                        '[{"value":0,"espath":"arguments/0"}]'
-                    ].join('\n'));
-                }
-                if (option.saveContextOnRethrow) {
-                    baseAssert.deepEqual(e.powerAssertContext, {
-                        "source": {
-                            "content": "assert.ok(await falsy)",
-                            "filepath": "test/some_test.js",
-                            "async": true,
-                            "line": 2
-                        },
-                        "args": [
-                            {
-                                "value": 0,
-                                "events": [
-                                    {"value": 0, "espath": "arguments/0"}
-                                ]
-                            }
-                        ]
-                    });
-                }
+                baseAssert.deepEqual(e.powerAssertContext, {
+                    "source": {
+                        "content": "assert.ok(await falsy)",
+                        "filepath": "test/some_test.js",
+                        "async": true,
+                        "line": 2
+                    },
+                    "args": [
+                        {
+                            "value": 0,
+                            "events": [
+                                {"value": 0, "espath": "arguments/0"}
+                            ]
+                        }
+                    ]
+                });
                 baseAssert.equal(e.name, 'AssertionError');
             } catch (e) {
                 return done (e);
@@ -446,23 +355,9 @@ suite(JSON.stringify(option) + ' await assertion inside async async function', f
 
 testWithOption({
     modifyMessageOnRethrow: false,
-    saveContextOnRethrow: false
-});
-
-testWithOption({
-    modifyMessageOnRethrow: true,
-    saveContextOnRethrow: false
-});
-
-testWithOption({
-    modifyMessageOnRethrow: false,
     saveContextOnRethrow: true
 });
 
-testWithOption({
-    modifyMessageOnRethrow: true,
-    saveContextOnRethrow: true
-});
 
 
 
@@ -478,7 +373,7 @@ test('the case when assertion function call is not listed in patterns (even if m
         'assert.deepStrictEqual(actual, expected, [message])',
         'assert.notDeepStrictEqual(actual, expected, [message])'
     ];
-    var assert = empower(baseAssert, fakeFormatter, { patterns: patterns });
+    var assert = empower(baseAssert, { patterns: patterns });
 
     var falsy = 0;
     try {

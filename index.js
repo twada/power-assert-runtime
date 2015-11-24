@@ -18,11 +18,10 @@ var define = require('define-properties');
 /**
  * Enhance Power Assert feature to assert function/object.
  * @param assert target assert function or object to enhance
- * @param formatter power assert format function
  * @param options enhancement options
  * @return enhanced assert function/object
  */
-function empower (assert, formatter, options) {
+function empower (assert, options) {
     var typeOfAssert = (typeof assert);
     var enhancedAssert;
     if ((typeOfAssert !== 'object' && typeOfAssert !== 'function') || assert === null) {
@@ -33,10 +32,10 @@ function empower (assert, formatter, options) {
     }
     switch (typeOfAssert) {
     case 'function':
-        enhancedAssert = empowerAssertFunction(assert, formatter, options);
+        enhancedAssert = empowerAssertFunction(assert, options);
         break;
     case 'object':
-        enhancedAssert = empowerAssertObject(assert, formatter, options);
+        enhancedAssert = empowerAssertObject(assert, options);
         break;
     default:
         throw new Error('Cannot be here');
@@ -45,19 +44,19 @@ function empower (assert, formatter, options) {
     return enhancedAssert;
 }
 
-function empowerAssertObject (assertObject, formatter, options) {
+function empowerAssertObject (assertObject, options) {
     var config = extend(defaultOptions(), options);
     var target = config.destructive ? assertObject : create(assertObject);
-    var decorator = new Decorator(target, formatter, config);
+    var decorator = new Decorator(target, config);
     return extend(target, decorator.enhancement());
 }
 
-function empowerAssertFunction (assertFunction, formatter, options) {
+function empowerAssertFunction (assertFunction, options) {
     var config = extend(defaultOptions(), options);
     if (config.destructive) {
         throw new Error('cannot use destructive:true to function.');
     }
-    var decorator = new Decorator(assertFunction, formatter, config);
+    var decorator = new Decorator(assertFunction, config);
     var enhancement = decorator.enhancement();
     var powerAssert;
     if (typeof enhancement === 'function') {
