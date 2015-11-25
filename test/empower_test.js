@@ -386,4 +386,42 @@ test('the case when assertion function call is not listed in patterns (even if m
 });
 
 
+suite('on rethrowing Error', function () {
+    test('rethrow behavior - name replacement', function () {
+        try {
+            try {
+                throw new baseAssert.AssertionError({
+                    actual: 'hoge',
+                    expected: 'fuga',
+                    operator: '==',
+                    message: 'HOOOOOOOO'
+                });
+            } catch (e) {
+                e.foo = 'bar';
+                e.message = 'BARRRRRRRR';
+                throw e;
+            }
+        } catch (e) {
+            baseAssert.equal(e.message, 'BARRRRRRRR');
+        }
+    });
+    test('rethrow behavior - new props', function () {
+        try {
+            try {
+                throw new baseAssert.AssertionError({
+                    actual: 'hoge',
+                    expected: 'fuga',
+                    operator: '==',
+                    message: 'HOOOOOOOO'
+                });
+            } catch (e) {
+                e.foo = 'bar';
+                throw e;
+            }
+        } catch (e) {
+            baseAssert.equal(e.foo, 'bar');
+        }
+    });
+});
+
 }));
