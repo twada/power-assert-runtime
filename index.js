@@ -44,21 +44,10 @@ function empower (assert, options) {
     return enhancedAssert;
 }
 
-function onError (ev) {
-    var e = ev.error;
-    var message = ev.originalMessage;
-    var context = ev.powerAssertContext;
-    if (e.name !== 'AssertionError') {
-        throw e;
-    }
-    e.powerAssertContext = context;
-    throw e;
-};
-
 function empowerAssertObject (assertObject, options) {
     var config = extend(defaultOptions(), options);
     var target = config.destructive ? assertObject : create(assertObject);
-    var decorator = new Decorator(target, onError, config);
+    var decorator = new Decorator(target, config);
     return extend(target, decorator.enhancement());
 }
 
@@ -67,7 +56,7 @@ function empowerAssertFunction (assertFunction, options) {
     if (config.destructive) {
         throw new Error('cannot use destructive:true to function.');
     }
-    var decorator = new Decorator(assertFunction, onError, config);
+    var decorator = new Decorator(assertFunction, config);
     var enhancement = decorator.enhancement();
     var powerAssert;
     if (typeof enhancement === 'function') {

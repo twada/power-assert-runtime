@@ -19,14 +19,9 @@ suite('empower.defaultOptions()', function () {
     test('destructive: false', function () {
         assert.equal(this.options.destructive, false);
     });
-    test('modifyMessageOnRethrow: false', function () {
-        assert.equal(this.options.modifyMessageOnRethrow, false);
-    });
-    test('saveContextOnRethrow: true', function () {
-        assert.equal(this.options.saveContextOnRethrow, true);
-    });
-    test('formatter: undefined', function () {
-        assert.deepEqual(typeof this.options.formatter, 'undefined');
+    test('onError: function', function () {
+        assert.equal(typeof this.options.onError, 'function');
+        assert.equal(typeof this.options.onSuccess, 'function');
     });
     test('patterns: Array', function () {
         assert.deepEqual(this.options.patterns, [

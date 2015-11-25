@@ -12,16 +12,11 @@
     baseAssert
 ) {
 
-function fakeFormatter (context) {
-    throw new Error('formatter should not be called');
-}
+suite('not-espowered: ', function () {
 
+var assert = empower(baseAssert);
 
-function testWithOption (option) {
-    var assert = empower(baseAssert, fakeFormatter, option);
-
-
-test(JSON.stringify(option) + ' argument is null Literal.', function () {
+test('argument is null Literal.', function () {
     var foo = 'foo';
     try {
         eval('assert.equal(foo, null);');
@@ -34,7 +29,7 @@ test(JSON.stringify(option) + ' argument is null Literal.', function () {
 });
 
 
-test(JSON.stringify(option) + ' empowered function also acts like an assert function', function () {
+test('empowered function also acts like an assert function', function () {
     var falsy = 0;
     try {
         eval('assert(falsy);');
@@ -47,7 +42,7 @@ test(JSON.stringify(option) + ' empowered function also acts like an assert func
 });
 
 
-suite(JSON.stringify(option) + ' assertion method with one argument', function () {
+suite('assertion method with one argument', function () {
     test('Identifier', function () {
         var falsy = 0;
         try {
@@ -62,7 +57,7 @@ suite(JSON.stringify(option) + ' assertion method with one argument', function (
 });
 
 
-suite(JSON.stringify(option) + ' assertion method with two arguments', function () {
+suite('assertion method with two arguments', function () {
     test('both Identifier', function () {
         var foo = 'foo', bar = 'bar';
         try {
@@ -100,26 +95,6 @@ suite(JSON.stringify(option) + ' assertion method with two arguments', function 
     });
 });
 
-}
-
-testWithOption({
-    modifyMessageOnRethrow: false,
-    saveContextOnRethrow: false
-});
-
-testWithOption({
-    modifyMessageOnRethrow: true,
-    saveContextOnRethrow: false
-});
-
-testWithOption({
-    modifyMessageOnRethrow: false,
-    saveContextOnRethrow: true
-});
-
-testWithOption({
-    modifyMessageOnRethrow: true,
-    saveContextOnRethrow: true
 });
 
 }));

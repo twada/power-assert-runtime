@@ -100,7 +100,7 @@ function runMochaSimply() {
         .src(config.test.base + config.test.pattern, {read: false})
         .pipe(mocha({
             ui: 'tdd',
-            reporter: 'dot',
+            reporter: 'spec',
             require: ['babel-core/polyfill']
         }))
         .on('error', gutil.log);
