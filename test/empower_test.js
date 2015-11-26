@@ -443,6 +443,7 @@ suite('custom logging event handlers', function () {
         baseAssert.strictEqual(log[0][0], 'error');
         var event = log[0][1][0];
         baseAssert.strictEqual(event.originalMessage, 'Where did you learn math?');
+        baseAssert.strictEqual(event.type, 'error');
         baseAssert(event.error instanceof baseAssert.AssertionError, 'instanceof AssertionError');
         baseAssert(event.powerAssertContext, 'has a powerAssertContext');
     });
@@ -454,6 +455,7 @@ suite('custom logging event handlers', function () {
         baseAssert.strictEqual(log[0][0], 'success');
         var event = log[0][1][0];
         baseAssert.strictEqual(event.originalMessage, 'Good job!');
+        baseAssert.strictEqual(event.type, 'success');
         baseAssert(event.powerAssertContext, 'has a powerAssertContext');
     });
 
@@ -464,6 +466,7 @@ suite('custom logging event handlers', function () {
         baseAssert.strictEqual(log[0][0], 'error');
         var event = log[0][1][0];
         baseAssert.strictEqual(event.originalMessage, 'Maybe in an alternate universe.');
+        baseAssert.strictEqual(event.type, 'error');
         baseAssert(event.error instanceof baseAssert.AssertionError, 'instanceof AssertionError');
         baseAssert(!event.powerAssertContext, 'does not have a powerAssertContext');
         baseAssert.deepEqual(event.args, [4, 5, 'Maybe in an alternate universe.'], 'attaches event.args');
@@ -476,6 +479,7 @@ suite('custom logging event handlers', function () {
         baseAssert.strictEqual(log[0][0], 'success');
         var event = log[0][1][0];
         baseAssert.strictEqual(event.originalMessage, 'Gold star!');
+        baseAssert.strictEqual(event.type, 'success');
         baseAssert(!event.powerAssertContext, 'does not have a powerAssertContext');
         baseAssert.deepEqual(event.args, [4, 4, 'Gold star!'], 'attaches event.args');
     });
