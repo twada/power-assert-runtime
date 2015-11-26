@@ -17,13 +17,8 @@
     }
   ],
   "dependencies": {
-    "array-filter": "^1.0.0",
-    "array-foreach": "^1.0.1",
-    "array-map": "0.0.0",
-    "array-some": "^1.0.0",
     "call-signature": "0.0.2",
-    "define-properties": "^1.1.2",
-    "object-create": "^0.1.0",
+    "core-js": "^1.2.6",
     "xtend": "^4.0.0"
   },
   "devDependencies": {

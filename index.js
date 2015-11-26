@@ -7,13 +7,13 @@
  * Licensed under the MIT license.
  *   https://github.com/power-assert-js/empower/blob/master/MIT-LICENSE.txt
  */
+var create = require('core-js/library/fn/object/create');
+var extend = require('xtend/mutable');
 var defaultOptions = require('./lib/default-options');
 var Decorator = require('./lib/decorator');
 var capturable = require('./lib/capturable');
-var create = require('object-create');
+var define = require('./lib/define-properties');
 var slice = Array.prototype.slice;
-var extend = require('xtend/mutable');
-var define = require('define-properties');
 
 /**
  * Enhance Power Assert feature to assert function/object.
