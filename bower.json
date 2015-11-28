@@ -1,7 +1,7 @@
 {
-  "name": "empower",
+  "name": "empower-core",
   "description": "Power Assert feature enhancer for assert function/object",
-  "main": "build/empower.js",
+  "main": "build/empower-core.js",
   "license": "MIT",
   "ignore": [
     "**/.*",
@@ -28,10 +28,10 @@
       "homepage": "https://github.com/jamestalmage"
     }
   ],
-  "homepage": "https://github.com/power-assert-js/empower",
+  "homepage": "https://github.com/twada/empower-core",
   "repository": {
     "type": "git",
-    "url": "git://github.com/power-assert-js/empower.git"
+    "url": "git://github.com/twada/empower-core.git"
   },
   "devDependencies": {
     "mocha": "~2.2.4",

@@ -1,11 +1,11 @@
 /**
  * empower - Power Assert feature enhancer for assert function/object.
  *
- * https://github.com/power-assert-js/empower
+ * https://github.com/twada/empower-core
  *
  * Copyright (c) 2013-2015 Takuto Wada
  * Licensed under the MIT license.
- *   https://github.com/power-assert-js/empower/blob/master/MIT-LICENSE.txt
+ *   https://github.com/twada/empower-core/blob/master/MIT-LICENSE.txt
  */
 var create = require('core-js/library/fn/object/create');
 var extend = require('xtend/mutable');

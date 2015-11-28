@@ -1,6 +1,6 @@
 require('blanket')({
     pattern: [
-        '/empower/index.js',
-        '/empower/lib/'
+        '/empower-core/index.js',
+        '/empower-core/lib/'
     ]
 });

@@ -1,5 +1,5 @@
 {
-  "name": "empower-assert",
+  "name": "empower-core",
   "description": "Power Assert feature enhancer for assert function/object",
   "version": "1.1.0",
   "author": {
@@ -8,7 +8,7 @@
     "url": "http://github.com/twada"
   },
   "bugs": {
-    "url": "http://github.com/twada/empower-assert/issues"
+    "url": "http://github.com/twada/empower-core/issues"
   },
   "contributors": [
     {
@@ -54,11 +54,11 @@
     "gulpfile.js",
     "index.js",
     "lib",
-    "build/empower-assert.js",
+    "build/empower-core.js",
     "package.json",
     "test"
   ],
-  "homepage": "http://github.com/twada/empower-assert",
+  "homepage": "http://github.com/twada/empower-core",
   "keywords": [
     "power-assert",
     "assert",
@@ -70,7 +70,7 @@
   "main": "./index.js",
   "repository": {
     "type": "git",
-    "url": "http://github.com/twada/empower-assert.git"
+    "url": "http://github.com/twada/empower-core.git"
   },
   "scripts": {
     "bower": "bower install --config.interactive=false",

@@ -1,6 +1,6 @@
 var require = {
     paths: {
-        empower: "../build/empower",
+        "empower-core": "../build/empower-core",
         acorn: '../node_modules/acorn/dist/acorn',
         escodegen: '../build/escodegen',
         espower: "../node_modules/espower/build/espower",

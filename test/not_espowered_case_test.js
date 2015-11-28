@@ -1,11 +1,11 @@
 (function (root, factory) {
     'use strict';
     if (typeof define === 'function' && define.amd) {
-        define(['empower', 'assert'], factory);
+        define(['empower-core', 'assert'], factory);
     } else if (typeof exports === 'object') {
         factory(require('..'), require('assert'));
     } else {
-        factory(root.empower, root.assert);
+        factory(root.empowerCore, root.assert);
     }
 }(this, function (
     empower,

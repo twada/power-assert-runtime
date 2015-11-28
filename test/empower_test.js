@@ -2,11 +2,11 @@
     'use strict';
 
     if (typeof define === 'function' && define.amd) {
-        define(['empower', 'espower', 'acorn', 'acorn-es7-plugin', 'babel', 'escodegen', 'assert'], factory);
+        define(['empower-core', 'espower', 'acorn', 'acorn-es7-plugin', 'babel', 'escodegen', 'assert'], factory);
     } else if (typeof exports === 'object') {
         factory(require('..'), require('espower'), require('acorn'), require('acorn-es7-plugin'), require('babel-core'), require('escodegen'), require('assert'));
     } else {
-        factory(root.empower, root.espower, root.acorn, root.acornEs7Plugin, root.babel, root.escodegen, root.assert);
+        factory(root.empowerCore, root.espower, root.acorn, root.acornEs7Plugin, root.babel, root.escodegen, root.assert);
     }
 }(this, function (
     empower,

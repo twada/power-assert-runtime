@@ -13,10 +13,10 @@ var derequire = require('gulp-derequire');
 var dereserve = require('gulp-dereserve');
 var config = {
     bundle: {
-        standalone: 'empower',
+        standalone: 'empowerCore',
         srcFile: './index.js',
         destDir: './build',
-        destName: 'empower.js'
+        destName: 'empower-core.js'
     },
     assert_bundle: {
         standalone: 'assert',
