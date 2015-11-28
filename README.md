@@ -1,4 +1,4 @@
-empower
+empower-core
 ================================
 
 [![Build Status][travis-image]][travis-url]
@@ -16,10 +16,10 @@ Power Assert feature enhancer for assert function/object.
 
 DESCRIPTION
 ---------------------------------------
-`empower` is a core module of [power-assert](http://github.com/power-assert-js/power-assert) family. `empower` enhances standard `assert` function or any assert-like object to work with power-assert feature added code instrumented by [espower](http://github.com/power-assert-js/espower).
+`empower-core` is a core module of [power-assert](http://github.com/power-assert-js/power-assert) family. `empower-core` enhances standard `assert` function or any assert-like object to work with power-assert feature added code instrumented by [espower](http://github.com/power-assert-js/espower).
 
 
-`empower` works with standard `assert` function (best fit with [Mocha](http://visionmedia.github.io/mocha/)), and also supports assert-like objects/functions provided by various testing frameworks such as [QUnit](http://qunitjs.com/), [buster.js](http://docs.busterjs.org/en/latest/), and [nodeunit](https://github.com/caolan/nodeunit).
+`empower-core` works with standard `assert` function (best fit with [Mocha](http://visionmedia.github.io/mocha/)), and also supports assert-like objects/functions provided by various testing frameworks such as [QUnit](http://qunitjs.com/), [buster.js](http://docs.busterjs.org/en/latest/), and [nodeunit](https://github.com/caolan/nodeunit).
 
 
 Pull-requests, issue reports and patches are always welcomed. See [power-assert](http://github.com/power-assert-js/power-assert) project for more documentation.
@@ -27,19 +27,19 @@ Pull-requests, issue reports and patches are always welcomed. See [power-assert]
 
 CHANGELOG
 ---------------------------------------
-See [CHANGELOG](https://github.com/power-assert-js/empower/blob/master/CHANGELOG.md)
+See [CHANGELOG](https://github.com/twada/empower-core/blob/master/CHANGELOG.md)
 
 
 API
 ---------------------------------------
 
-### var enhancedAssert = empower(originalAssert, formatter, [options])
+### var enhancedAssert = empowerCore(originalAssert, [options])
 
 | return type            |
 |:-----------------------|
 | `function` or `object` |
 
-`empower` function takes function or object(`originalAssert`) and `formatter` function created by [power-assert-formatter](http://github.com/power-assert-js/power-assert-formatter) then returns PowerAssert feature added function/object base on `originalAssert`.
+`empower-core` function takes function or object(`originalAssert`) then returns PowerAssert feature added function/object based on `originalAssert`.
 If `destructive` option is falsy, `originalAssert` will be unchanged. If `destructive` option is truthy, `originalAssert` will be manipulated directly and returned `enhancedAssert` will be the same instance of `originalAssert`.
 
 
@@ -49,23 +49,14 @@ If `destructive` option is falsy, `originalAssert` will be unchanged. If `destru
 |:-----------------------|:--------------|
 | `function` or `object` | N/A           |
 
-`originalAssert` is an instance of standard `assert` function or any assert-like object. see [SUPPORTED ASSERTION LIBRARIES](https://github.com/power-assert-js/empower#supported-assertion-libraries) and [ASSERTION LIBRARIES KNOWN TO WORK](https://github.com/power-assert-js/empower#assertion-libraries-known-to-work) section. Be careful that `originalAssert` will be manipulated directly if `destructive` option is truthy.
-
-
-#### formatter
-
-| type       | default value |
-|:-----------|:--------------|
-| `function` | N/A           |
-
-formatter function created by [power-assert-formatter](http://github.com/power-assert-js/power-assert-formatter).
+`originalAssert` is an instance of standard `assert` function or any assert-like object. see [SUPPORTED ASSERTION LIBRARIES](https://github.com/twada/empower-core#supported-assertion-libraries) and [ASSERTION LIBRARIES KNOWN TO WORK](https://github.com/twada/empower-core#assertion-libraries-known-to-work) section. Be careful that `originalAssert` will be manipulated directly if `destructive` option is truthy.
 
 
 #### options
 
 | type     | default value |
 |:---------|:--------------|
-| `object` | (return value of `empower.defaultOptions()`) |
+| `object` | (return value of `empowerCore.defaultOptions()`) |
 
 Configuration options. If not passed, default options will be used.
 
@@ -78,35 +69,25 @@ Configuration options. If not passed, default options will be used.
 
 If truthy, modify `originalAssert` destructively.
 
-If `false`, empower mimics originalAssert as new object/function, so `originalAssert` will not be changed. If `true`, `originalAssert` will be manipulated directly and returned `enhancedAssert` will be the same instance of `originalAssert`.
+If `false`, empower-core mimics originalAssert as new object/function, so `originalAssert` will not be changed. If `true`, `originalAssert` will be manipulated directly and returned `enhancedAssert` will be the same instance of `originalAssert`.
 
 
-#### options.modifyMessageOnRethrow
+#### options.onError
 
-| type      | default value |
-|:----------|:--------------|
-| `boolean` | `false`       |
+| type       | default value |
+|:-----------|:--------------|
+| `function` | (function defined in `empowerCore.defaultOptions()`) |
 
-If truthy, modify `message` property of AssertionError on rethrow.
-
-
-#### options.saveContextOnRethrow
-
-| type      | default value |
-|:----------|:--------------|
-| `boolean` | `false`       |
-
-If truthy, add `powerAssertContext` property to AssertionError on rethrow.
+TBD
 
 
-`modifyMessageOnRethrow` option and `saveContextOnRethrow` option makes behavior matrix as below.
+#### options.onSuccess
 
-| modifyMessageOnRethrow | saveContextOnRethrow | resulting behavior                                |
-|:-----------------------|:---------------------|:--------------------------------------------------|
-| `false` (default)      | `false` (default)    | Always modify assertion message argument directly |
-| `true`                 | `false`              | Modify `message` of AssertionError on fail        |
-| `false`                | `true`               | Do not modify `message` of AssertionError but add `powerAssertContext` property on fail |
-| `true`                 | `true`               | On fail, modify `message` of AssertionError and also add `powerAssertContext` property |
+| type       | default value |
+|:-----------|:--------------|
+| `function` | (function defined in `empowerCore.defaultOptions()`) |
+
+TBD
 
 
 #### options.patterns
@@ -132,18 +113,18 @@ If truthy, add `powerAssertContext` property to AssertionError on rethrow.
 
 Target patterns for power assert feature instrumentation.
 
-Pattern detection is done by [escallmatch](http://github.com/twada/escallmatch). Any arguments enclosed in bracket (for example, `[message]`) means optional parameters. Without bracket means mandatory parameters.
+Pattern detection is done by [call-signature](https://github.com/jamestalmage/call-signature). Any arguments enclosed in bracket (for example, `[message]`) means optional parameters. Without bracket means mandatory parameters.
 
 
-### var options = empower.defaultOptions();
+### var options = empowerCore.defaultOptions();
 
-Returns default options object for `empower` function. In other words, returns
+Returns default options object for `empowerCore` function. In other words, returns
 
 ```javascript
 {
     destructive: false,
-    modifyMessageOnRethrow: false,
-    saveContextOnRethrow: false,
+    onError: onError,
+    onSuccess: onSuccess,
     patterns: [
         'assert(value, [message])',
         'assert.ok(value, [message])',
@@ -159,11 +140,26 @@ Returns default options object for `empower` function. In other words, returns
 }
 ```
 
+with sensible default for `onError` and `onSuccess`
+
+```js
+function onError (errorEvent) {
+    var e = errorEvent.error;
+    if (errorEvent.powerAssertContext && e.name === 'AssertionError') {
+        e.powerAssertContext = errorEvent.powerAssertContext;
+    }
+    throw e;
+}
+
+function onSuccess(successEvent) {
+    return successEvent.returnValue;
+}
+```
+
 
 SUPPORTED ASSERTION LIBRARIES
 ---------------------------------------
 * [Node assert API](http://nodejs.org/api/assert.html)
-* [Jxck/assert](https://github.com/Jxck/assert)
 
 
 ASSERTION LIBRARIES KNOWN TO WORK
@@ -180,25 +176,25 @@ INSTALL
 
 Install
 
-    $ npm install --save-dev empower
+    $ npm install --save-dev empower-core
 
 
-#### use empower npm module on browser
+#### use empower-core npm module on browser
 
-`empower` function is exported
+`empowerCore` function is exported
 
-    <script type="text/javascript" src="./path/to/node_modules/empower/build/empower.js"></script>
+    <script type="text/javascript" src="./path/to/node_modules/empower-core/build/empower-core.js"></script>
 
 
 ### via bower
 
 Install
 
-    $ bower install --save-dev empower
+    $ bower install --save-dev empower-core
 
-Then load (`empower` function is exported)
+Then load (`empowerCore` function is exported)
 
-    <script type="text/javascript" src="./path/to/bower_components/empower/build/empower.js"></script>
+    <script type="text/javascript" src="./path/to/bower_components/empower-core/build/empower-core.js"></script>
 
 
 AUTHOR
@@ -213,29 +209,29 @@ CONTRIBUTORS
 
 LICENSE
 ---------------------------------------
-Licensed under the [MIT](https://github.com/power-assert-js/empower/blob/master/MIT-LICENSE.txt) license.
+Licensed under the [MIT](https://github.com/twada/empower-core/blob/master/MIT-LICENSE.txt) license.
 
 
-[npm-url]: https://npmjs.org/package/empower
-[npm-image]: https://badge.fury.io/js/empower.svg
+[npm-url]: https://npmjs.org/package/empower-core
+[npm-image]: https://badge.fury.io/js/empower-core.svg
 
-[bower-url]: http://badge.fury.io/bo/empower
-[bower-image]: https://badge.fury.io/bo/empower.svg
+[bower-url]: http://badge.fury.io/bo/empower-core
+[bower-image]: https://badge.fury.io/bo/empower-core.svg
 
-[travis-url]: http://travis-ci.org/power-assert-js/empower
-[travis-image]: https://secure.travis-ci.org/power-assert-js/empower.svg?branch=master
+[travis-url]: http://travis-ci.org/twada/empower-core
+[travis-image]: https://secure.travis-ci.org/twada/empower-core.svg?branch=master
 
-[depstat-url]: https://gemnasium.com/power-assert-js/empower
-[depstat-image]: https://gemnasium.com/power-assert-js/empower.svg
+[depstat-url]: https://gemnasium.com/twada/empower-core
+[depstat-image]: https://gemnasium.com/twada/empower-core.svg
 
-[license-url]: https://github.com/power-assert-js/empower/blob/master/MIT-LICENSE.txt
+[license-url]: https://github.com/twada/empower-core/blob/master/MIT-LICENSE.txt
 [license-image]: http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat
 
-[codeclimate-url]: https://codeclimate.com/github/power-assert-js/empower
-[codeclimate-image]: https://codeclimate.com/github/power-assert-js/empower/badges/gpa.svg
+[codeclimate-url]: https://codeclimate.com/github/twada/empower-core
+[codeclimate-image]: https://codeclimate.com/github/twada/empower-core/badges/gpa.svg
 
-[coverage-url]: https://coveralls.io/r/power-assert-js/empower?branch=master
-[coverage-image]: https://coveralls.io/repos/power-assert-js/empower/badge.svg?branch=master
+[coverage-url]: https://coveralls.io/r/twada/empower-core?branch=master
+[coverage-image]: https://coveralls.io/repos/twada/empower-core/badge.svg?branch=master
 
 [gulp-url]: http://gulpjs.com/
 [gulp-image]: http://img.shields.io/badge/built_with-gulp-brightgreen.svg
