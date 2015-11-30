@@ -49,6 +49,7 @@
   },
   "files": [
     "CHANGELOG.md",
+    "CHANGELOG-empower.md",
     "MIT-LICENSE.txt",
     "README.md",
     "gulpfile.js",
