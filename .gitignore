@@ -4,6 +4,4 @@
 /bower_components
 /coverage.lcov
 /coverage.html
-/build/assert.js
-/build/escodegen.js
-/build/acorn-es7-plugin.js
+/local_build

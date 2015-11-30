@@ -15,25 +15,25 @@ var config = {
     bundle: {
         standalone: 'empowerCore',
         srcFile: './index.js',
-        destDir: './build',
+        destDir: './local_build',
         destName: 'empower-core.js'
     },
     assert_bundle: {
         standalone: 'assert',
         require: 'assert',
-        destDir: './build',
+        destDir: './local_build',
         destName: 'assert.js'
     },
     acorn_es7_plugin_bundle: {
         standalone: 'acornEs7Plugin',
         require: 'acorn-es7-plugin',
-        destDir: './build',
+        destDir: './local_build',
         destName: 'acorn-es7-plugin.js'
     },
     escodegen_bundle: {
         standalone: 'escodegen',
         srcFile: './node_modules/escodegen/escodegen.js',
-        destDir: './build',
+        destDir: './local_build',
         destName: 'escodegen.js'
     },
     coverage: {
@@ -46,7 +46,7 @@ var config = {
         browser: 'test/test-browser.html'
     }
 };
-var BUILDS = ['assert', 'escodegen', 'acorn_es7_plugin'];
+var LOCAL_BUILDS = ['assert', 'escodegen', 'acorn_es7_plugin'];
 
 function captureStdout (filespec) {
     var orig, log = '';
@@ -138,7 +138,7 @@ gulp.task('bundle', ['clean_bundle'], function() {
         .pipe(gulp.dest(config.bundle.destDir));
 });
 
-BUILDS.forEach(function (name) {
+LOCAL_BUILDS.forEach(function (name) {
     gulp.task('clean_' + name + '_bundle', function () {
         del.sync([path.join(config[name + '_bundle'].destDir, config[name + '_bundle'].destName)]);
     });
@@ -156,8 +156,8 @@ BUILDS.forEach(function (name) {
             .pipe(gulp.dest(config[name + '_bundle'].destDir));
     });
 });
-gulp.task('clean_deps', BUILDS.map(function (name) { return 'clean_' + name + '_bundle'; }));
-gulp.task('build_deps', BUILDS.map(function (name) { return name + '_bundle'; }));
+gulp.task('clean_deps', LOCAL_BUILDS.map(function (name) { return 'clean_' + name + '_bundle'; }));
+gulp.task('build_deps', LOCAL_BUILDS.map(function (name) { return name + '_bundle'; }));
 
 gulp.task('unit', function () {
     return runMochaSimply();
