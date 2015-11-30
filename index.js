@@ -1,5 +1,5 @@
 /**
- * empower - Power Assert feature enhancer for assert function/object.
+ * empower-core - Power Assert feature enhancer for assert function/object.
  *
  * https://github.com/twada/empower-core
  *
@@ -21,11 +21,11 @@ var slice = Array.prototype.slice;
  * @param options enhancement options
  * @return enhanced assert function/object
  */
-function empower (assert, options) {
+function empowerCore (assert, options) {
     var typeOfAssert = (typeof assert);
     var enhancedAssert;
     if ((typeOfAssert !== 'object' && typeOfAssert !== 'function') || assert === null) {
-        throw new TypeError('empower argument should be a function or object.');
+        throw new TypeError('empower-core argument should be a function or object.');
     }
     if (isEmpowered(assert)) {
         return assert;
@@ -76,5 +76,5 @@ function isEmpowered (assertObjectOrFunction) {
     return (typeof assertObjectOrFunction._capt === 'function') && (typeof assertObjectOrFunction._expr === 'function');
 }
 
-empower.defaultOptions = defaultOptions;
-module.exports = empower;
+empowerCore.defaultOptions = defaultOptions;
+module.exports = empowerCore;

@@ -42,7 +42,7 @@ suite('empower.defaultOptions()', function () {
 
 suite('empower argument preconditions', function () {
     function argumentTest (name, arg, expectedMessage) {
-        expectedMessage = expectedMessage || 'empower argument should be a function or object.';
+        expectedMessage = expectedMessage || 'empower-core argument should be a function or object.';
         test(name, function () {
             assert.throws(
                 function() {
