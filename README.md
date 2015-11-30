@@ -90,6 +90,15 @@ TBD
 TBD
 
 
+#### options.modifyMessageBeforeAssert
+
+| type       | default value |
+|:-----------|:--------------|
+| `function` | N/A           |
+
+TBD
+
+
 #### options.patterns
 
 | type                | default value       |
