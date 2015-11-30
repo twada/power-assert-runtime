@@ -12,6 +12,10 @@ var licensify = require('licensify');
 var derequire = require('gulp-derequire');
 var dereserve = require('gulp-dereserve');
 var config = {
+    dist: {
+        destDir: './build',
+        destName: 'empower-core.js'
+    },
     bundle: {
         standalone: 'empowerCore',
         srcFile: './index.js',
@@ -179,6 +183,16 @@ gulp.task('test_browser', ['bundle', 'build_deps'], function () {
         .pipe(mochaPhantomJS({reporter: 'dot'}));
 });
 
-gulp.task('clean', ['clean_coverage', 'clean_bundle', 'clean_deps']);
+gulp.task('clean_dist', function () {
+    del.sync([config.dist.destDir]);
+});
+
+gulp.task('dist', ['clean_dist', 'bundle'], function () {
+    return gulp
+        .src(path.join(config.bundle.destDir, config.bundle.destName))
+        .pipe(gulp.dest(config.dist.destDir));
+});
+
+gulp.task('clean', ['clean_dist', 'clean_coverage', 'clean_bundle', 'clean_deps']);
 
 gulp.task('test', ['unit','test_browser','test_amd']);

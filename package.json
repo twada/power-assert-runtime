@@ -73,8 +73,10 @@
     "url": "http://github.com/twada/empower-core.git"
   },
   "scripts": {
+    "preversion": "npm test",
+    "version": "npm run dist && git add -A build",
     "bower": "bower install --config.interactive=false",
-    "build": "npm prune && npm dedupe && gulp bundle",
+    "dist": "npm prune && npm dedupe && gulp dist",
     "test": "gulp test",
     "unit": "gulp unit",
     "watch": "gulp watch",
