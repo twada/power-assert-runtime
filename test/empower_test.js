@@ -443,6 +443,7 @@ suite('custom logging event handlers', function () {
         baseAssert.strictEqual(log[0][0], 'error');
         var event = log[0][1][0];
         baseAssert.strictEqual(event.originalMessage, 'Where did you learn math?');
+        baseAssert.strictEqual(event.assertionThrew, true);
         baseAssert(event.error instanceof baseAssert.AssertionError, 'instanceof AssertionError');
         baseAssert(event.powerAssertContext, 'has a powerAssertContext');
     });
@@ -454,6 +455,7 @@ suite('custom logging event handlers', function () {
         baseAssert.strictEqual(log[0][0], 'success');
         var event = log[0][1][0];
         baseAssert.strictEqual(event.originalMessage, 'Good job!');
+        baseAssert.strictEqual(event.assertionThrew, false);
         baseAssert(event.powerAssertContext, 'has a powerAssertContext');
     });
 
@@ -464,6 +466,7 @@ suite('custom logging event handlers', function () {
         baseAssert.strictEqual(log[0][0], 'error');
         var event = log[0][1][0];
         baseAssert.strictEqual(event.originalMessage, 'Maybe in an alternate universe.');
+        baseAssert.strictEqual(event.assertionThrew, true);
         baseAssert(event.error instanceof baseAssert.AssertionError, 'instanceof AssertionError');
         baseAssert(!event.powerAssertContext, 'does not have a powerAssertContext');
         baseAssert.deepEqual(event.args, [4, 5, 'Maybe in an alternate universe.'], 'attaches event.args');
@@ -476,6 +479,7 @@ suite('custom logging event handlers', function () {
         baseAssert.strictEqual(log[0][0], 'success');
         var event = log[0][1][0];
         baseAssert.strictEqual(event.originalMessage, 'Gold star!');
+        baseAssert.strictEqual(event.assertionThrew, false);
         baseAssert(!event.powerAssertContext, 'does not have a powerAssertContext');
         baseAssert.deepEqual(event.args, [4, 4, 'Gold star!'], 'attaches event.args');
     });
@@ -510,6 +514,65 @@ suite('onSuccess can throw', function () {
             return;
         }
         baseAssert.fail('should have thrown');
+    });
+});
+
+suite('wrapOnlyPatterns', function () {
+    var assert = empower(
+      {
+          fail: function (message) {
+              baseAssert.ok(false, message);
+          },
+          pass: function (message) {
+              // noop
+          }
+      },
+      {
+          wrapOnlyPatterns: [
+              'assert.fail([message])',
+              'assert.pass([message])'
+          ],
+          onError: function (event) {
+              baseAssert.equal(event.assertionThrew, true);
+              return event;
+          },
+          onSuccess: function (event) {
+              baseAssert.equal(event.assertionThrew, false);
+              return event;
+          }
+      }
+    );
+
+    test('instrumented code: success', function () {
+        var event = eval(weave('assert.pass("woot!")'));
+        baseAssert.equal(event.assertionThrew, false);
+        baseAssert.strictEqual(event.enhanced, false);
+        baseAssert.equal(event.originalMessage, 'woot!');
+        baseAssert.deepEqual(event.args, ['woot!']);
+    });
+
+    test('instrumented code: error', function () {
+        var event = eval(weave('assert.fail("Oh no!")'));
+        baseAssert.equal(event.assertionThrew, true);
+        baseAssert.strictEqual(event.enhanced, false);
+        baseAssert.equal(event.originalMessage, 'Oh no!');
+        baseAssert.deepEqual(event.args, ['Oh no!']);
+    });
+
+    test('non-instrumented code: success', function () {
+        var event = assert.pass('woot!');
+        baseAssert.equal(event.assertionThrew, false);
+        baseAssert.strictEqual(event.enhanced, false);
+        baseAssert.equal(event.originalMessage, 'woot!');
+        baseAssert.deepEqual(event.args, ['woot!']);
+    });
+
+    test('non-instrumented code: error', function () {
+        var event = assert.fail('Oh no!');
+        baseAssert.equal(event.assertionThrew, true);
+        baseAssert.strictEqual(event.enhanced, false);
+        baseAssert.equal(event.originalMessage, 'Oh no!');
+        baseAssert.deepEqual(event.args, ['Oh no!']);
     });
 });
 

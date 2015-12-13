@@ -73,22 +73,37 @@ If `false`, empower-core mimics originalAssert as new object/function, so `origi
 
 
 #### options.onError
-
-| type       | default value |
-|:-----------|:--------------|
-| `function` | (function defined in `empowerCore.defaultOptions()`) |
-
-TBD
-
-
 #### options.onSuccess
 
 | type       | default value |
 |:-----------|:--------------|
 | `function` | (function defined in `empowerCore.defaultOptions()`) |
 
-TBD
+Both methods are called with a single `event` argument, it will have the following properties:
 
+- `event.enhanced` - `true` for methods matching `patterns`. `false` for methods matching `wrapOnlyPatterns`.
+
+- `event.originalMessage` - The actual value the user provided for optional `message` parameter. This will be `undefined` if the user did not provide a value, even if the underlying assertion provides a default message.
+
+- `event.args` - An array of the actual arguments passed to the assertion.
+
+- `event.assertionThrew` - Whether or not the underlying assertion threw an error. This will always be `true` in an `onError` callback, and always `false` in an `onSuccess` callback.
+
+- `event.error` - Only present if `event.assertionThrew === true`. Contains the error thrown by the underlying assertion method.
+
+- `event.returnValue` - Only present if `event.assertionThrew === false`. Contains the value return value returned by the underlying assertion method.
+
+- `event.powerAssertContext` - Only present for methods that match `patterns`, and only in code that has been enhanced with the power-assert transform. It contains the information necessary for power-assert renderers to generate their output. Implementors of `onError` should usually attach it to the error object
+
+  ```js
+  function onError (errorEvent) {
+    var e = errorEvent.error;
+    if (errorEvent.powerAssertContext && e.name === 'AssertionError') {
+        e.powerAssertContext = errorEvent.powerAssertContext;
+    }
+    throw e;
+  }
+  ```
 
 #### options.modifyMessageBeforeAssert
 
@@ -123,6 +138,14 @@ TBD
 Target patterns for power assert feature instrumentation.
 
 Pattern detection is done by [call-signature](https://github.com/jamestalmage/call-signature). Any arguments enclosed in bracket (for example, `[message]`) means optional parameters. Without bracket means mandatory parameters.
+
+#### options.wrapOnlyPatterns
+
+| type                | default value       |
+|:--------------------|:--------------------|
+| `Array` of `string` | empty array         |
+
+Methods matching these patterns will not be instrumented by the code transform, but they will be wrapped at runtime and trigger events in the `onSuccess` and `onError` callbacks. Note that "wrap only" events will never have a `powerAssertContext` property.
 
 
 ### var options = empowerCore.defaultOptions();
