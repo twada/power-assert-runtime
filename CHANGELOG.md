@@ -1,3 +1,11 @@
+## [0.2.0](https://github.com/twada/empower-core/releases/tag/v0.2.0) (2015-12-13)
+
+
+#### Features
+
+  * [Track non-enhanced assertions](https://github.com/twada/empower-core/pull/2) (by [@jamestalmage](https://github.com/jamestalmage))
+
+
 ## [0.1.0](https://github.com/twada/empower-core/releases/tag/v0.1.0) (2015-12-01)
 
 
