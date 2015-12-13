@@ -517,4 +517,63 @@ suite('onSuccess can throw', function () {
     });
 });
 
+suite('additionalMethods', function () {
+    var assert = empower(
+      {
+          fail: function (message) {
+              baseAssert.ok(false, message);
+          },
+          pass: function (message) {
+              // noop
+          }
+      },
+      {
+          additionalMethods: [
+              'assert.fail([message])',
+              'assert.pass([message])'
+          ],
+          onError: function (event) {
+              baseAssert.equal(event.type, 'error');
+              return event;
+          },
+          onSuccess: function (event) {
+              baseAssert.equal(event.type, 'success');
+              return event;
+          }
+      }
+    );
+
+    test('instrumented code: success', function () {
+        var event = eval(weave('assert.pass("woot!")'));
+        baseAssert.equal(event.type, 'success');
+        baseAssert.strictEqual(event.enhanced, false);
+        baseAssert.equal(event.originalMessage, 'woot!');
+        baseAssert.deepEqual(event.args, ['woot!']);
+    });
+
+    test('instrumented code: error', function () {
+        var event = eval(weave('assert.fail("Oh no!")'));
+        baseAssert.equal(event.type, 'error');
+        baseAssert.strictEqual(event.enhanced, false);
+        baseAssert.equal(event.originalMessage, 'Oh no!');
+        baseAssert.deepEqual(event.args, ['Oh no!']);
+    });
+
+    test('non-instrumented code: success', function () {
+        var event = assert.pass('woot!');
+        baseAssert.equal(event.type, 'success');
+        baseAssert.strictEqual(event.enhanced, false);
+        baseAssert.equal(event.originalMessage, 'woot!');
+        baseAssert.deepEqual(event.args, ['woot!']);
+    });
+
+    test('non-instrumented code: error', function () {
+        var event = assert.fail('Oh no!');
+        baseAssert.equal(event.type, 'error');
+        baseAssert.strictEqual(event.enhanced, false);
+        baseAssert.equal(event.originalMessage, 'Oh no!');
+        baseAssert.deepEqual(event.args, ['Oh no!']);
+    });
+});
+
 }));
