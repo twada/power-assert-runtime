@@ -457,6 +457,7 @@ suite('custom logging event handlers', function () {
         baseAssert.strictEqual(event.originalMessage, 'Good job!');
         baseAssert.strictEqual(event.assertionThrew, false);
         baseAssert(event.powerAssertContext, 'has a powerAssertContext');
+        baseAssert.equal(event.powerAssertContext.source.content, 'assert.equal(2 + 2, 4, "Good job!")');
     });
 
     test('non-instrumented code: log assertion failures with onError', function () {
