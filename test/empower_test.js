@@ -517,7 +517,7 @@ suite('onSuccess can throw', function () {
     });
 });
 
-suite('enhanced methods can have default messages', function () {
+suite('metadata for enhanced methods', function () {
     var assert = empower(
       {
           fail: function (message) {
@@ -549,11 +549,15 @@ suite('enhanced methods can have default messages', function () {
     test('instrumented', function () {
         var event = eval(weave("assert.fail('doh!');"));
         baseAssert.equal(event.defaultMessage, 'User! You have failed this assertion!');
+        baseAssert.strictEqual(event.enhanced, true);
+        baseAssert.strictEqual(event.assertionFunction, assert.fail);
     });
 
-    test('noninstrumented', function () {
+    test('non-instrumented', function () {
         var event = assert.fail('doh!');
         baseAssert.equal(event.defaultMessage, 'User! You have failed this assertion!');
+        baseAssert.strictEqual(event.enhanced, true);
+        baseAssert.strictEqual(event.assertionFunction, assert.fail);
     });
 });
 
@@ -592,6 +596,7 @@ suite('wrapOnlyPatterns', function () {
         baseAssert.strictEqual(event.enhanced, false);
         baseAssert.equal(event.originalMessage, 'woot!');
         baseAssert.deepEqual(event.args, ['woot!']);
+        baseAssert.strictEqual(event.assertionFunction, assert.pass);
     });
 
     test('instrumented code: error', function () {
@@ -601,6 +606,7 @@ suite('wrapOnlyPatterns', function () {
         baseAssert.equal(event.originalMessage, 'Oh no!');
         baseAssert.equal(event.defaultMessage, 'User! You have failed this assertion!');
         baseAssert.deepEqual(event.args, ['Oh no!']);
+        baseAssert.strictEqual(event.assertionFunction, assert.fail);
     });
 
     test('non-instrumented code: success', function () {
@@ -609,6 +615,7 @@ suite('wrapOnlyPatterns', function () {
         baseAssert.strictEqual(event.enhanced, false);
         baseAssert.equal(event.originalMessage, 'woot!');
         baseAssert.deepEqual(event.args, ['woot!']);
+        baseAssert.strictEqual(event.assertionFunction, assert.pass);
     });
 
     test('non-instrumented code: error', function () {
@@ -618,6 +625,7 @@ suite('wrapOnlyPatterns', function () {
         baseAssert.equal(event.originalMessage, 'Oh no!');
         baseAssert.equal(event.defaultMessage, 'User! You have failed this assertion!');
         baseAssert.deepEqual(event.args, ['Oh no!']);
+        baseAssert.strictEqual(event.assertionFunction, assert.fail);
     });
 });
 
