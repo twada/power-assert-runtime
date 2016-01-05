@@ -551,6 +551,14 @@ suite('metadata for enhanced methods', function () {
         baseAssert.equal(event.defaultMessage, 'User! You have failed this assertion!');
         baseAssert.strictEqual(event.enhanced, true);
         baseAssert.strictEqual(event.assertionFunction, assert.fail);
+        baseAssert.deepEqual(event.matcherSpec, {
+            pattern: 'assert.fail([message])',
+            defaultMessage: 'User! You have failed this assertion!',
+            parsed: {
+                args: [{name: 'message', optional: true}],
+                callee: {object: 'assert', member: 'fail', type: 'MemberExpression'}
+            }
+        });
     });
 
     test('non-instrumented', function () {
