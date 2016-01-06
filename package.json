@@ -49,15 +49,12 @@
   },
   "files": [
     "CHANGELOG.md",
-    "CHANGELOG-empower.md",
     "MIT-LICENSE.txt",
     "README.md",
-    "gulpfile.js",
     "index.js",
     "lib",
     "build/empower-core.js",
-    "package.json",
-    "test"
+    "package.json"
   ],
   "homepage": "http://github.com/twada/empower-core",
   "keywords": [
