@@ -3,10 +3,7 @@ empower-core
 
 [![Build Status][travis-image]][travis-url]
 [![NPM package][npm-image]][npm-url]
-[![Bower package][bower-image]][bower-url]
 [![Dependency Status][depstat-image]][depstat-url]
-[![Coverage Status][coverage-image]][coverage-url]
-[![Code Climate][codeclimate-image]][codeclimate-url]
 [![License][license-image]][license-url]
 [![Built with Gulp][gulp-image]][gulp-url]
 
@@ -264,9 +261,6 @@ Licensed under the [MIT](https://github.com/twada/empower-core/blob/master/MIT-L
 [npm-url]: https://npmjs.org/package/empower-core
 [npm-image]: https://badge.fury.io/js/empower-core.svg
 
-[bower-url]: http://badge.fury.io/bo/empower-core
-[bower-image]: https://badge.fury.io/bo/empower-core.svg
-
 [travis-url]: http://travis-ci.org/twada/empower-core
 [travis-image]: https://secure.travis-ci.org/twada/empower-core.svg?branch=master
 
@@ -275,12 +269,6 @@ Licensed under the [MIT](https://github.com/twada/empower-core/blob/master/MIT-L
 
 [license-url]: https://github.com/twada/empower-core/blob/master/MIT-LICENSE.txt
 [license-image]: http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat
-
-[codeclimate-url]: https://codeclimate.com/github/twada/empower-core
-[codeclimate-image]: https://codeclimate.com/github/twada/empower-core/badges/gpa.svg
-
-[coverage-url]: https://coveralls.io/r/twada/empower-core?branch=master
-[coverage-image]: https://coveralls.io/repos/twada/empower-core/badge.svg?branch=master
 
 [gulp-url]: http://gulpjs.com/
 [gulp-image]: http://img.shields.io/badge/built_with-gulp-brightgreen.svg
