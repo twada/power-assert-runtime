@@ -85,6 +85,10 @@ Both methods are called with a single `event` argument, it will have the followi
 
 - `event.originalMessage` - The actual value the user provided for optional `message` parameter. This will be `undefined` if the user did not provide a value, even if the underlying assertion provides a default message.
 
+- `event.defaultMessage` - If you use objects instead of strings to specify patterns (see below), the `defaultMessage` metadata will be copied directly on the event object.
+
+- `event.matcherSpec` - This contains the complete parsed matcher spec as supplied, as well as any additional metadata you may have supplied (see patterns section below for details on how to supply additional metadata).
+
 - `event.args` - An array of the actual arguments passed to the assertion.
 
 - `event.assertionThrew` - Whether or not the underlying assertion threw an error. This will always be `true` in an `onError` callback, and always `false` in an `onSuccess` callback.
@@ -118,7 +122,7 @@ TBD
 
 | type                | default value       |
 |:--------------------|:--------------------|
-| `Array` of `string` | objects shown below |
+| `Array` of `string` or `objects`| objects shown below |
 
 ```javascript
 [
@@ -134,10 +138,22 @@ TBD
     'assert.notDeepStrictEqual(actual, expected, [message])'
 ]
 ```
-
 Target patterns for power assert feature instrumentation.
 
 Pattern detection is done by [call-signature](https://github.com/jamestalmage/call-signature). Any arguments enclosed in bracket (for example, `[message]`) means optional parameters. Without bracket means mandatory parameters.
+
+Instead of a string, you may alternatively specify an object with a `pattern` property, and any other arbitrary data.
+Currently only `defaultMessage` is formally recommended, but you can attach any data here and it will be passed to the `onSuccess` and `onError` handlers.
+
+```javascript
+[
+  {
+    pattern: 'assert.fail([message])',
+    defaultMessage:'assert.fail() was called!!'
+  },
+  ...
+]
+```
 
 #### options.wrapOnlyPatterns
 
@@ -147,6 +163,7 @@ Pattern detection is done by [call-signature](https://github.com/jamestalmage/ca
 
 Methods matching these patterns will not be instrumented by the code transform, but they will be wrapped at runtime and trigger events in the `onSuccess` and `onError` callbacks. Note that "wrap only" events will never have a `powerAssertContext` property.
 
+Similar to the `options.patterns`, you may supply objects with a `pattern` member, and the additional metadata will be passed to the assertion listeners.
 
 ### var options = empowerCore.defaultOptions();
 

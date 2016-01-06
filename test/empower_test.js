@@ -518,6 +518,58 @@ suite('onSuccess can throw', function () {
     });
 });
 
+suite('metadata for enhanced methods', function () {
+    var assert = empower(
+      {
+          fail: function (message) {
+              baseAssert.ok(false, message);
+          },
+          pass: function (message) {
+              // noop
+          }
+      },
+      {
+          patterns: [
+              {
+                  pattern: 'assert.fail([message])',
+                  defaultMessage: 'User! You have failed this assertion!'
+              },
+              'assert.pass([message])'
+          ],
+          onError: function (event) {
+              baseAssert.equal(event.assertionThrew, true);
+              return event;
+          },
+          onSuccess: function (event) {
+              baseAssert.equal(event.assertionThrew, false);
+              return event;
+          }
+      }
+    );
+
+    test('instrumented', function () {
+        var event = eval(weave("assert.fail('doh!');"));
+        baseAssert.equal(event.defaultMessage, 'User! You have failed this assertion!');
+        baseAssert.strictEqual(event.enhanced, true);
+        baseAssert.strictEqual(event.assertionFunction, assert.fail);
+        baseAssert.deepEqual(event.matcherSpec, {
+            pattern: 'assert.fail([message])',
+            defaultMessage: 'User! You have failed this assertion!',
+            parsed: {
+                args: [{name: 'message', optional: true}],
+                callee: {object: 'assert', member: 'fail', type: 'MemberExpression'}
+            }
+        });
+    });
+
+    test('non-instrumented', function () {
+        var event = assert.fail('doh!');
+        baseAssert.equal(event.defaultMessage, 'User! You have failed this assertion!');
+        baseAssert.strictEqual(event.enhanced, true);
+        baseAssert.strictEqual(event.assertionFunction, assert.fail);
+    });
+});
+
 suite('wrapOnlyPatterns', function () {
     var assert = empower(
       {
@@ -530,7 +582,10 @@ suite('wrapOnlyPatterns', function () {
       },
       {
           wrapOnlyPatterns: [
-              'assert.fail([message])',
+              {
+                  pattern: 'assert.fail([message])',
+                  defaultMessage: 'User! You have failed this assertion!'
+              },
               'assert.pass([message])'
           ],
           onError: function (event) {
@@ -550,6 +605,7 @@ suite('wrapOnlyPatterns', function () {
         baseAssert.strictEqual(event.enhanced, false);
         baseAssert.equal(event.originalMessage, 'woot!');
         baseAssert.deepEqual(event.args, ['woot!']);
+        baseAssert.strictEqual(event.assertionFunction, assert.pass);
     });
 
     test('instrumented code: error', function () {
@@ -557,7 +613,9 @@ suite('wrapOnlyPatterns', function () {
         baseAssert.equal(event.assertionThrew, true);
         baseAssert.strictEqual(event.enhanced, false);
         baseAssert.equal(event.originalMessage, 'Oh no!');
+        baseAssert.equal(event.defaultMessage, 'User! You have failed this assertion!');
         baseAssert.deepEqual(event.args, ['Oh no!']);
+        baseAssert.strictEqual(event.assertionFunction, assert.fail);
     });
 
     test('non-instrumented code: success', function () {
@@ -566,6 +624,7 @@ suite('wrapOnlyPatterns', function () {
         baseAssert.strictEqual(event.enhanced, false);
         baseAssert.equal(event.originalMessage, 'woot!');
         baseAssert.deepEqual(event.args, ['woot!']);
+        baseAssert.strictEqual(event.assertionFunction, assert.pass);
     });
 
     test('non-instrumented code: error', function () {
@@ -573,7 +632,9 @@ suite('wrapOnlyPatterns', function () {
         baseAssert.equal(event.assertionThrew, true);
         baseAssert.strictEqual(event.enhanced, false);
         baseAssert.equal(event.originalMessage, 'Oh no!');
+        baseAssert.equal(event.defaultMessage, 'User! You have failed this assertion!');
         baseAssert.deepEqual(event.args, ['Oh no!']);
+        baseAssert.strictEqual(event.assertionFunction, assert.fail);
     });
 });
 
