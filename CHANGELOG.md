@@ -1,3 +1,11 @@
+## [0.3.0](https://github.com/twada/empower-core/releases/tag/v0.3.0) (2016-01-06)
+
+
+#### Features
+
+  * [Allow arbitrary data to be provided for a given pattern](https://github.com/twada/empower-core/pull/6) (by [@jamestalmage](https://github.com/jamestalmage))
+
+
 ## [0.2.0](https://github.com/twada/empower-core/releases/tag/v0.2.0) (2015-12-13)
 
 
