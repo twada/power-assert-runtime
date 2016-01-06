@@ -7,7 +7,7 @@
  *   author: Takuto Wada <takuto.wada@gmail.com>
  *   contributors: James Talmage
  *   homepage: http://github.com/twada/empower-core
- *   version: 0.2.0
+ *   version: 0.3.0
  * 
  * call-signature:
  *   license: MIT
@@ -38,7 +38,7 @@
  *
  * https://github.com/twada/empower-core
  *
- * Copyright (c) 2013-2015 Takuto Wada
+ * Copyright (c) 2013-2016 Takuto Wada
  * Licensed under the MIT license.
  *   https://github.com/twada/empower-core/blob/master/MIT-LICENSE.txt
  */
@@ -162,10 +162,7 @@ var map = _dereq_('core-js/library/fn/array/map');
 var slice = Array.prototype.slice;
 
 function decorate (callSpec, decorator) {
-    var func = callSpec.func;
-    var thisObj = callSpec.thisObj;
     var numArgsToCapture = callSpec.numArgsToCapture;
-    var enhanced = callSpec.enhanced;
 
     return function decoratedAssert () {
         var context, message, hasMessage = false, args = slice.apply(arguments);
@@ -176,12 +173,9 @@ function decorate (callSpec, decorator) {
         }
 
         var invocation = {
-            thisObj: thisObj,
-            func: func,
             values: args,
             message: message,
-            hasMessage: hasMessage,
-            enhanced: enhanced
+            hasMessage: hasMessage
         };
 
         if (some(args, isCaptured)) {
@@ -202,9 +196,9 @@ function decorate (callSpec, decorator) {
                 return arg.powerAssertContext.value;
             });
 
-            return decorator.concreteAssert(invocation, context);
+            return decorator.concreteAssert(callSpec, invocation, context);
         } else {
-            return decorator.concreteAssert(invocation);
+            return decorator.concreteAssert(callSpec, invocation);
         }
     };
 }
@@ -229,6 +223,7 @@ var filter = _dereq_('core-js/library/fn/array/filter');
 var map = _dereq_('core-js/library/fn/array/map');
 var signature = _dereq_('call-signature');
 var decorate = _dereq_('./decorate');
+var keys = _dereq_('core-js/library/fn/object/keys');
 
 
 function Decorator (receiver, config) {
@@ -236,8 +231,8 @@ function Decorator (receiver, config) {
     this.config = config;
     this.onError = config.onError;
     this.onSuccess = config.onSuccess;
-    this.signatures = map(config.patterns, signature.parse);
-    this.wrapOnlySignatures = map(config.wrapOnlyPatterns, signature.parse);
+    this.signatures = map(config.patterns, parse);
+    this.wrapOnlySignatures = map(config.wrapOnlyPatterns, parse);
 }
 
 Decorator.prototype.enhancement = function () {
@@ -245,7 +240,8 @@ Decorator.prototype.enhancement = function () {
     var container = this.container();
     var wrappedMethods = [];
 
-    function attach(matcher, enhanced) {
+    function attach(matcherSpec, enhanced) {
+        var matcher = matcherSpec.parsed;
         var methodName = detectMethodName(matcher.callee);
         if (typeof that.receiver[methodName] !== 'function' || wrappedMethods.indexOf(methodName) !== -1) {
             return;
@@ -253,10 +249,11 @@ Decorator.prototype.enhancement = function () {
         var callSpec = {
             thisObj: that.receiver,
             func: that.receiver[methodName],
-            numArgsToCapture: numberOfArgumentsToCapture(matcher),
+            numArgsToCapture: numberOfArgumentsToCapture(matcherSpec),
+            matcherSpec: matcherSpec,
             enhanced: enhanced
         };
-        container[methodName] = decorate(callSpec, that);
+        container[methodName] = callSpec.enhancedFunc = decorate(callSpec, that);
         wrappedMethods.push(methodName);
     }
 
@@ -285,27 +282,33 @@ Decorator.prototype.container = function () {
                 thisObj: null,
                 func: this.receiver,
                 numArgsToCapture: numberOfArgumentsToCapture(candidates[0]),
+                matcherSpec: candidates[0],
                 enhanced: enhanced
             };
-            basement = decorate(callSpec, this);
+            basement = callSpec.enhancedFunc = decorate(callSpec, this);
         }
     }
     return basement;
 };
 
-Decorator.prototype.concreteAssert = function (invocation, context) {
-    var func = invocation.func;
-    var thisObj = invocation.thisObj;
+Decorator.prototype.concreteAssert = function (callSpec, invocation, context) {
+    var func = callSpec.func;
+    var thisObj = callSpec.thisObj;
+    var enhanced = callSpec.enhanced;
     var args = invocation.values;
     var message = invocation.message;
-    var enhanced = invocation.enhanced;
+    var matcherSpec = callSpec.matcherSpec;
+
     if (context && typeof this.config.modifyMessageBeforeAssert === 'function') {
         message = this.config.modifyMessageBeforeAssert({originalMessage: message, powerAssertContext: context});
     }
     args = args.concat(message);
 
     var data = {
+        assertionFunction: callSpec.enhancedFunc,
         originalMessage: message,
+        defaultMessage: matcherSpec.defaultMessage,
+        matcherSpec: matcherSpec,
         enhanced: enhanced,
         args: args
     };
@@ -327,7 +330,8 @@ Decorator.prototype.concreteAssert = function (invocation, context) {
     return this.onSuccess(data);
 };
 
-function numberOfArgumentsToCapture (matcher) {
+function numberOfArgumentsToCapture (matcherSpec) {
+    var matcher = matcherSpec.parsed;
     var len = matcher.args.length;
     var lastArg;
     if (0 < len) {
@@ -348,19 +352,31 @@ function detectMethodName (callee) {
 }
 
 
-function functionCall (matcher) {
-    return matcher.callee.type === 'Identifier';
+function functionCall (matcherSpec) {
+    return matcherSpec.parsed.callee.type === 'Identifier';
 }
 
 
-function methodCall (matcher) {
-    return matcher.callee.type === 'MemberExpression';
+function methodCall (matcherSpec) {
+    return matcherSpec.parsed.callee.type === 'MemberExpression';
+}
+
+function parse(matcherSpec) {
+    if (typeof matcherSpec === 'string') {
+        matcherSpec = {pattern: matcherSpec};
+    }
+    var ret = {};
+    keys(matcherSpec).forEach(function (key) {
+        ret[key] = matcherSpec[key];
+    });
+    ret.parsed = signature.parse(matcherSpec.pattern);
+    return ret;
 }
 
 
 module.exports = Decorator;
 
-},{"./decorate":3,"call-signature":7,"core-js/library/fn/array/filter":8,"core-js/library/fn/array/for-each":9,"core-js/library/fn/array/map":10}],5:[function(_dereq_,module,exports){
+},{"./decorate":3,"call-signature":7,"core-js/library/fn/array/filter":8,"core-js/library/fn/array/for-each":9,"core-js/library/fn/array/map":10,"core-js/library/fn/object/keys":14}],5:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function defaultOptions () {
