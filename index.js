@@ -3,7 +3,7 @@
  *
  * https://github.com/twada/empower-core
  *
- * Copyright (c) 2013-2015 Takuto Wada
+ * Copyright (c) 2013-2016 Takuto Wada
  * Licensed under the MIT license.
  *   https://github.com/twada/empower-core/blob/master/MIT-LICENSE.txt
  */
