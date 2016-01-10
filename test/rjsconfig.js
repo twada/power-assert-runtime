@@ -2,6 +2,7 @@ var require = {
     paths: {
         "empower-core": "../local_build/empower-core",
         acorn: '../node_modules/acorn/dist/acorn',
+        capturable: '../local_build/capturable',
         escodegen: '../local_build/escodegen',
         espower: "../node_modules/espower/build/espower",
         assert: '../local_build/assert',

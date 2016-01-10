@@ -40,6 +40,12 @@ var config = {
         destDir: './local_build',
         destName: 'escodegen.js'
     },
+    capturable_bundle: {
+        standalone: 'capturable',
+        srcFile: './test/capturable.js',
+        destDir: './local_build',
+        destName: 'capturable.js'
+    },
     coverage: {
         filename: 'coverage.lcov'
     },
@@ -50,7 +56,7 @@ var config = {
         browser: 'test/test-browser.html'
     }
 };
-var LOCAL_BUILDS = ['assert', 'escodegen', 'acorn_es7_plugin'];
+var LOCAL_BUILDS = ['assert', 'escodegen', 'acorn_es7_plugin', 'capturable'];
 
 function captureStdout (filespec) {
     var orig, log = '';
@@ -124,7 +130,7 @@ gulp.task('watch', function () {
 });
 
 gulp.task('clean_bundle', function () {
-    del.sync([config.bundle.destDir]);
+    del.sync([path.join(config.bundle.destDir, config.bundle.destName)]);
 });
 
 gulp.task('clean_coverage', function () {

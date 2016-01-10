@@ -1,20 +1,26 @@
 (function (root, factory) {
     'use strict';
     if (typeof define === 'function' && define.amd) {
-        define(['empower-core', 'espower', 'acorn', 'escodegen', 'assert', 'buster-assertions'], factory);
+        define(['empower-core', 'espower', 'acorn', 'escodegen', 'capturable', 'assert', 'buster-assertions'], factory);
     } else if (typeof exports === 'object') {
-        factory(require('..'), require('espower'), require('acorn'), require('escodegen'), require('assert'), require('buster-assertions'));
+        factory(require('..'), require('espower'), require('acorn'), require('escodegen'), require('./capturable'), require('assert'), require('buster-assertions'));
     } else {
-        factory(root.empowerCore, root.espower, root.acorn, root.escodegen, root.assert, root.buster);
+        factory(root.empowerCore, root.espower, root.acorn, root.escodegen, root.capturable, root.assert, root.buster);
     }
 }(this, function (
     empowerCore,
     espower,
     acorn,
     escodegen,
+    capturable,
     baseAssert,
     busterAssertions
 ) {
+    var empower = function (a, opts) {
+        var enhanced = empowerCore(a, opts);
+        Object.assign(enhanced, capturable());
+        return enhanced;
+    };
 
     var weave = function (line) {
         var filepath = '/absolute/path/to/project/test/some_test.js';
@@ -45,7 +51,7 @@
         ].join('\n');
     };
 
-    var assert = empowerCore(busterAssertions.assert, {
+    var assert = empower(busterAssertions.assert, {
         modifyMessageBeforeAssert: function (ev) {
             var message = ev.originalMessage;
             var powerAssertText = fakeFormatter(ev.powerAssertContext);

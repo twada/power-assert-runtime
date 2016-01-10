@@ -11,7 +11,6 @@ var create = require('core-js/library/fn/object/create');
 var extend = require('xtend/mutable');
 var defaultOptions = require('./lib/default-options');
 var Decorator = require('./lib/decorator');
-var capturable = require('./lib/capturable');
 var define = require('./lib/define-properties');
 var slice = Array.prototype.slice;
 
@@ -40,7 +39,7 @@ function empowerCore (assert, options) {
     default:
         throw new Error('Cannot be here');
     }
-    define(enhancedAssert, capturable());
+    define(enhancedAssert, { _empowered: true });
     return enhancedAssert;
 }
 
@@ -73,7 +72,7 @@ function empowerAssertFunction (assertFunction, options) {
 }
 
 function isEmpowered (assertObjectOrFunction) {
-    return (typeof assertObjectOrFunction._capt === 'function') && (typeof assertObjectOrFunction._expr === 'function');
+    return assertObjectOrFunction._empowered;
 }
 
 empowerCore.defaultOptions = defaultOptions;
