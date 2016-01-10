@@ -1,3 +1,11 @@
+## [0.4.0](https://github.com/twada/empower-core/releases/tag/v0.4.0) (2016-01-10)
+
+
+#### Features
+
+  * [remove `_capt` and `_expr` from empower-core](https://github.com/twada/empower-core/pull/3)
+
+
 ## [0.3.0](https://github.com/twada/empower-core/releases/tag/v0.3.0) (2016-01-06)
 
 
