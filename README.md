@@ -13,13 +13,13 @@ Power Assert feature enhancer for assert function/object.
 
 DESCRIPTION
 ---------------------------------------
-`empower-core` is a core module of [power-assert](http://github.com/power-assert-js/power-assert) family. `empower-core` enhances standard `assert` function or any assert-like object to work with power-assert feature added code instrumented by [espower](http://github.com/power-assert-js/espower).
+`empower-core` is a core module of [power-assert](https://github.com/power-assert-js/power-assert) family. `empower-core` enhances standard `assert` function or any assert-like object to work with power-assert feature added code instrumented by [espower](https://github.com/power-assert-js/espower).
 
 
-`empower-core` works with standard `assert` function (best fit with [Mocha](http://visionmedia.github.io/mocha/)), and also supports assert-like objects/functions provided by various testing frameworks such as [QUnit](http://qunitjs.com/), [buster.js](http://docs.busterjs.org/en/latest/), and [nodeunit](https://github.com/caolan/nodeunit).
+`empower-core` works with standard `assert` function (best fit with [Mocha](https://mochajs.org/)), and also supports assert-like objects/functions provided by various testing frameworks such as [QUnit](https://qunitjs.com/), [buster.js](http://docs.busterjs.org/en/latest/), and [nodeunit](https://github.com/caolan/nodeunit).
 
 
-Pull-requests, issue reports and patches are always welcomed. See [power-assert](http://github.com/power-assert-js/power-assert) project for more documentation.
+Pull-requests, issue reports and patches are always welcomed. See [power-assert](https://github.com/power-assert-js/power-assert) project for more documentation.
 
 
 CHANGELOG
@@ -205,12 +205,12 @@ function onSuccess(successEvent) {
 
 SUPPORTED ASSERTION LIBRARIES
 ---------------------------------------
-* [Node assert API](http://nodejs.org/api/assert.html)
+* [Node assert API](https://nodejs.org/api/assert.html)
 
 
 ASSERTION LIBRARIES KNOWN TO WORK
 ---------------------------------------
-* [QUnit.assert](http://qunitjs.com/)
+* [QUnit.assert](https://qunitjs.com/)
 * [nodeunit](https://github.com/caolan/nodeunit)
 * [buster-assertions](http://docs.busterjs.org/en/latest/modules/buster-assertions/)
 
@@ -245,7 +245,7 @@ Then load (`empowerCore` function is exported)
 
 AUTHOR
 ---------------------------------------
-* [Takuto Wada](http://github.com/twada)
+* [Takuto Wada](https://github.com/twada)
 
 
 CONTRIBUTORS
@@ -261,14 +261,14 @@ Licensed under the [MIT](https://github.com/twada/empower-core/blob/master/MIT-L
 [npm-url]: https://npmjs.org/package/empower-core
 [npm-image]: https://badge.fury.io/js/empower-core.svg
 
-[travis-url]: http://travis-ci.org/twada/empower-core
+[travis-url]: https://travis-ci.org/twada/empower-core
 [travis-image]: https://secure.travis-ci.org/twada/empower-core.svg?branch=master
 
 [depstat-url]: https://gemnasium.com/twada/empower-core
 [depstat-image]: https://gemnasium.com/twada/empower-core.svg
 
 [license-url]: https://github.com/twada/empower-core/blob/master/MIT-LICENSE.txt
-[license-image]: http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat
+[license-image]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat
 
 [gulp-url]: http://gulpjs.com/
-[gulp-image]: http://img.shields.io/badge/built_with-gulp-brightgreen.svg
+[gulp-image]: https://img.shields.io/badge/built_with-gulp-brightgreen.svg
