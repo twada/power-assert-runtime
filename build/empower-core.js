@@ -7,7 +7,7 @@
  *   author: Takuto Wada <takuto.wada@gmail.com>
  *   contributors: James Talmage
  *   homepage: http://github.com/twada/empower-core
- *   version: 0.3.0
+ *   version: 0.4.0
  * 
  * call-signature:
  *   license: MIT
@@ -46,7 +46,6 @@ var create = _dereq_('core-js/library/fn/object/create');
 var extend = _dereq_('xtend/mutable');
 var defaultOptions = _dereq_('./lib/default-options');
 var Decorator = _dereq_('./lib/decorator');
-var capturable = _dereq_('./lib/capturable');
 var define = _dereq_('./lib/define-properties');
 var slice = Array.prototype.slice;
 
@@ -75,7 +74,7 @@ function empowerCore (assert, options) {
     default:
         throw new Error('Cannot be here');
     }
-    define(enhancedAssert, capturable());
+    define(enhancedAssert, { _empowered: true });
     return enhancedAssert;
 }
 
@@ -108,53 +107,13 @@ function empowerAssertFunction (assertFunction, options) {
 }
 
 function isEmpowered (assertObjectOrFunction) {
-    return (typeof assertObjectOrFunction._capt === 'function') && (typeof assertObjectOrFunction._expr === 'function');
+    return assertObjectOrFunction._empowered;
 }
 
 empowerCore.defaultOptions = defaultOptions;
 module.exports = empowerCore;
 
-},{"./lib/capturable":2,"./lib/decorator":4,"./lib/default-options":5,"./lib/define-properties":6,"core-js/library/fn/object/create":12,"xtend/mutable":27}],2:[function(_dereq_,module,exports){
-'use strict';
-
-module.exports = function capturable () {
-    var events = [];
-
-    function _capt (value, espath) {
-        events.push({value: value, espath: espath});
-        return value;
-    }
-
-    function _expr (value, args) {
-        var captured = events;
-        events = [];
-        var source = {
-            content: args.content,
-            filepath: args.filepath,
-            line: args.line
-        };
-        if (args.generator) {
-            source.generator = true;
-        }
-        if (args.async) {
-            source.async = true;
-        }
-        return {
-            powerAssertContext: {
-                value: value,
-                events: captured
-            },
-            source: source
-        };
-    }
-
-    return {
-        _capt: _capt,
-        _expr: _expr
-    };
-};
-
-},{}],3:[function(_dereq_,module,exports){
+},{"./lib/decorator":3,"./lib/default-options":4,"./lib/define-properties":5,"core-js/library/fn/object/create":11,"xtend/mutable":26}],2:[function(_dereq_,module,exports){
 'use strict';
 
 var some = _dereq_('core-js/library/fn/array/some');
@@ -215,7 +174,7 @@ function isCaptured (value) {
 
 module.exports = decorate;
 
-},{"core-js/library/fn/array/map":10,"core-js/library/fn/array/some":11}],4:[function(_dereq_,module,exports){
+},{"core-js/library/fn/array/map":9,"core-js/library/fn/array/some":10}],3:[function(_dereq_,module,exports){
 'use strict';
 
 var forEach = _dereq_('core-js/library/fn/array/for-each');
@@ -366,7 +325,7 @@ function parse(matcherSpec) {
         matcherSpec = {pattern: matcherSpec};
     }
     var ret = {};
-    keys(matcherSpec).forEach(function (key) {
+    forEach(keys(matcherSpec), function (key) {
         ret[key] = matcherSpec[key];
     });
     ret.parsed = signature.parse(matcherSpec.pattern);
@@ -376,7 +335,7 @@ function parse(matcherSpec) {
 
 module.exports = Decorator;
 
-},{"./decorate":3,"call-signature":7,"core-js/library/fn/array/filter":8,"core-js/library/fn/array/for-each":9,"core-js/library/fn/array/map":10,"core-js/library/fn/object/keys":14}],5:[function(_dereq_,module,exports){
+},{"./decorate":2,"call-signature":6,"core-js/library/fn/array/filter":7,"core-js/library/fn/array/for-each":8,"core-js/library/fn/array/map":9,"core-js/library/fn/object/keys":13}],4:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function defaultOptions () {
@@ -412,7 +371,7 @@ function onSuccess(successEvent) {
     return successEvent.returnValue;
 }
 
-},{}],6:[function(_dereq_,module,exports){
+},{}],5:[function(_dereq_,module,exports){
 'use strict';
 
 var defineProperty = _dereq_('core-js/library/fn/object/define-property');
@@ -433,7 +392,7 @@ var defineProperties = function (object, map) {
 
 module.exports = defineProperties;
 
-},{"core-js/library/fn/array/for-each":9,"core-js/library/fn/object/define-property":13,"core-js/library/fn/object/keys":14}],7:[function(_dereq_,module,exports){
+},{"core-js/library/fn/array/for-each":8,"core-js/library/fn/object/define-property":12,"core-js/library/fn/object/keys":13}],6:[function(_dereq_,module,exports){
 'use strict';
 module.exports.parse = parse;
 module.exports.generate = generate;
@@ -518,40 +477,40 @@ function generate(parsed) {
 	]).join('');
 }
 
-},{}],8:[function(_dereq_,module,exports){
+},{}],7:[function(_dereq_,module,exports){
 _dereq_('../../modules/js.array.statics');
 module.exports = _dereq_('../../modules/$.core').Array.filter;
-},{"../../modules/$.core":16,"../../modules/js.array.statics":26}],9:[function(_dereq_,module,exports){
+},{"../../modules/$.core":15,"../../modules/js.array.statics":25}],8:[function(_dereq_,module,exports){
 _dereq_('../../modules/js.array.statics');
 module.exports = _dereq_('../../modules/$.core').Array.forEach;
-},{"../../modules/$.core":16,"../../modules/js.array.statics":26}],10:[function(_dereq_,module,exports){
+},{"../../modules/$.core":15,"../../modules/js.array.statics":25}],9:[function(_dereq_,module,exports){
 _dereq_('../../modules/js.array.statics');
 module.exports = _dereq_('../../modules/$.core').Array.map;
-},{"../../modules/$.core":16,"../../modules/js.array.statics":26}],11:[function(_dereq_,module,exports){
+},{"../../modules/$.core":15,"../../modules/js.array.statics":25}],10:[function(_dereq_,module,exports){
 _dereq_('../../modules/js.array.statics');
 module.exports = _dereq_('../../modules/$.core').Array.some;
-},{"../../modules/$.core":16,"../../modules/js.array.statics":26}],12:[function(_dereq_,module,exports){
+},{"../../modules/$.core":15,"../../modules/js.array.statics":25}],11:[function(_dereq_,module,exports){
 var $ = _dereq_('../../modules/$');
 module.exports = function create(P, D){
   return $.create(P, D);
 };
-},{"../../modules/$":22}],13:[function(_dereq_,module,exports){
+},{"../../modules/$":21}],12:[function(_dereq_,module,exports){
 var $ = _dereq_('../../modules/$');
 module.exports = function defineProperty(it, key, desc){
   return $.setDesc(it, key, desc);
 };
-},{"../../modules/$":22}],14:[function(_dereq_,module,exports){
+},{"../../modules/$":21}],13:[function(_dereq_,module,exports){
 _dereq_('../../modules/es6.object.keys');
 module.exports = _dereq_('../../modules/$.core').Object.keys;
-},{"../../modules/$.core":16,"../../modules/es6.object.keys":25}],15:[function(_dereq_,module,exports){
+},{"../../modules/$.core":15,"../../modules/es6.object.keys":24}],14:[function(_dereq_,module,exports){
 module.exports = function(it){
   if(typeof it != 'function')throw TypeError(it + ' is not a function!');
   return it;
 };
-},{}],16:[function(_dereq_,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 var core = module.exports = {version: '1.2.6'};
 if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
-},{}],17:[function(_dereq_,module,exports){
+},{}],16:[function(_dereq_,module,exports){
 // optional / simple context binding
 var aFunction = _dereq_('./$.a-function');
 module.exports = function(fn, that, length){
@@ -572,13 +531,13 @@ module.exports = function(fn, that, length){
     return fn.apply(that, arguments);
   };
 };
-},{"./$.a-function":15}],18:[function(_dereq_,module,exports){
+},{"./$.a-function":14}],17:[function(_dereq_,module,exports){
 // 7.2.1 RequireObjectCoercible(argument)
 module.exports = function(it){
   if(it == undefined)throw TypeError("Can't call method on  " + it);
   return it;
 };
-},{}],19:[function(_dereq_,module,exports){
+},{}],18:[function(_dereq_,module,exports){
 var global    = _dereq_('./$.global')
   , core      = _dereq_('./$.core')
   , ctx       = _dereq_('./$.ctx')
@@ -625,7 +584,7 @@ $export.P = 8;  // proto
 $export.B = 16; // bind
 $export.W = 32; // wrap
 module.exports = $export;
-},{"./$.core":16,"./$.ctx":17,"./$.global":21}],20:[function(_dereq_,module,exports){
+},{"./$.core":15,"./$.ctx":16,"./$.global":20}],19:[function(_dereq_,module,exports){
 module.exports = function(exec){
   try {
     return !!exec();
@@ -633,12 +592,12 @@ module.exports = function(exec){
     return true;
   }
 };
-},{}],21:[function(_dereq_,module,exports){
+},{}],20:[function(_dereq_,module,exports){
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
 var global = module.exports = typeof window != 'undefined' && window.Math == Math
   ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
 if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
-},{}],22:[function(_dereq_,module,exports){
+},{}],21:[function(_dereq_,module,exports){
 var $Object = Object;
 module.exports = {
   create:     $Object.create,
@@ -652,7 +611,7 @@ module.exports = {
   getSymbols: $Object.getOwnPropertySymbols,
   each:       [].forEach
 };
-},{}],23:[function(_dereq_,module,exports){
+},{}],22:[function(_dereq_,module,exports){
 // most Object methods by ES6 should accept primitives
 var $export = _dereq_('./$.export')
   , core    = _dereq_('./$.core')
@@ -663,13 +622,13 @@ module.exports = function(KEY, exec){
   exp[KEY] = exec(fn);
   $export($export.S + $export.F * fails(function(){ fn(1); }), 'Object', exp);
 };
-},{"./$.core":16,"./$.export":19,"./$.fails":20}],24:[function(_dereq_,module,exports){
+},{"./$.core":15,"./$.export":18,"./$.fails":19}],23:[function(_dereq_,module,exports){
 // 7.1.13 ToObject(argument)
 var defined = _dereq_('./$.defined');
 module.exports = function(it){
   return Object(defined(it));
 };
-},{"./$.defined":18}],25:[function(_dereq_,module,exports){
+},{"./$.defined":17}],24:[function(_dereq_,module,exports){
 // 19.1.2.14 Object.keys(O)
 var toObject = _dereq_('./$.to-object');
 
@@ -678,7 +637,7 @@ _dereq_('./$.object-sap')('keys', function($keys){
     return $keys(toObject(it));
   };
 });
-},{"./$.object-sap":23,"./$.to-object":24}],26:[function(_dereq_,module,exports){
+},{"./$.object-sap":22,"./$.to-object":23}],25:[function(_dereq_,module,exports){
 // JavaScript 1.6 / Strawman array statics shim
 var $       = _dereq_('./$')
   , $export = _dereq_('./$.export')
@@ -696,7 +655,7 @@ setStatics('indexOf,every,some,forEach,map,filter,find,findIndex,includes', 3);
 setStatics('join,slice,concat,push,splice,unshift,sort,lastIndexOf,' +
            'reduce,reduceRight,copyWithin,fill');
 $export($export.S, 'Array', statics);
-},{"./$":22,"./$.core":16,"./$.ctx":17,"./$.export":19}],27:[function(_dereq_,module,exports){
+},{"./$":21,"./$.core":15,"./$.ctx":16,"./$.export":18}],26:[function(_dereq_,module,exports){
 module.exports = extend
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
