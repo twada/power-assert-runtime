@@ -1,3 +1,12 @@
+## [0.5.0](https://github.com/twada/empower-core/releases/tag/v0.5.0) (2016-01-21)
+
+
+#### Features
+
+  * [Allow prototype enhancements](https://github.com/twada/empower-core/pull/7) (by [@jamestalmage](https://github.com/jamestalmage))
+  * [Performance improvements](https://github.com/twada/empower-core/pull/8) (by [@jamestalmage](https://github.com/jamestalmage))
+
+
 ## [0.4.0](https://github.com/twada/empower-core/releases/tag/v0.4.0) (2016-01-10)
 
 
