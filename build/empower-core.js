@@ -7,7 +7,7 @@
  *   author: Takuto Wada <takuto.wada@gmail.com>
  *   contributors: James Talmage
  *   homepage: http://github.com/twada/empower-core
- *   version: 0.4.0
+ *   version: 0.5.0
  * 
  * call-signature:
  *   license: MIT
@@ -118,13 +118,19 @@ module.exports = empowerCore;
 
 var some = _dereq_('core-js/library/fn/array/some');
 var map = _dereq_('core-js/library/fn/array/map');
-var slice = Array.prototype.slice;
 
 function decorate (callSpec, decorator) {
     var numArgsToCapture = callSpec.numArgsToCapture;
 
     return function decoratedAssert () {
-        var context, message, hasMessage = false, args = slice.apply(arguments);
+        var context, message, hasMessage = false;
+
+        // see: https://github.com/twada/empower-core/pull/8#issue-127859465
+        // see: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#32-leaking-arguments
+        var args = new Array(arguments.length);
+        for(var i = 0; i < args.length; ++i) {
+            args[i] = arguments[i];
+        }
 
         if (numArgsToCapture === (args.length - 1)) {
             message = args.pop();
@@ -132,6 +138,7 @@ function decorate (callSpec, decorator) {
         }
 
         var invocation = {
+            thisObj: this,
             values: args,
             message: message,
             hasMessage: hasMessage
@@ -252,7 +259,7 @@ Decorator.prototype.container = function () {
 
 Decorator.prototype.concreteAssert = function (callSpec, invocation, context) {
     var func = callSpec.func;
-    var thisObj = callSpec.thisObj;
+    var thisObj = this.config.bindReceiver ? callSpec.thisObj : invocation.thisObj;
     var enhanced = callSpec.enhanced;
     var args = invocation.values;
     var message = invocation.message;
@@ -264,6 +271,7 @@ Decorator.prototype.concreteAssert = function (callSpec, invocation, context) {
     args = args.concat(message);
 
     var data = {
+        thisObj: invocation.thisObj,
         assertionFunction: callSpec.enhancedFunc,
         originalMessage: message,
         defaultMessage: matcherSpec.defaultMessage,
@@ -276,17 +284,22 @@ Decorator.prototype.concreteAssert = function (callSpec, invocation, context) {
         data.powerAssertContext = context;
     }
 
+    return this._callFunc(func, thisObj, args, data);
+};
+
+// see: https://github.com/twada/empower-core/pull/8#issuecomment-173480982
+Decorator.prototype._callFunc = function (func, thisObj, args, data) {
     var ret;
     try {
         ret = func.apply(thisObj, args);
     } catch (e) {
         data.assertionThrew = true;
         data.error = e;
-        return this.onError(data);
+        return this.onError.call(thisObj, data);
     }
     data.assertionThrew = false;
     data.returnValue = ret;
-    return this.onSuccess(data);
+    return this.onSuccess.call(thisObj, data);
 };
 
 function numberOfArgumentsToCapture (matcherSpec) {
@@ -341,6 +354,7 @@ module.exports = Decorator;
 module.exports = function defaultOptions () {
     return {
         destructive: false,
+        bindReceiver: true,
         onError: onError,
         onSuccess: onSuccess,
         patterns: [
