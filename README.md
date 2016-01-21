@@ -69,6 +69,15 @@ If truthy, modify `originalAssert` destructively.
 If `false`, empower-core mimics originalAssert as new object/function, so `originalAssert` will not be changed. If `true`, `originalAssert` will be manipulated directly and returned `enhancedAssert` will be the same instance of `originalAssert`.
 
 
+#### options.bindReceiver
+
+| type      | default value |
+|:----------|:--------------|
+| `boolean` | `true`        |
+
+`bindReceiver` defaults to `true`, meaning assertion methods have their `this` value bound to the original assertion. Setting `bindReceiver` to false causes the `this` reference to be passed through from the actual invocation.
+
+
 #### options.onError
 #### options.onSuccess
 
