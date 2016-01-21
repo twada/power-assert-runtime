@@ -644,4 +644,47 @@ suite('wrapOnlyPatterns', function () {
     });
 });
 
+suite('enhancing a prototype', function () {
+    test('you can enhance a prototype', function () {
+        function AssertionApi(name) {
+            this.name = name;
+            this.assertions = [];
+        }
+
+        AssertionApi.prototype.name = 'prototype';
+
+        AssertionApi.prototype.equal = function (actual, expected, message) {
+            this.assertions.push(actual + ' == ' + expected);
+            baseAssert.equal(actual, expected, message);
+        };
+
+        function onAssertion(event) {
+            baseAssert.strictEqual(this, event.thisObj);
+            return event.thisObj;
+        }
+
+        empower(AssertionApi.prototype, {
+            patterns: [
+                'assert.equal(actual, expected, [message])'
+            ],
+            destructive: true,
+            bindReceiver: false,
+            onSuccess: onAssertion,
+            onError: onAssertion
+        });
+
+        var assertA = new AssertionApi('foo');
+        var assertB = new AssertionApi('bar');
+
+        var a = assertA.equal('a', 'a');
+        var b = assertB.equal('b', 'b');
+
+        baseAssert.deepEqual(assertA.assertions, ['a == a']);
+        baseAssert.deepEqual(assertB.assertions, ['b == b']);
+
+        baseAssert.strictEqual(a, assertA);
+        baseAssert.strictEqual(b, assertB);
+    });
+});
+
 }));
