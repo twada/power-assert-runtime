@@ -2,7 +2,6 @@
 
 var ContextTraversal = require('../packages/power-assert-context-traversal');
 var baseAssert = require('assert');
-var empower = require('empower-core');
 
 function testRendering (body, expectedLines, targetRenderers) {
     try {
@@ -27,6 +26,5 @@ function testRendering (body, expectedLines, targetRenderers) {
 }
 
 module.exports = {
-    assert: empower(baseAssert),
     testRendering: testRendering
 };
