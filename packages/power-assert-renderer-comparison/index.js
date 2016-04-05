@@ -7,6 +7,11 @@ var keys = Object.keys || require('object-keys');
 var forEach = require('array-foreach');
 var udiff = require('./udiff');
 var stringifier = require('stringifier');
+var literalPattern = /^(?:String|Numeric|Null|Boolean|RegExp)?Literal$/;
+
+function isLiteral (node) {
+    return literalPattern.test(node.type);
+}
 
 function ComparisonRenderer (config) {
     BaseRenderer.call(this, config);
@@ -23,7 +28,7 @@ inherits(ComparisonRenderer, BaseRenderer);
 ComparisonRenderer.prototype.onData = function (esNode) {
     var pair;
     if (!esNode.isCaptured()) {
-        if (isTargetBinaryExpression(esNode.getParent()) && esNode.currentNode.type === 'Literal') {
+        if (isTargetBinaryExpression(esNode.getParent()) && isLiteral(esNode.currentNode)) {
             this.espathToPair[esNode.parentEspath][esNode.currentProp] = {code: esNode.code(), value: esNode.value()};
         }
         return;

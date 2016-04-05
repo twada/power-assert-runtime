@@ -1,7 +1,11 @@
 'use strict';
 
-var syntax = require('estraverse').Syntax;
 var locationOf = require('./location');
+var literalPattern = /^(?:String|Numeric|Null|Boolean|RegExp)?Literal$/;
+
+function isLiteral (node) {
+    return literalPattern.test(node.type);
+}
 
 function EsNode (path, currentNode, parentNode, espathToValue, jsCode, tokens) {
     if (path) {
@@ -34,7 +38,7 @@ EsNode.prototype.code = function () {
 };
 
 EsNode.prototype.value = function () {
-    if (this.currentNode.type === syntax.Literal) {
+    if (isLiteral(this.currentNode)) {
         return this.currentNode.value;
     }
     return this.espathToValue[this.espath];
