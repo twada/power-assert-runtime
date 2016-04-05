@@ -1,0 +1,30 @@
+{
+  "name": "power-assert-renderer-diagram",
+  "version": "0.0.0",
+  "author": {
+    "name": "Takuto Wada",
+    "email": "takuto.wada@gmail.com",
+    "url": "https://github.com/twada"
+  },
+  "dependencies": {
+    "eastasianwidth": "^0.1.1",
+    "power-assert-renderer-base": "^0.0.0",
+    "stringifier": "^1.2.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.1.0",
+    "babel-plugin-espower": "power-assert-js/babel-plugin-espower#embedded-ast",
+    "empower-core": "^0.5.0",
+    "mocha": "^2.4.5",
+    "power-assert-renderer-assertion": "^0.0.0",
+    "power-assert-context-traversal": "^0.0.0"
+  },
+  "keywords": [
+    "power-assert"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  }
+}

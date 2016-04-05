@@ -1,0 +1,28 @@
+{
+  "name": "power-assert-renderer-succinct",
+  "version": "0.0.0",
+  "author": {
+    "name": "Takuto Wada",
+    "email": "takuto.wada@gmail.com",
+    "url": "https://github.com/twada"
+  },
+  "dependencies": {
+    "array-some": "^1.0.0",
+    "power-assert-renderer-diagram": "^0.0.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.1.0",
+    "babel-plugin-espower": "power-assert-js/babel-plugin-espower#embedded-ast",
+    "empower-core": "^0.5.0",
+    "mocha": "^2.4.5",
+    "power-assert-context-traversal": "^0.0.0"
+  },
+  "keywords": [
+    "power-assert"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  }
+}
