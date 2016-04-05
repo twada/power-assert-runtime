@@ -5,7 +5,7 @@ var AssertionRenderer = require('..');
 
 var helper = require('../../../test_helper/helper');
 var assert = helper.assert;
-var transpile = helper.transpile;
+var transpile = require('../../../test_helper/transpile');
 var testRendering = helper.testRendering;
 
 describe('AssertionRenderer', function () {
