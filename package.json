@@ -4,6 +4,9 @@
     "lerna": "^1.1.2"
   },
   "devDependencies": {
+    "babel-core": "^6.1.0",
+    "babel-plugin-espower": "power-assert-js/babel-plugin-espower#embedded-ast",
+    "empower-core": "^0.5.0",
     "mocha": "^2.4.5"
   },
   "scripts": {
