@@ -2,11 +2,9 @@
 
 delete require.cache[require.resolve('..')];
 var FileRenderer = require('..');
-
-var helper = require('../../../test_helper/helper');
 var assert = require('../../../test_helper/empowered-assert');
 var transpile = require('../../../test_helper/transpile');
-var testRendering = helper.testRendering;
+var testRendering = require('../../../test_helper/test-rendering');
 
 describe('FileRenderer', function () {
     it('assert(foo === bar)', function () {

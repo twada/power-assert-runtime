@@ -3,7 +3,7 @@
 var ContextTraversal = require('../packages/power-assert-context-traversal');
 var baseAssert = require('assert');
 
-function testRendering (body, expectedLines, targetRenderers) {
+module.exports = function testRendering (body, expectedLines, targetRenderers) {
     try {
         body();
         baseAssert.fail('AssertionError should be thrown');
@@ -23,8 +23,4 @@ function testRendering (body, expectedLines, targetRenderers) {
         traversal.traverse();
         baseAssert.deepEqual(lines, expectedLines);
     }
-}
-
-module.exports = {
-    testRendering: testRendering
 };
