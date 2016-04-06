@@ -5,7 +5,7 @@ var inherits = require('util').inherits;
 var typeName = require('type-name');
 var keys = Object.keys || require('object-keys');
 var forEach = require('array-foreach');
-var udiff = require('./udiff');
+var udiff = require('./lib/udiff');
 var stringifier = require('stringifier');
 var literalPattern = /^(?:String|Numeric|Null|Boolean|RegExp)?Literal$/;
 
