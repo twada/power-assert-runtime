@@ -11,6 +11,7 @@
     "url": "https://github.com/twada/power-assert-runtime/issues"
   },
   "dependencies": {
+    "array-foreach": "^1.0.2",
     "eastasianwidth": "^0.1.1",
     "power-assert-renderer-base": "^0.0.0",
     "stringifier": "^1.2.1"
