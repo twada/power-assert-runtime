@@ -1,0 +1,43 @@
+{
+  "name": "power-assert-renderer-comparison",
+  "description": "comparison renderer for power-assert context",
+  "version": "0.0.0",
+  "author": {
+    "name": "Takuto Wada",
+    "email": "takuto.wada@gmail.com",
+    "url": "https://github.com/twada"
+  },
+  "bugs": {
+    "url": "https://github.com/twada/power-assert-runtime/issues"
+  },
+  "dependencies": {
+    "array-foreach": "^1.0.1",
+    "googlediff": "^0.1.0",
+    "object-keys": "^1.0.4",
+    "power-assert-renderer-base": "^0.0.0",
+    "stringifier": "^1.2.1",
+    "type-name": "^2.0.1"
+  },
+  "devDependencies": {
+    "mocha": "^2.4.5",
+    "power-assert-renderer-assertion": "^0.0.0"
+  },
+  "files": [
+    "README.md",
+    "index.js",
+    "lib"
+  ],
+  "homepage": "https://github.com/twada/power-assert-runtime",
+  "keywords": [
+    "power-assert"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/twada/power-assert-runtime.git"
+  },
+  "scripts": {
+    "test": "mocha"
+  }
+}
