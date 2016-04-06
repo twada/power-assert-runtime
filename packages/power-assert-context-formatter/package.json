@@ -6,6 +6,9 @@
     "email": "takuto.wada@gmail.com",
     "url": "https://github.com/twada"
   },
+  "bugs": {
+    "url": "https://github.com/twada/power-assert-runtime/issues"
+  },
   "dependencies": {
     "power-assert-context-traversal": "^0.0.0",
     "xtend": "^4.0.1"
@@ -20,11 +23,16 @@
     "index.js",
     "lib"
   ],
+  "homepage": "https://github.com/twada/power-assert-runtime",
   "keywords": [
     "power-assert"
   ],
   "license": "MIT",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/twada/power-assert-runtime.git"
+  },
   "scripts": {
     "test": "mocha"
   }
