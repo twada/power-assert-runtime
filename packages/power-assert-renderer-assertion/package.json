@@ -12,6 +12,10 @@
   "devDependencies": {
     "mocha": "^2.4.5"
   },
+  "files": [
+    "README.md",
+    "index.js"
+  ],
   "keywords": [
     "power-assert"
   ],

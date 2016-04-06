@@ -6,6 +6,10 @@
     "email": "takuto.wada@gmail.com",
     "url": "https://github.com/twada"
   },
+  "files": [
+    "README.md",
+    "index.js"
+  ],
   "keywords": [
     "power-assert"
   ],

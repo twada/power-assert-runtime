@@ -15,6 +15,11 @@
     "babel-types": "^6.1.0",
     "mocha": "^2.4.5"
   },
+  "files": [
+    "README.md",
+    "index.js",
+    "lib"
+  ],
   "keywords": [
     "power-assert"
   ],

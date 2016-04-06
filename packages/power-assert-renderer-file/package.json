@@ -13,6 +13,10 @@
     "mocha": "^2.4.5",
     "power-assert-renderer-assertion": "^0.0.0"
   },
+  "files": [
+    "README.md",
+    "index.js"
+  ],
   "keywords": [
     "power-assert"
   ],
