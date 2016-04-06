@@ -4,7 +4,7 @@ var BaseRenderer = require('power-assert-renderer-base');
 var inherits = require('util').inherits;
 var forEach = require('array-foreach');
 var stringifier = require('stringifier');
-var stringWidth = require('./string-width');
+var stringWidth = require('./lib/string-width');
 
 function DiagramRenderer (config) {
     BaseRenderer.call(this, config);
