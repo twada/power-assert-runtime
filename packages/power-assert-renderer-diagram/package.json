@@ -14,7 +14,8 @@
     "array-foreach": "^1.0.2",
     "eastasianwidth": "^0.1.1",
     "power-assert-renderer-base": "^0.1.0",
-    "stringifier": "^1.2.1"
+    "stringifier": "^1.2.1",
+    "xtend": "^4.0.1"
   },
   "devDependencies": {
     "mocha": "^2.4.5",
