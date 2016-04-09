@@ -5,9 +5,25 @@ var inherits = require('util').inherits;
 var forEach = require('array-foreach');
 var stringifier = require('stringifier');
 var stringWidth = require('./lib/string-width');
+var extend = require('xtend');
+var defaultOptions = require('./lib/default-options');
 
+/**
+ * options.stringify [function]
+ * options.maxDepth [number]
+ * options.indent [string]
+ * options.lineSeparator [string]
+ * options.anonymous [string]
+ * options.circular [string]
+ * options.snip [string]
+ * options.handlers [object]
+ * 
+ * options.widthOf [function]
+ * options.ambiguousEastAsianCharWidth [number]
+ */
 function DiagramRenderer (config) {
-    BaseRenderer.call(this, config);
+    BaseRenderer.call(this);
+    this.config = extend(defaultOptions(), config);
     this.events = [];
     if (typeof this.config.stringify !== 'function') {
         this.stringify = stringifier(this.config);

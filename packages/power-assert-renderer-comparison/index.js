@@ -7,14 +7,30 @@ var keys = Object.keys || require('object-keys');
 var forEach = require('array-foreach');
 var udiff = require('./lib/udiff');
 var stringifier = require('stringifier');
+var extend = require('xtend');
+var defaultOptions = require('./lib/default-options');
 var literalPattern = /^(?:String|Numeric|Null|Boolean|RegExp)?Literal$/;
 
 function isLiteral (node) {
     return literalPattern.test(node.type);
 }
 
+/**
+ * options.stringify [function]
+ * options.maxDepth [number]
+ * options.indent [string]
+ * options.lineSeparator [string]
+ * options.anonymous [string]
+ * options.circular [string]
+ * options.snip [string]
+ * options.handlers [object]
+ * 
+ * options.diff [function]
+ * options.lineDiffThreshold [number]
+ */
 function ComparisonRenderer (config) {
-    BaseRenderer.call(this, config);
+    BaseRenderer.call(this);
+    this.config = extend(defaultOptions(), config);
     if (typeof this.config.stringify !== 'function') {
         this.stringify = stringifier(this.config);
     }

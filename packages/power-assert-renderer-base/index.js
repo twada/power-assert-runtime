@@ -1,7 +1,6 @@
 'use strict';
 
-function BaseRenderer (config) {
-    this.config = config || {};
+function BaseRenderer () {
 }
 
 BaseRenderer.prototype.register = function (traversal) {

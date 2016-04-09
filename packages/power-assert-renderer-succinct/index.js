@@ -4,6 +4,19 @@ var DiagramRenderer = require('power-assert-renderer-diagram');
 var inherits = require('util').inherits;
 var some = require('array-some');
 
+/**
+ * options.stringify [function]
+ * options.maxDepth [number]
+ * options.indent [string]
+ * options.lineSeparator [string]
+ * options.anonymous [string]
+ * options.circular [string]
+ * options.snip [string]
+ * options.handlers [object]
+ * 
+ * options.widthOf [function]
+ * options.ambiguousEastAsianCharWidth [number]
+ */
 function SuccinctRenderer (config) {
     DiagramRenderer.call(this, config);
 }
