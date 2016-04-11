@@ -37,7 +37,7 @@ function onEachEsNode(capturedArgument, source, callback) {
     estraverse.traverse(ast, {
         keys: visitorKeys,
         enter: function (currentNode, parentNode) {
-            var esNode = createEsNode(this.path(), currentNode, parentNode, espathToValue, source.content, tokens, nodeStack);
+            var esNode = createEsNode(this.path(), currentNode, espathToValue, source.content, tokens, nodeStack);
             nodeStack.push(esNode);
             callback(esNode);
         },
@@ -51,15 +51,13 @@ function isLiteral (node) {
     return literalPattern.test(node.type);
 }
 
-function createEsNode (path, currentNode, parentNode, espathToValue, jsCode, tokens, nodeStack) {
+function createEsNode (path, currentNode, espathToValue, jsCode, tokens, nodeStack) {
     var espath = path ? path.join('/') : '';
     return {
         espath: espath,
         parent: (1 < nodeStack.length) ? nodeStack[nodeStack.length - 1] : null,
-        parentEspath: path ? path.slice(0, path.length - 1).join('/') : '',
-        currentProp: path ? path[path.length - 1] : null,
-        currentNode: currentNode,
-        parentNode: parentNode,
+        key: path ? path[path.length - 1] : null,
+        node: currentNode,
         range: locationOf(currentNode, tokens),
         code: jsCode.slice(currentNode.range[0], currentNode.range[1]),
         isCaptured: espathToValue.hasOwnProperty(espath),

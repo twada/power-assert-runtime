@@ -33,7 +33,7 @@ SuccinctRenderer.prototype.onData = function (esNode) {
 };
 
 SuccinctRenderer.prototype.dumpIfSupported = function (esNode) {
-    switch(esNode.currentNode.type) {
+    switch(esNode.node.type) {
     case 'Identifier':
     case 'MemberExpression':
     case 'CallExpression':
@@ -45,7 +45,7 @@ SuccinctRenderer.prototype.dumpIfSupported = function (esNode) {
 function withinMemberExpression (esNode) {
     var ancestors = collectAncestors([], esNode.parent);
     return some(ancestors, function (eachNode) {
-        return eachNode.currentNode.type === 'MemberExpression';
+        return eachNode.node.type === 'MemberExpression';
     });
 }
 
