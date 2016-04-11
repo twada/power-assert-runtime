@@ -37,7 +37,7 @@ SuccinctRenderer.prototype.dumpIfSupported = function (esNode) {
     case 'Identifier':
     case 'MemberExpression':
     case 'CallExpression':
-        this.events.push({value: esNode.value(), range: esNode.range()});
+        this.events.push({value: esNode.value(), leftIndex: esNode.range()[0]});
         break;
     }
 };

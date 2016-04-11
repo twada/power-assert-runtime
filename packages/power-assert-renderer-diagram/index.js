@@ -44,7 +44,7 @@ DiagramRenderer.prototype.onData = function (esNode) {
     if (!esNode.isCaptured()) {
         return;
     }
-    this.events.push({value: esNode.value(), range: esNode.range()});
+    this.events.push({value: esNode.value(), leftIndex: esNode.range()[0]});
 };
 
 DiagramRenderer.prototype.onEnd = function () {
@@ -108,7 +108,7 @@ DiagramRenderer.prototype.constructRows = function (capturedEvents) {
 };
 
 DiagramRenderer.prototype.startColumnFor = function (captured) {
-    return this.widthOf(this.assertionLine.slice(0, captured.range[0]));
+    return this.widthOf(this.assertionLine.slice(0, captured.leftIndex));
 };
 
 function createRow (numCols, initial) {
@@ -120,7 +120,7 @@ function createRow (numCols, initial) {
 }
 
 function rightToLeft (a, b) {
-    return b.range[0] - a.range[0];
+    return b.leftIndex - a.leftIndex;
 }
 
 module.exports = DiagramRenderer;
