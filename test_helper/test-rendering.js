@@ -1,26 +1,17 @@
 'use strict';
 
-var ContextTraversal = require('../packages/power-assert-context-traversal');
+var createFormatter = require('../packages/power-assert-context-formatter');
 var baseAssert = require('assert');
 
-module.exports = function testRendering (body, expectedLines, targetRenderers) {
+module.exports = function testRendering (body, expectedLines, renderers) {
     try {
         body();
         baseAssert.fail('AssertionError should be thrown');
     } catch (e) {
-        var traversal = new ContextTraversal(e.powerAssertContext);
-        var lines = [];
-        var dest = {
-            write: function (str) {
-                lines.push(str);
-            }
-        };
-        targetRenderers.forEach(function (TargetRenderer) {
-            var ar = new TargetRenderer();
-            ar.register(traversal);
-            ar.setDestination(dest);
+        var format = createFormatter({
+            outputOffset: 0,
+            renderers: renderers
         });
-        traversal.traverse();
-        baseAssert.deepEqual(lines, expectedLines);
+        baseAssert.equal(format(e.powerAssertContext), expectedLines.join('\n') + '\n');
     }
 };
