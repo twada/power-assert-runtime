@@ -23,7 +23,7 @@ function SuccinctRenderer (config) {
 inherits(SuccinctRenderer, DiagramRenderer);
 
 SuccinctRenderer.prototype.onData = function (esNode) {
-    if (!esNode.isCaptured()) {
+    if (!esNode.isCaptured) {
         return;
     }
     if (withinMemberExpression(esNode)) {
@@ -37,7 +37,7 @@ SuccinctRenderer.prototype.dumpIfSupported = function (esNode) {
     case 'Identifier':
     case 'MemberExpression':
     case 'CallExpression':
-        this.events.push({value: esNode.value(), leftIndex: esNode.range()[0]});
+        this.events.push({value: esNode.value, leftIndex: esNode.range[0]});
         break;
     }
 };

@@ -43,19 +43,19 @@ inherits(ComparisonRenderer, BaseRenderer);
 
 ComparisonRenderer.prototype.onData = function (esNode) {
     var pair;
-    if (!esNode.isCaptured()) {
+    if (!esNode.isCaptured) {
         if (isTargetBinaryExpression(esNode.getParent()) && isLiteral(esNode.currentNode)) {
-            this.espathToPair[esNode.parentEspath][esNode.currentProp] = {code: esNode.code(), value: esNode.value()};
+            this.espathToPair[esNode.parentEspath][esNode.currentProp] = {code: esNode.code, value: esNode.value};
         }
         return;
     }
     if (isTargetBinaryExpression(esNode.getParent())) {
-        this.espathToPair[esNode.parentEspath][esNode.currentProp] = {code: esNode.code(), value: esNode.value()};
+        this.espathToPair[esNode.parentEspath][esNode.currentProp] = {code: esNode.code, value: esNode.value};
     }
     if (isTargetBinaryExpression(esNode)) {
         pair = {
             operator: esNode.currentNode.operator,
-            value: esNode.value()
+            value: esNode.value
         };
         this.espathToPair[esNode.espath] = pair;
     }
@@ -102,8 +102,8 @@ function isTargetBinaryExpression (esNode) {
     return esNode &&
         esNode.currentNode.type === 'BinaryExpression' &&
         (esNode.currentNode.operator === '===' || esNode.currentNode.operator === '==') &&
-        esNode.isCaptured() &&
-        !(esNode.value());
+        esNode.isCaptured &&
+        !(esNode.value);
 }
 
 function isStringDiffTarget(pair) {

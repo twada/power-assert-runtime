@@ -41,10 +41,10 @@ DiagramRenderer.prototype.onStart = function (context) {
 };
 
 DiagramRenderer.prototype.onData = function (esNode) {
-    if (!esNode.isCaptured()) {
+    if (!esNode.isCaptured) {
         return;
     }
-    this.events.push({value: esNode.value(), leftIndex: esNode.range()[0]});
+    this.events.push({value: esNode.value, leftIndex: esNode.range[0]});
 };
 
 DiagramRenderer.prototype.onEnd = function () {
