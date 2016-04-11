@@ -58,10 +58,10 @@ function createEsNode (path, currentNode, espathToValue, jsCode, tokens, nodeSta
         parent: (1 < nodeStack.length) ? nodeStack[nodeStack.length - 1] : null,
         key: path ? path[path.length - 1] : null,
         node: currentNode,
-        range: locationOf(currentNode, tokens),
         code: jsCode.slice(currentNode.range[0], currentNode.range[1]),
+        value: isLiteral(currentNode) ? currentNode.value : espathToValue[espath],
         isCaptured: espathToValue.hasOwnProperty(espath),
-        value: isLiteral(currentNode) ? currentNode.value : espathToValue[espath]
+        range: locationOf(currentNode, tokens)
     };
 }
 
