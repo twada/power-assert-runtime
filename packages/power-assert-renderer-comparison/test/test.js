@@ -2,64 +2,55 @@
 
 delete require.cache[require.resolve('..')];
 var ComparisonRenderer = require('..');
-var AssertionRenderer = require('power-assert-renderer-assertion');
+var createRendererTester = require('../../../test_helper/create-renderer-tester');
+var test = createRendererTester(ComparisonRenderer);
 var assert = require('../../../test_helper/empowered-assert');
-var transpile = require('../../../test_helper/transpile');
-var testRendering = require('../../../test_helper/test-rendering');
 
 describe('ComparisonRenderer', function () {
 
-    it('assert(foo === bar)', function () {
+    test('BinaryExpression', function (transpiledCode) {
         var foo = 'foo';
         var bar = 'bar';
-        testRendering(function () {
-            eval(transpile('assert(foo === bar)'));
-        }, [
-            '',
-            'assert(foo === bar)',
-            '',
-            '--- [string] bar',
-            '+++ [string] foo',
-            '@@ -1,3 +1,3 @@',
-            '-bar',
-            '+foo',
-            ''
-        ], [AssertionRenderer, ComparisonRenderer]);
-    });
-
-    it('StringLiteral: assert(foo === "bar")', function () {
+        eval(transpiledCode);
+    }, [
+        'assert(foo === bar)',
+        '',
+        '--- [string] bar',
+        '+++ [string] foo',
+        '@@ -1,3 +1,3 @@',
+        '-bar',
+        '+foo',
+        ''
+    ]);
+    
+    test('StringLiteral', function (transpiledCode) {
         var foo = 'foo';
-        testRendering(function () {
-            eval(transpile('assert(foo === "bar")'));
-        }, [
-            '',
-            'assert(foo === "bar")',
-            '',
-            '--- [string] "bar"',
-            '+++ [string] foo',
-            '@@ -1,3 +1,3 @@',
-            '-bar',
-            '+foo',
-            ''
-        ], [AssertionRenderer, ComparisonRenderer]);
-    });
-
-    it('mutiline diff: assert(foo === "foo\\r\\nbar")', function () {
+        eval(transpiledCode);
+    }, [
+        'assert(foo === "bar")',
+        '',
+        '--- [string] "bar"',
+        '+++ [string] foo',
+        '@@ -1,3 +1,3 @@',
+        '-bar',
+        '+foo',
+        ''
+    ]);
+    
+    test('mutiline diff', function (transpiledCode) {
         var foo = 'foo\nbar';
-        testRendering(function () {
-            eval(transpile('assert(foo === "foo\\r\\nbar")'));
-        }, [
-            '',
-            'assert(foo === "foo\\r\\nbar")',
-            '',
-            '--- [string] "foo\\r\\nbar"',
-            '+++ [string] foo',
-            '@@ -1,8 +1,7 @@',
-            ' foo',
-            '-\r',
-            ' ',
-            'bar',
-            ''
-        ], [AssertionRenderer, ComparisonRenderer]);
-    });
+        eval(transpiledCode);
+    }, [
+        'assert(foo === "foo\\r\\nbar")',
+        '',
+        '--- [string] "foo\\r\\nbar"',
+        '+++ [string] foo',
+        '@@ -1,8 +1,7 @@',
+        ' foo',
+        '-\r',
+        ' ',
+        'bar',
+        ''
+    ]);
+
 });

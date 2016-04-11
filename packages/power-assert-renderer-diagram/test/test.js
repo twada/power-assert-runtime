@@ -2,38 +2,32 @@
 
 delete require.cache[require.resolve('..')];
 var DiagramRenderer = require('..');
-var AssertionRenderer = require('power-assert-renderer-assertion');
+var createRendererTester = require('../../../test_helper/create-renderer-tester');
+var test = createRendererTester(DiagramRenderer);
 var assert = require('../../../test_helper/empowered-assert');
-var transpile = require('../../../test_helper/transpile');
-var testRendering = require('../../../test_helper/test-rendering');
 
 describe('DiagramRenderer', function () {
 
-    it('assert(foo === bar)', function () {
+    test('BinaryExpression', function (transpiledCode) {
         var foo = 'foo';
         var bar = 'bar';
-        testRendering(function () {
-            eval(transpile('assert(foo === bar)'));
-        }, [
-            '',
-            'assert(foo === bar)',
-            '       |   |   |   ',
-            '       |   |   "bar"',
-            '       |   false   ',
-            '       "foo"       '
-        ], [AssertionRenderer, DiagramRenderer]);
-    });
-
-    it('StringLiteral: assert(foo === "bar")', function () {
+        eval(transpiledCode);
+    }, [
+        'assert(foo === bar)',
+        '       |   |   |   ',
+        '       |   |   "bar"',
+        '       |   false   ',
+        '       "foo"       '
+    ]);
+    
+    test('StringLiteral', function (transpiledCode) {
         var foo = 'foo';
-        testRendering(function () {
-            eval(transpile('assert(foo === "bar")'));
-        }, [
-            '',
-            'assert(foo === "bar")',
-            '       |   |         ',
-            '       |   false     ',
-            '       "foo"         '
-        ], [AssertionRenderer, DiagramRenderer]);
-    });
+        eval(transpiledCode);
+    }, [
+        'assert(foo === "bar")',
+        '       |   |         ',
+        '       |   false     ',
+        '       "foo"         '
+    ]);
+
 });
