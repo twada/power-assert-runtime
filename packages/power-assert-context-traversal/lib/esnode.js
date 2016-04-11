@@ -20,9 +20,10 @@ function EsNode (path, currentNode, parentNode, espathToValue, jsCode, tokens) {
     this.currentNode = currentNode;
     this.parentNode = parentNode;
     this.parentEsNode = null;
-    this.espathToValue = espathToValue;
-    this.jsCode = jsCode;
-    this.tokens = tokens;
+    this._range = locationOf(this.currentNode, tokens);
+    this._code = jsCode.slice(this.currentNode.range[0], this.currentNode.range[1]);
+    this._isCaptured = espathToValue.hasOwnProperty(this.espath);
+    this._value = isLiteral(this.currentNode) ? this.currentNode.value : espathToValue[this.espath];
 }
 
 EsNode.prototype.setParent = function (parentEsNode) {
@@ -34,22 +35,19 @@ EsNode.prototype.getParent = function () {
 };
 
 EsNode.prototype.code = function () {
-    return this.jsCode.slice(this.currentNode.range[0], this.currentNode.range[1]);
+    return this._code;
 };
 
 EsNode.prototype.value = function () {
-    if (isLiteral(this.currentNode)) {
-        return this.currentNode.value;
-    }
-    return this.espathToValue[this.espath];
+    return this._value;
 };
 
 EsNode.prototype.isCaptured = function () {
-    return this.espathToValue.hasOwnProperty(this.espath);
+    return this._isCaptured;
 };
 
 EsNode.prototype.range = function () {
-    return locationOf(this.currentNode, this.tokens);
+    return this._range;
 };
 
 module.exports = EsNode;
