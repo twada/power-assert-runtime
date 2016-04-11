@@ -43,7 +43,7 @@ SuccinctRenderer.prototype.dumpIfSupported = function (esNode) {
 };
 
 function withinMemberExpression (esNode) {
-    var ancestors = collectAncestors([], esNode.getParent());
+    var ancestors = collectAncestors([], esNode.parent);
     return some(ancestors, function (eachNode) {
         return eachNode.currentNode.type === 'MemberExpression';
     });
@@ -54,7 +54,7 @@ function collectAncestors (ary, esNode) {
         return ary;
     }
     ary.push(esNode);
-    return collectAncestors(ary, esNode.getParent());
+    return collectAncestors(ary, esNode.parent);
 }
 
 module.exports = SuccinctRenderer;

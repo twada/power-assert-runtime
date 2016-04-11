@@ -26,12 +26,4 @@ function EsNode (path, currentNode, parentNode, espathToValue, jsCode, tokens) {
     this.value = isLiteral(this.currentNode) ? this.currentNode.value : espathToValue[this.espath];
 }
 
-EsNode.prototype.setParent = function (parentEsNode) {
-    this.parentEsNode = parentEsNode;
-};
-
-EsNode.prototype.getParent = function () {
-    return this.parentEsNode;
-};
-
 module.exports = EsNode;

@@ -44,12 +44,12 @@ inherits(ComparisonRenderer, BaseRenderer);
 ComparisonRenderer.prototype.onData = function (esNode) {
     var pair;
     if (!esNode.isCaptured) {
-        if (isTargetBinaryExpression(esNode.getParent()) && isLiteral(esNode.currentNode)) {
+        if (isTargetBinaryExpression(esNode.parent) && isLiteral(esNode.currentNode)) {
             this.espathToPair[esNode.parentEspath][esNode.currentProp] = {code: esNode.code, value: esNode.value};
         }
         return;
     }
-    if (isTargetBinaryExpression(esNode.getParent())) {
+    if (isTargetBinaryExpression(esNode.parent)) {
         this.espathToPair[esNode.parentEspath][esNode.currentProp] = {code: esNode.code, value: esNode.value};
     }
     if (isTargetBinaryExpression(esNode)) {

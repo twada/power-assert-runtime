@@ -38,7 +38,7 @@ function onEachEsNode(capturedArgument, source, callback) {
         enter: function (currentNode, parentNode) {
             var esNode = new EsNode(this.path(), currentNode, parentNode, espathToValue, source.content, tokens);
             if (1 < nodeStack.length) {
-                esNode.setParent(nodeStack[nodeStack.length - 1]);
+                esNode.parent = nodeStack[nodeStack.length - 1];
             }
             nodeStack.push(esNode);
             callback(esNode);
