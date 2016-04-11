@@ -20,7 +20,10 @@ describe('ComparisonRenderer', function () {
             '',
             '--- [string] bar',
             '+++ [string] foo',
-            '@@ -1,3 +1,3 @@\n-bar\n+foo\n'
+            '@@ -1,3 +1,3 @@',
+            '-bar',
+            '+foo',
+            ''
         ], [AssertionRenderer, ComparisonRenderer]);
     });
 
@@ -34,7 +37,29 @@ describe('ComparisonRenderer', function () {
             '',
             '--- [string] "bar"',
             '+++ [string] foo',
-            '@@ -1,3 +1,3 @@\n-bar\n+foo\n'
+            '@@ -1,3 +1,3 @@',
+            '-bar',
+            '+foo',
+            ''
+        ], [AssertionRenderer, ComparisonRenderer]);
+    });
+
+    it('mutiline diff: assert(foo === "foo\\r\\nbar")', function () {
+        var foo = 'foo\nbar';
+        testRendering(function () {
+            eval(transpile('assert(foo === "foo\\r\\nbar")'));
+        }, [
+            '',
+            'assert(foo === "foo\\r\\nbar")',
+            '',
+            '--- [string] "foo\\r\\nbar"',
+            '+++ [string] foo',
+            '@@ -1,8 +1,7 @@',
+            ' foo',
+            '-\r',
+            ' ',
+            'bar',
+            ''
         ], [AssertionRenderer, ComparisonRenderer]);
     });
 });
