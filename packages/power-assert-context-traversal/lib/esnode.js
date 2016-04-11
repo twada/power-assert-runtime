@@ -7,23 +7,20 @@ function isLiteral (node) {
     return literalPattern.test(node.type);
 }
 
-function EsNode (path, currentNode, parentNode, espathToValue, jsCode, tokens) {
-    if (path) {
-        this.espath = path.join('/');
-        this.parentEspath = path.slice(0, path.length - 1).join('/');
-        this.currentProp = path[path.length - 1];
-    } else {
-        this.espath = '';
-        this.parentEspath = '';
-        this.currentProp = null;
-    }
-    this.currentNode = currentNode;
-    this.parentNode = parentNode;
-    this.parentEsNode = null;
-    this.range = locationOf(this.currentNode, tokens);
-    this.code = jsCode.slice(this.currentNode.range[0], this.currentNode.range[1]);
-    this.isCaptured = espathToValue.hasOwnProperty(this.espath);
-    this.value = isLiteral(this.currentNode) ? this.currentNode.value : espathToValue[this.espath];
+function createEsNode (path, currentNode, parentNode, espathToValue, jsCode, tokens, nodeStack) {
+    var espath = path ? path.join('/') : '';
+    return {
+        espath: espath,
+        parent: (1 < nodeStack.length) ? nodeStack[nodeStack.length - 1] : null,
+        parentEspath: path ? path.slice(0, path.length - 1).join('/') : '',
+        currentProp: path ? path[path.length - 1] : null,
+        currentNode: currentNode,
+        parentNode: parentNode,
+        range: locationOf(currentNode, tokens),
+        code: jsCode.slice(currentNode.range[0], currentNode.range[1]),
+        isCaptured: espathToValue.hasOwnProperty(espath),
+        value: isLiteral(currentNode) ? currentNode.value : espathToValue[espath]
+    };
 }
 
-module.exports = EsNode;
+module.exports = createEsNode;

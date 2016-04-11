@@ -5,7 +5,7 @@ var inherits = require('util').inherits;
 var estraverse = require('estraverse');
 var forEach = require('array-foreach');
 var reduce = require('array-reduce');
-var EsNode = require('./esnode');
+var createEsNode = require('./esnode');
 
 function ContextTraversal (powerAssertContext) {
     this.powerAssertContext = powerAssertContext;
@@ -36,10 +36,7 @@ function onEachEsNode(capturedArgument, source, callback) {
     estraverse.traverse(ast, {
         keys: visitorKeys,
         enter: function (currentNode, parentNode) {
-            var esNode = new EsNode(this.path(), currentNode, parentNode, espathToValue, source.content, tokens);
-            if (1 < nodeStack.length) {
-                esNode.parent = nodeStack[nodeStack.length - 1];
-            }
+            var esNode = createEsNode(this.path(), currentNode, parentNode, espathToValue, source.content, tokens, nodeStack);
             nodeStack.push(esNode);
             callback(esNode);
         },
