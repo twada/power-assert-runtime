@@ -9,7 +9,8 @@ var assert = require('../../../test_helper/empowered-assert');
 var transpile = require('../../../test_helper/transpile');
 
 describe('power-assert-context-formatter', function () {
-    it('assert(foo === bar)', function () {
+
+    it('bare constructors, without options', function () {
         var format = createFormatter({
             renderers: [
                 AssertionRenderer,
@@ -17,18 +18,41 @@ describe('power-assert-context-formatter', function () {
             ]
         });
         try {
-            var foo = 'foo';
-            var bar = 'bar';
-            eval(transpile('assert(foo === bar)'));
+            var foo = { name: 'foo', items: ['one', 'two'] };
+            var bar = { name: 'bar', items: ['toto', 'tata'] };
+            eval(transpile('assert.deepEqual(foo, bar)'));
         } catch (e) {
             var result = format(e.powerAssertContext);
             baseAssert.equal(result, [
                 '  ',
-                '  assert(foo === bar)',
-                '         |   |   |   ',
-                '         |   |   "bar"',
-                '         |   false   ',
-                '         "foo"       ',
+                '  assert.deepEqual(foo, bar)',
+                '                   |    |   ',
+                '                   |    Object{name:"bar",items:#Array#}',
+                '                   Object{name:"foo",items:#Array#}',
+                '  '
+            ].join('\n'));
+        }
+    });
+
+    it('constructors with options', function () {
+        var format = createFormatter({
+            renderers: [
+                { ctor: AssertionRenderer },
+                { ctor: DiagramRenderer, options: { maxDepth: 2 } }
+            ]
+        });
+        try {
+            var foo = { name: 'foo', items: ['one', 'two'] };
+            var bar = { name: 'bar', items: ['toto', 'tata'] };
+            eval(transpile('assert.deepEqual(foo, bar)'));
+        } catch (e) {
+            var result = format(e.powerAssertContext);
+            baseAssert.equal(result, [
+                '  ',
+                '  assert.deepEqual(foo, bar)',
+                '                   |    |   ',
+                '                   |    Object{name:"bar",items:["toto","tata"]}',
+                '                   Object{name:"foo",items:["one","two"]}',
                 '  '
             ].join('\n'));
         }
