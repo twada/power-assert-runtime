@@ -8,7 +8,7 @@ var baseAssert = require('assert');
 var assert = require('../../../test_helper/empowered-assert');
 var transpile = require('../../../test_helper/transpile');
 
-describe('power-assert-context-formatter', function () {
+describe('power-assert-context-formatter : renderers option', function () {
 
     it('bare constructors, without options', function () {
         var format = createFormatter({
@@ -54,6 +54,47 @@ describe('power-assert-context-formatter', function () {
                 '                   |    Object{name:"bar",items:["toto","tata"]}',
                 '                   Object{name:"foo",items:["one","two"]}',
                 '  '
+            ].join('\n'));
+        }
+    });
+});
+
+
+describe('power-assert-context-formatter : outputOffset option', function () {
+
+    it('default is 2', function () {
+        var format = createFormatter({
+            renderers: [ AssertionRenderer ]
+        });
+        try {
+            var foo = 'foo';
+            var bar = 'bar';
+            eval(transpile('assert(foo === bar)'));
+        } catch (e) {
+            var result = format(e.powerAssertContext);
+            baseAssert.equal(result, [
+                '  ',
+                '  assert(foo === bar)',
+                '  '
+            ].join('\n'));
+        }
+    });
+
+    it('when 0', function () {
+        var format = createFormatter({
+            outputOffset: 0,
+            renderers: [ AssertionRenderer ]
+        });
+        try {
+            var foo = 'foo';
+            var bar = 'bar';
+            eval(transpile('assert(foo === bar)'));
+        } catch (e) {
+            var result = format(e.powerAssertContext);
+            baseAssert.equal(result, [
+                '',
+                'assert(foo === bar)',
+                ''
             ].join('\n'));
         }
     });
