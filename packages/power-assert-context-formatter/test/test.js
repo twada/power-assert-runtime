@@ -7,6 +7,8 @@ var DiagramRenderer = require('power-assert-renderer-diagram');
 var baseAssert = require('assert');
 var assert = require('../../../test_helper/empowered-assert');
 var transpile = require('../../../test_helper/transpile');
+var extend = require('xtend');
+
 
 describe('power-assert-context-formatter : renderers option', function () {
 
@@ -98,4 +100,32 @@ describe('power-assert-context-formatter : outputOffset option', function () {
             ].join('\n'));
         }
     });
+});
+
+
+describe('power-assert-context-formatter : lineSeparator option', function () {
+    function lineSeparatorTest (name, option, expectedSeparator) {
+        it(name, function () {
+            var format = createFormatter(extend({
+                outputOffset: 0,
+                renderers: [ AssertionRenderer ]
+            }, option));
+            try {
+                var foo = 'foo';
+                eval(transpile('assert(foo === "bar")'));
+            } catch (e) {
+                var result = format(e.powerAssertContext);
+                baseAssert.equal(result, [
+                    '',
+                    'assert(foo === "bar")',
+                    ''
+                ].join(expectedSeparator));
+                baseAssert.equal(e.name, 'AssertionError');
+            }
+        });
+    }
+    lineSeparatorTest('default is LF', {}, '\n');
+    lineSeparatorTest('LF', {lineSeparator: '\n'}, '\n');
+    lineSeparatorTest('CR', {lineSeparator: '\r'}, '\r');
+    lineSeparatorTest('CRLF', {lineSeparator: '\r\n'}, '\r\n');
 });
