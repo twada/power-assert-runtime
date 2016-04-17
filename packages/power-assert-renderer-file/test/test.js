@@ -7,6 +7,7 @@ var transpile = require('../../../test_helper/transpile');
 var testRendering = require('../../../test_helper/test-rendering');
 
 describe('FileRenderer', function () {
+
     it('assert(foo === bar)', function () {
         var foo = 'foo';
         var bar = 'bar';
@@ -16,4 +17,14 @@ describe('FileRenderer', function () {
             '# test/some_test.js:1'
         ], [FileRenderer]);
     });
+
+    it('line number detection', function () {
+        var falsyStr = '';
+        testRendering(function () {
+            eval(transpile('var i = 0;\n\nassert(falsyStr)'));
+        }, [
+            '# test/some_test.js:3'
+        ], [FileRenderer]);
+    });
+
 });
