@@ -8,6 +8,7 @@ module.exports = function testRendering (body, expectedLines, renderers) {
         body();
         baseAssert.fail('AssertionError should be thrown');
     } catch (e) {
+        baseAssert.equal(typeof e.powerAssertContext, 'object', 'powerAssertContext should exist');
         var format = createFormatter({
             outputOffset: 0,
             renderers: renderers

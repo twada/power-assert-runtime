@@ -48,6 +48,37 @@ describe('DiagramRenderer', function () {
 
 
     describe('UnaryExpression', function () {
+        test('with NumberLiteral', function (transpiledCode) {
+            var num = 1;
+            eval(transpiledCode);
+        }, [
+            'assert(-0)',
+            '       |  ',
+            '       0  '
+        ]);
+
+        test('with NumberLiteral and BinaryExpression', function (transpiledCode) {
+            var num = 1;
+            eval(transpiledCode);
+        }, [
+            'assert(4 === -4)',
+            '         |   |  ',
+            '         |   -4 ',
+            '         false  '
+        ]);
+
+        test('with Identifier and BinaryExpression', function (transpiledCode) {
+            var num = 1;
+            eval(transpiledCode);
+        }, [
+            'assert(+num === -num)',
+            '       ||   |   ||   ',
+            '       ||   |   |1   ',
+            '       ||   |   -1   ',
+            '       |1   false    ',
+            '       1             '
+        ]);
+
         test('negation', function (transpiledCode) {
             var truth = true;
             eval(transpiledCode);
@@ -96,7 +127,7 @@ describe('DiagramRenderer', function () {
 
 
     describe('MemberExpression', function () {
-        test('MemberExpression', function (transpiledCode) {
+        test('computed: false', function (transpiledCode) {
             var en = { foo: false };
             eval(transpiledCode);
         }, [
@@ -106,7 +137,19 @@ describe('DiagramRenderer', function () {
             '       Object{foo:false}'
         ]);
         
-        test('deep MemberExpression', function (transpiledCode) {
+        test('computed: false', function (transpiledCode) {
+            var propName = 'foo';
+            var en = { foo: false };
+            eval(transpiledCode);
+        }, [
+            'assert(en[propName])',
+            '       | ||         ',
+            '       | |"foo"     ',
+            '       | false      ',
+            '       Object{foo:false}'
+        ]);
+        
+        test('chained member', function (transpiledCode) {
             var en = { foo: { bar: false } };
             eval(transpiledCode);
         }, [
@@ -128,97 +171,145 @@ describe('DiagramRenderer', function () {
         ]);
     });
 
-    
-    test('CallExpression', function (transpiledCode) {
-        var name = 'bar';
-        var foo = function (n) { return false; };
-        eval(transpiledCode);
-    }, [
-        'assert(foo(name))',
-        '       |   |     ',
-        '       |   "bar" ',
-        '       false     ',
-    ]);
-    
-    test('deep CallExpression', function (transpiledCode) {
-        var bar = function () { return 'baz'; };
-        var en = { foo: function (n) { return false; } };
-        eval(transpiledCode);
-    }, [
-        'assert(en.foo(bar()))',
-        '       |  |   |      ',
-        '       |  |   "baz"  ',
-        '       |  false      ',
-        '       Object{foo:#function#}'
-    ]);
-    
-    test('BinaryExpression of Identifier', function (transpiledCode) {
-        var foo = 'foo';
-        var bar = 'bar';
-        eval(transpiledCode);
-    }, [
-        'assert(foo === bar)',
-        '       |   |   |   ',
-        '       |   |   "bar"',
-        '       |   false   ',
-        '       "foo"       ',
-    ]);
-    
-    test('BinaryExpression of Identifier and StringLiteral', function (transpiledCode) {
-        var foo = 'foo';
-        eval(transpiledCode);
-    }, [
-        'assert(foo === "bar")',
-        '       |   |         ',
-        '       |   false     ',
-        '       "foo"         ',
-    ]);
 
-    test('BinaryExpression of StringLiteral', function (transpiledCode) {
-        eval(transpiledCode);
-    }, [
-        'assert("foo" === "bar")',
-        '             |         ',
-        '             false     '
-    ]);
+    describe('CallExpression', function () {
+        test('arguments', function (transpiledCode) {
+            var name = 'bar';
+            var age = 23;
+            var foo = function (n, a) { return false; };
+            eval(transpiledCode);
+        }, [
+            'assert(foo(name, age))',
+            '       |   |     |    ',
+            '       |   "bar" 23   ',
+            '       false          '
+        ]);
+        
+        test('deep CallExpression', function (transpiledCode) {
+            var bar = function () { return 'baz'; };
+            var en = { foo: function (n) { return false; } };
+            eval(transpiledCode);
+        }, [
+            'assert(en.foo(bar()))',
+            '       |  |   |      ',
+            '       |  |   "baz"  ',
+            '       |  false      ',
+            '       Object{foo:#function#}'
+        ]);
+    });
+    
 
-    test('BinaryExpression of MemberExpression', function (transpiledCode) {
-        var en = { foo: 'bar', toto: 'tata' };
-        var fr = { toto: 'tata'};
-        eval(transpiledCode);
-    }, [
-        'assert(en.foo === fr.toto)',
-        '       |  |   |   |  |    ',
-        '       |  |   |   |  "tata"',
-        '       |  |   |   Object{toto:"tata"}',
-        '       |  |   false       ',
-        '       |  "bar"           ',
-        '       Object{foo:"bar",toto:"tata"}'
-    ]);
+    describe('BinaryExpression', function () {
+        test('of Identifier', function (transpiledCode) {
+            var foo = 'foo';
+            var bar = 'bar';
+            eval(transpiledCode);
+        }, [
+            'assert(foo === bar)',
+            '       |   |   |   ',
+            '       |   |   "bar"',
+            '       |   false   ',
+            '       "foo"       ',
+        ]);
+        
+        test('of Identifier and StringLiteral', function (transpiledCode) {
+            var foo = 'foo';
+            eval(transpiledCode);
+        }, [
+            'assert(foo === "bar")',
+            '       |   |         ',
+            '       |   false     ',
+            '       "foo"         ',
+        ]);
 
-    test('BinaryExpression of CallExpression', function (transpiledCode) {
-        var en = { foo: function() { return 'bar';} };
-        var fr = { toto: function() { return 'tata'; } };
-        eval(transpiledCode);
-    }, [
-        'assert(en.foo() === fr.toto())',
-        '       |  |     |   |  |      ',
-        '       |  |     |   |  "tata" ',
-        '       |  |     |   Object{toto:#function#}',
-        '       |  "bar" false         ',
-        '       Object{foo:#function#} '
-    ]);
+        test('of StringLiteral', function (transpiledCode) {
+            eval(transpiledCode);
+        }, [
+            'assert("foo" === "bar")',
+            '             |         ',
+            '             false     '
+        ]);
 
-    test('non-Punctuator BinaryExpression operator', function (transpiledCode) {
-        function Person (name) { this.name = name; };
-        var foo = 'bob';
-        eval(transpiledCode);
-    }, [
-        'assert(foo instanceof Person)',
-        '       |   |          |      ',
-        '       |   false      #function#',
-        '       "bob"                 '
-    ]);
+        test('of NumberLiteral', function (transpiledCode) {
+            eval(transpiledCode);
+        }, [
+            'assert(4 !== 4)',
+            '         |     ',
+            '         false '
+        ]);
+
+        test('of MemberExpression', function (transpiledCode) {
+            var en = { foo: 'bar', toto: 'tata' };
+            var fr = { toto: 'tata'};
+            eval(transpiledCode);
+        }, [
+            'assert(en.foo === fr.toto)',
+            '       |  |   |   |  |    ',
+            '       |  |   |   |  "tata"',
+            '       |  |   |   Object{toto:"tata"}',
+            '       |  |   false       ',
+            '       |  "bar"           ',
+            '       Object{foo:"bar",toto:"tata"}'
+        ]);
+
+        test('of CallExpression', function (transpiledCode) {
+            var en = { foo: function() { return 'bar';} };
+            var fr = { toto: function() { return 'tata'; } };
+            eval(transpiledCode);
+        }, [
+            'assert(en.foo() === fr.toto())',
+            '       |  |     |   |  |      ',
+            '       |  |     |   |  "tata" ',
+            '       |  |     |   Object{toto:#function#}',
+            '       |  "bar" false         ',
+            '       Object{foo:#function#} '
+        ]);
+
+        test('non-Punctuator BinaryExpression operator', function (transpiledCode) {
+            function Person (name) { this.name = name; };
+            var foo = 'bob';
+            eval(transpiledCode);
+        }, [
+            'assert(foo instanceof Person)',
+            '       |   |          |      ',
+            '       |   false      #function#',
+            '       "bob"                 '
+        ]);
+
+        test('Loose equality', function (transpiledCode) {
+            var truthy = '1';
+            var falsy = false;
+            eval(transpiledCode);
+        }, [
+            'assert(truthy == falsy)',
+            '       |      |  |     ',
+            '       |      |  false ',
+            '       "1"    false    '
+        ]);
+
+        test('of NaN', function (transpiledCode) {
+            var nan1 = NaN;
+            var nan2 = NaN;
+            eval(transpiledCode);
+        }, [
+            'assert(nan1 === nan2)',
+            '       |    |   |    ',
+            '       |    |   NaN  ',
+            '       NaN  false    '
+        ]);
+
+        test('of Infinity', function (transpiledCode) {
+            var positiveInfinity = Infinity;
+            var negativeInfinity = -Infinity;
+            eval(transpiledCode);
+        }, [
+            'assert(positiveInfinity === negativeInfinity)',
+            '       |                |   |                ',
+            '       |                |   -Infinity        ',
+            '       Infinity         false                '
+        ]);
+    });
+    
 
     test('LogicalExpression of Identifiers', function (transpiledCode) {
         var x = false;
