@@ -7,12 +7,9 @@ var some = require('array-some');
 /**
  * options.stringify [function]
  * options.maxDepth [number]
- * options.indent [string]
  * options.lineSeparator [string]
  * options.anonymous [string]
  * options.circular [string]
- * options.snip [string]
- * options.handlers [object]
  * 
  * options.widthOf [function]
  * options.ambiguousEastAsianCharWidth [number]
