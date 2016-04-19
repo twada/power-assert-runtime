@@ -7,6 +7,14 @@ var test = createRendererTester(SuccinctRenderer);
 var assert = require('../../../test_helper/empowered-assert');
 
 describe('SuccinctRenderer', function () {
+    test('MemberExpression, BinaryExpression and StringLiteral', function (transpiledCode) {
+        var a = { name: 'foo' };
+        eval(transpiledCode);
+    }, [
+        'assert(a.name === "bar")',
+        '         |              ',
+        '         "foo"          '
+    ]);
 
     test('Identifier', function (transpiledCode) {
         var truthy = false;
