@@ -8,14 +8,14 @@ Reorganize [power-assert-formatter](https://github.com/power-assert-js/power-ass
 MODULES
 ---------------------------------------
 
-- [power-assert-context-formatter](https://github.com/twada/power-assert-runtime/blob/master/packages/power-assert-context-formatter/README.md): format power-assert context
-- [power-assert-context-traversal](https://github.com/twada/power-assert-runtime/blob/master/packages/power-assert-context-traversal/README.md): traverse power-assert context
-- [power-assert-renderer-base](https://github.com/twada/power-assert-runtime/blob/master/packages/power-assert-renderer-base/README.md): base renderer for power-assert context
-- [power-assert-renderer-file](https://github.com/twada/power-assert-runtime/blob/master/packages/power-assert-renderer-file/README.md): filepath renderer for power-assert context
-- [power-assert-renderer-assertion](https://github.com/twada/power-assert-runtime/blob/master/packages/power-assert-renderer-assertion/README.md): assertion renderer for power-assert context
-- [power-assert-renderer-comparison](https://github.com/twada/power-assert-runtime/blob/master/packages/power-assert-renderer-comparison/README.md): comparison renderer for power-assert context
-- [power-assert-renderer-diagram](https://github.com/twada/power-assert-runtime/blob/master/packages/power-assert-renderer-diagram/README.md): diagram renderer for power-assert context
-- [power-assert-renderer-succinct](https://github.com/twada/power-assert-runtime/blob/master/packages/power-assert-renderer-succinct/README.md): succinct diagram renderer for power-assert context
+- [power-assert-context-formatter](./packages/power-assert-context-formatter/)
+- [power-assert-context-traversal](./packages/power-assert-context-traversal/)
+- [power-assert-renderer-base](./packages/power-assert-renderer-base/)
+- [power-assert-renderer-file](./packages/power-assert-renderer-file/)
+- [power-assert-renderer-assertion](./packages/power-assert-renderer-assertion/)
+- [power-assert-renderer-comparison](./packages/power-assert-renderer-comparison/)
+- [power-assert-renderer-diagram](./packages/power-assert-renderer-diagram/)
+- [power-assert-renderer-succinct](./packages/power-assert-renderer-succinct/)
 
 
 DESIGN DECISION
