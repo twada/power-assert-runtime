@@ -55,7 +55,7 @@ function createEsNode (path, currentNode, espathToValue, jsCode, tokens, nodeSta
     var espath = path ? path.join('/') : '';
     return {
         espath: espath,
-        parent: (1 < nodeStack.length) ? nodeStack[nodeStack.length - 1] : null,
+        parent: (0 < nodeStack.length) ? nodeStack[nodeStack.length - 1] : null,
         key: path ? path[path.length - 1] : null,
         node: currentNode,
         code: jsCode.slice(currentNode.range[0], currentNode.range[1]),
