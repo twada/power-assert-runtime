@@ -61,13 +61,27 @@ Create format function to format `powerAssertContext` object provided by power-a
 
 #### options.renderers
 
-| type                  | default value |
-|:----------------------|:--------------|
-| `Array` of `function` | null          |
+| type                                         | default value |
+|:---------------------------------------------|:--------------|
+| `Array` of `function` or `Array` of `object` | null          |
 
 Array of constructor function of various Renderers.
 Each Renderer is instantiated for each assertion and registered to `ContextTraversal`.
 
+##### customization
+
+Each renderer accepts its options via form of object literal.
+
+```javascript
+var format = createFormatter({
+    renderers: [
+        { ctor: FileRenderer },
+        { ctor: AssertionRenderer },
+        { ctor: DiagramRenderer, options: { maxDepth: 2 } },
+        { ctor: ComparisonRenderer, options: { lineDiffThreshold: 3 } }
+    ]
+});
+```
 
 #### options.outputOffset
 
