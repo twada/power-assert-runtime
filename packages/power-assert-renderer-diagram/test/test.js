@@ -200,6 +200,25 @@ describe('DiagramRenderer', function () {
     
 
     describe('BinaryExpression', function () {
+        test('of BinaryExpression', function (transpiledCode) {
+            var foo = 'foo';
+            var bar = 'bar';
+            eval(transpiledCode);
+        }, [
+            'assert(foo === bar === (foo === bar) === (foo === bar))',
+            '       |   |   |   |    |   |   |    |    |   |   |    ',
+            '       |   |   |   |    |   |   |    |    |   |   "bar"',
+            '       |   |   |   |    |   |   |    |    |   false    ',
+            '       |   |   |   |    |   |   |    |    "foo"        ',
+            '       |   |   |   |    |   |   |    false             ',
+            '       |   |   |   |    |   |   "bar"                  ',
+            '       |   |   |   |    |   false                      ',
+            '       |   |   |   true "foo"                          ',
+            '       |   |   "bar"                                   ',
+            '       |   false                                       ',
+            '       "foo"                                           '
+        ]);
+
         test('of Identifier', function (transpiledCode) {
             var foo = 'foo';
             var bar = 'bar';
@@ -363,6 +382,16 @@ describe('DiagramRenderer', function () {
         '       |   ||     |    |     |   1   ',
         '       |   |0     1    2     false   ',
         '       2   [0,1]                     '
+    ]);
+
+
+    test('ObjectExpression', function (transpiledCode) {
+        eval(transpiledCode);
+    }, [
+        'assert.deepEqual({ foo: 0 }, { foo: 1 })',
+        '                 |           |          ',
+        '                 |           Object{foo:1}',
+        '                 Object{foo:0}          '
     ]);
 
 });
