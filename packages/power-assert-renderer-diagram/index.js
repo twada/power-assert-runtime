@@ -5,9 +5,22 @@ var inherits = require('util').inherits;
 var forEach = require('array-foreach');
 var stringifier = require('stringifier');
 var stringWidth = require('./lib/string-width');
+var extend = require('xtend');
+var defaultOptions = require('./lib/default-options');
 
+/**
+ * options.stringify [function]
+ * options.maxDepth [number]
+ * options.lineSeparator [string]
+ * options.anonymous [string]
+ * options.circular [string]
+ * 
+ * options.widthOf [function]
+ * options.ambiguousEastAsianCharWidth [number]
+ */
 function DiagramRenderer (config) {
-    BaseRenderer.call(this, config);
+    BaseRenderer.call(this);
+    this.config = extend(defaultOptions(), config);
     this.events = [];
     if (typeof this.config.stringify !== 'function') {
         this.stringify = stringifier(this.config);
@@ -25,10 +38,10 @@ DiagramRenderer.prototype.onStart = function (context) {
 };
 
 DiagramRenderer.prototype.onData = function (esNode) {
-    if (!esNode.isCaptured()) {
+    if (!esNode.isCaptured) {
         return;
     }
-    this.events.push({value: esNode.value(), range: esNode.range()});
+    this.events.push({value: esNode.value, leftIndex: esNode.range[0]});
 };
 
 DiagramRenderer.prototype.onEnd = function () {
@@ -92,7 +105,7 @@ DiagramRenderer.prototype.constructRows = function (capturedEvents) {
 };
 
 DiagramRenderer.prototype.startColumnFor = function (captured) {
-    return this.widthOf(this.assertionLine.slice(0, captured.range[0]));
+    return this.widthOf(this.assertionLine.slice(0, captured.leftIndex));
 };
 
 function createRow (numCols, initial) {
@@ -104,7 +117,7 @@ function createRow (numCols, initial) {
 }
 
 function rightToLeft (a, b) {
-    return b.range[0] - a.range[0];
+    return b.leftIndex - a.leftIndex;
 }
 
 module.exports = DiagramRenderer;

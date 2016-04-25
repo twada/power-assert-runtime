@@ -7,14 +7,27 @@ var keys = Object.keys || require('object-keys');
 var forEach = require('array-foreach');
 var udiff = require('./lib/udiff');
 var stringifier = require('stringifier');
+var extend = require('xtend');
+var defaultOptions = require('./lib/default-options');
 var literalPattern = /^(?:String|Numeric|Null|Boolean|RegExp)?Literal$/;
 
 function isLiteral (node) {
     return literalPattern.test(node.type);
 }
 
+/**
+ * options.stringify [function]
+ * options.maxDepth [number]
+ * options.lineSeparator [string]
+ * options.anonymous [string]
+ * options.circular [string]
+ * 
+ * options.diff [function]
+ * options.lineDiffThreshold [number]
+ */
 function ComparisonRenderer (config) {
-    BaseRenderer.call(this, config);
+    BaseRenderer.call(this);
+    this.config = extend(defaultOptions(), config);
     if (typeof this.config.stringify !== 'function') {
         this.stringify = stringifier(this.config);
     }
@@ -27,19 +40,19 @@ inherits(ComparisonRenderer, BaseRenderer);
 
 ComparisonRenderer.prototype.onData = function (esNode) {
     var pair;
-    if (!esNode.isCaptured()) {
-        if (isTargetBinaryExpression(esNode.getParent()) && isLiteral(esNode.currentNode)) {
-            this.espathToPair[esNode.parentEspath][esNode.currentProp] = {code: esNode.code(), value: esNode.value()};
+    if (!esNode.isCaptured) {
+        if (isTargetBinaryExpression(esNode.parent) && isLiteral(esNode.node)) {
+            this.espathToPair[esNode.parent.espath][esNode.key] = {code: esNode.code, value: esNode.value};
         }
         return;
     }
-    if (isTargetBinaryExpression(esNode.getParent())) {
-        this.espathToPair[esNode.parentEspath][esNode.currentProp] = {code: esNode.code(), value: esNode.value()};
+    if (isTargetBinaryExpression(esNode.parent)) {
+        this.espathToPair[esNode.parent.espath][esNode.key] = {code: esNode.code, value: esNode.value};
     }
     if (isTargetBinaryExpression(esNode)) {
         pair = {
-            operator: esNode.currentNode.operator,
-            value: esNode.value()
+            operator: esNode.node.operator,
+            value: esNode.value
         };
         this.espathToPair[esNode.espath] = pair;
     }
@@ -84,10 +97,10 @@ ComparisonRenderer.prototype.showStringDiff = function (pair) {
 
 function isTargetBinaryExpression (esNode) {
     return esNode &&
-        esNode.currentNode.type === 'BinaryExpression' &&
-        (esNode.currentNode.operator === '===' || esNode.currentNode.operator === '==') &&
-        esNode.isCaptured() &&
-        !(esNode.value());
+        esNode.node.type === 'BinaryExpression' &&
+        (esNode.node.operator === '===' || esNode.node.operator === '==') &&
+        esNode.isCaptured &&
+        !(esNode.value);
 }
 
 function isStringDiffTarget(pair) {

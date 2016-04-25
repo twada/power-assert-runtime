@@ -5,7 +5,8 @@ var inherits = require('util').inherits;
 var estraverse = require('estraverse');
 var forEach = require('array-foreach');
 var reduce = require('array-reduce');
-var EsNode = require('./esnode');
+var locationOf = require('./location');
+var literalPattern = /^(?:String|Numeric|Null|Boolean|RegExp)?Literal$/;
 
 function ContextTraversal (powerAssertContext) {
     this.powerAssertContext = powerAssertContext;
@@ -36,10 +37,8 @@ function onEachEsNode(capturedArgument, source, callback) {
     estraverse.traverse(ast, {
         keys: visitorKeys,
         enter: function (currentNode, parentNode) {
-            var esNode = new EsNode(this.path(), currentNode, parentNode, espathToValue, source.content, tokens);
-            if (1 < nodeStack.length) {
-                esNode.setParent(nodeStack[nodeStack.length - 1]);
-            }
+            var parentEsNode = (0 < nodeStack.length) ? nodeStack[nodeStack.length - 1] : null;
+            var esNode = createEsNode(this.path(), currentNode, espathToValue, source.content, tokens, parentEsNode);
             nodeStack.push(esNode);
             callback(esNode);
         },
@@ -47,6 +46,24 @@ function onEachEsNode(capturedArgument, source, callback) {
             nodeStack.pop();
         }
     });
+}
+
+function isLiteral (node) {
+    return literalPattern.test(node.type);
+}
+
+function createEsNode (path, currentNode, espathToValue, jsCode, tokens, parent) {
+    var espath = path ? path.join('/') : '';
+    return {
+        espath: espath,
+        parent: parent,
+        key: path ? path[path.length - 1] : null,
+        node: currentNode,
+        code: jsCode.slice(currentNode.range[0], currentNode.range[1]),
+        value: isLiteral(currentNode) ? currentNode.value : espathToValue[espath],
+        isCaptured: espathToValue.hasOwnProperty(espath),
+        range: locationOf(currentNode, tokens)
+    };
 }
 
 module.exports = ContextTraversal;

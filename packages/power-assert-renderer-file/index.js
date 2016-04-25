@@ -3,8 +3,8 @@
 var BaseRenderer = require('power-assert-renderer-base');
 var inherits = require('util').inherits;
 
-function FileRenderer (config) {
-    BaseRenderer.call(this, config);
+function FileRenderer () {
+    BaseRenderer.call(this);
 }
 inherits(FileRenderer, BaseRenderer);
 

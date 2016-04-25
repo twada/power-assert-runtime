@@ -4,13 +4,23 @@ var DiagramRenderer = require('power-assert-renderer-diagram');
 var inherits = require('util').inherits;
 var some = require('array-some');
 
+/**
+ * options.stringify [function]
+ * options.maxDepth [number]
+ * options.lineSeparator [string]
+ * options.anonymous [string]
+ * options.circular [string]
+ * 
+ * options.widthOf [function]
+ * options.ambiguousEastAsianCharWidth [number]
+ */
 function SuccinctRenderer (config) {
     DiagramRenderer.call(this, config);
 }
 inherits(SuccinctRenderer, DiagramRenderer);
 
 SuccinctRenderer.prototype.onData = function (esNode) {
-    if (!esNode.isCaptured()) {
+    if (!esNode.isCaptured) {
         return;
     }
     if (withinMemberExpression(esNode)) {
@@ -20,19 +30,19 @@ SuccinctRenderer.prototype.onData = function (esNode) {
 };
 
 SuccinctRenderer.prototype.dumpIfSupported = function (esNode) {
-    switch(esNode.currentNode.type) {
+    switch(esNode.node.type) {
     case 'Identifier':
     case 'MemberExpression':
     case 'CallExpression':
-        this.events.push({value: esNode.value(), range: esNode.range()});
+        this.events.push({value: esNode.value, leftIndex: esNode.range[0]});
         break;
     }
 };
 
 function withinMemberExpression (esNode) {
-    var ancestors = collectAncestors([], esNode.getParent());
+    var ancestors = collectAncestors([], esNode.parent);
     return some(ancestors, function (eachNode) {
-        return eachNode.currentNode.type === 'MemberExpression';
+        return eachNode.node.type === 'MemberExpression';
     });
 }
 
@@ -41,7 +51,7 @@ function collectAncestors (ary, esNode) {
         return ary;
     }
     ary.push(esNode);
-    return collectAncestors(ary, esNode.getParent());
+    return collectAncestors(ary, esNode.parent);
 }
 
 module.exports = SuccinctRenderer;

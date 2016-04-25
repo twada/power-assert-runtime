@@ -7,27 +7,153 @@ var baseAssert = require('assert');
 var assert = require('../../../test_helper/empowered-assert');
 var transpile = require('../../../test_helper/transpile');
 
-describe('ContextTraversal', function () {
-    it('assert(foo === bar)', function (done) {
-        try {
-            var foo = 'foo';
-            var bar = 'bar';
-            eval(transpile('assert(foo === bar)'));
-        } catch (e) {
-            var traversal = new ContextTraversal(e.powerAssertContext);
-            traversal.on('start', function (powerAssertContext) {
-                baseAssert(e.powerAssertContext === powerAssertContext);
-            });
-            var nodes = [];
-            traversal.on('data', function (esNode) {
-                nodes.push(esNode);
-            });
-            traversal.on('end', function () {
-                baseAssert.equal(nodes.length, 5);
-                done();
-            });
-            traversal.traverse();
-        }
+describe('ContextTraversal of assert(foo === bar)', function () {
+    function testTraversal (title, body) {
+        it(title, function (done) {
+            try {
+                var foo = 'FOO';
+                var bar = 'BAR';
+                eval(transpile('assert(foo === bar)'));
+            } catch (e) {
+                var nodes = [];
+                var traversal = new ContextTraversal(e.powerAssertContext);
+                traversal.on('start', function (powerAssertContext) {
+                    baseAssert(e.powerAssertContext === powerAssertContext);
+                });
+                traversal.on('data', function (esNode) {
+                    nodes.push(esNode);
+                });
+                traversal.on('end', function () {
+                    body(nodes);
+                    done();
+                });
+                traversal.traverse();
+            }
+        });
+    }
+
+    testTraversal('number of EsNode', function (nodes) {
+        baseAssert.equal(nodes.length, 5);
+    });
+
+    function testEsNodeAtIndex (index, prop, expected) {
+        testTraversal(prop, function (nodes) {
+            baseAssert.deepEqual(nodes[index][prop], expected);
+        });
+    }
+
+    describe('root EsNode', function () {
+        testEsNodeAtIndex(0, 'parent', null);
+        testEsNodeAtIndex(0, 'espath', '');
+        testEsNodeAtIndex(0, 'key', null);
+        testEsNodeAtIndex(0, 'node', {
+            type: 'CallExpression',
+            callee: {
+                type: 'Identifier',
+                name: 'assert',
+                range: [ 0, 6 ]
+            },
+            arguments: [
+                {
+                    type: 'BinaryExpression',
+                    operator: '===',
+                    left: {
+                        type: 'Identifier',
+                        name: 'foo',
+                        range: [ 7, 10 ]
+                    },
+                    right: {
+                        type: 'Identifier',
+                        name: 'bar',
+                        range: [ 15, 18 ]
+                    },
+                    range: [ 7, 18 ]
+                }
+            ],
+            range: [ 0, 19 ]
+        });
+        testEsNodeAtIndex(0, 'code', 'assert(foo === bar)');
+        testEsNodeAtIndex(0, 'value', undefined);
+        testEsNodeAtIndex(0, 'isCaptured', false);
+        testEsNodeAtIndex(0, 'range', [0, 19]);
+    });
+
+    describe('2nd EsNode', function () {
+        testTraversal('parent', function (nodes) {
+            baseAssert.deepEqual(nodes[1].parent, nodes[0]);
+        });
+        testEsNodeAtIndex(1, 'espath', 'callee');
+        testEsNodeAtIndex(1, 'key', 'callee');
+        testEsNodeAtIndex(1, 'node', {
+            type: 'Identifier',
+            name: 'assert',
+            range: [ 0, 6 ]
+        });
+        testEsNodeAtIndex(1, 'code', 'assert');
+        testEsNodeAtIndex(1, 'value', undefined);
+        testEsNodeAtIndex(1, 'isCaptured', false);
+        testEsNodeAtIndex(1, 'range', [0, 6]);
+    });
+
+    describe('3rd EsNode', function () {
+        testTraversal('parent', function (nodes) {
+            baseAssert.deepEqual(nodes[2].parent, nodes[0]);
+        });
+        testEsNodeAtIndex(2, 'espath', 'arguments/0');
+        testEsNodeAtIndex(2, 'key', 0);
+        testEsNodeAtIndex(2, 'node', {
+            type: 'BinaryExpression',
+            operator: '===',
+            left: {
+                type: 'Identifier',
+                name: 'foo',
+                range: [ 7, 10 ]
+            },
+            right: {
+                type: 'Identifier',
+                name: 'bar',
+                range: [ 15, 18 ]
+            },
+            range: [ 7, 18 ]
+        });
+        testEsNodeAtIndex(2, 'code', 'foo === bar');
+        testEsNodeAtIndex(2, 'value', false);
+        testEsNodeAtIndex(2, 'isCaptured', true);
+        testEsNodeAtIndex(2, 'range', [ 11, 14 ]);  // range of operator
+    });
+
+    describe('4th EsNode', function () {
+        testTraversal('parent', function (nodes) {
+            baseAssert.deepEqual(nodes[3].parent, nodes[2]);
+        });
+        testEsNodeAtIndex(3, 'espath', 'arguments/0/left');
+        testEsNodeAtIndex(3, 'key', 'left');
+        testEsNodeAtIndex(3, 'node', {
+            type: 'Identifier',
+            name: 'foo',
+            range: [ 7, 10 ]
+        });
+        testEsNodeAtIndex(3, 'code', 'foo');
+        testEsNodeAtIndex(3, 'value', 'FOO');
+        testEsNodeAtIndex(3, 'isCaptured', true);
+        testEsNodeAtIndex(3, 'range', [ 7, 10 ]);
+    });
+
+    describe('5th EsNode', function () {
+        testTraversal('parent', function (nodes) {
+            baseAssert.deepEqual(nodes[4].parent, nodes[2]);
+        });
+        testEsNodeAtIndex(4, 'espath', 'arguments/0/right');
+        testEsNodeAtIndex(4, 'key', 'right');
+        testEsNodeAtIndex(4, 'node', {
+            type: 'Identifier',
+            name: 'bar',
+            range: [ 15, 18 ]
+        });
+        testEsNodeAtIndex(4, 'code', 'bar');
+        testEsNodeAtIndex(4, 'value', 'BAR');
+        testEsNodeAtIndex(4, 'isCaptured', true);
+        testEsNodeAtIndex(4, 'range', [ 15, 18 ]);
     });
 });
 
@@ -35,8 +161,8 @@ describe('powerAssertContext structure', function () {
 
     it('assert(foo === bar)', function () {
         try {
-            var foo = 'foo';
-            var bar = 'bar';
+            var foo = 'FOO';
+            var bar = 'BAR';
             eval(transpile('assert(foo === bar)'));
         } catch (e) {
             baseAssert.deepEqual(e.powerAssertContext, {
@@ -53,11 +179,11 @@ describe('powerAssertContext structure', function () {
                         value: false,
                         events: [
                             {
-                                value: "foo",
+                                value: "FOO",
                                 espath: "arguments/0/left"
                             },
                             {
-                                value: "bar",
+                                value: "BAR",
                                 espath: "arguments/0/right"
                             },
                             {
@@ -73,8 +199,8 @@ describe('powerAssertContext structure', function () {
 
     it('assert.equal(foo, bar)', function () {
         try {
-            var foo = 'foo';
-            var bar = 'bar';
+            var foo = 'FOO';
+            var bar = 'BAR';
             eval(transpile('assert.equal(foo, bar)'));
         } catch (e) {
             baseAssert.deepEqual(e.powerAssertContext, {
@@ -88,19 +214,19 @@ describe('powerAssertContext structure', function () {
                 },
                 args: [
                     {
-                        value: "foo",
+                        value: "FOO",
                         events: [
                             {
-                                value: "foo",
+                                value: "FOO",
                                 espath: "arguments/0"
                             }
                         ]
                     },
                     {
-                        value: "bar",
+                        value: "BAR",
                         events: [
                             {
-                                value: "bar",
+                                value: "BAR",
                                 espath: "arguments/1"
                             }
                         ]
