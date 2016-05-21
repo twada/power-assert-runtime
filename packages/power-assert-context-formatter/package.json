@@ -11,11 +11,13 @@
     "url": "https://github.com/twada/power-assert-runtime/issues"
   },
   "dependencies": {
+    "array-reduce": "0.0.0",
     "power-assert-context-traversal": "^0.1.0",
     "xtend": "^4.0.1"
   },
   "devDependencies": {
     "mocha": "^2.4.5",
+    "power-assert-context-reducer-ast": "^0.1.0",
     "power-assert-renderer-assertion": "^0.1.0",
     "power-assert-renderer-diagram": "^0.1.0"
   },

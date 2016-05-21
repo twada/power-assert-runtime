@@ -83,6 +83,16 @@ var format = createFormatter({
 });
 ```
 
+
+#### options.reducers
+
+| type                  | default value |
+|:----------------------|:--------------|
+| `Array` of `function` | empty array   |
+
+Array of reducer function to be applied to `powerAssertContext`.
+
+
 #### options.outputOffset
 
 | type     | default value |
