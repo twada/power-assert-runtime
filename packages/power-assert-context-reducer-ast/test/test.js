@@ -3,12 +3,11 @@
 var assert = require('assert');
 var estraverse = require('estraverse');
 delete require.cache[require.resolve('..')];
-var filter = require('..');
+var reduce = require('..');
 
 describe('power-assert-context-reducer-ast', function () {
-
-    it('add parsed AST, tokens and visitor keys into output', function () {
-        var input = {
+    beforeEach(function () {
+        this.input = {
             source: {
                 content: 'assert(foo === bar)',
                 filepath: 'test/some_test.js',
@@ -34,15 +33,32 @@ describe('power-assert-context-reducer-ast', function () {
                 }
             ]
         };
-        var inputClone = JSON.parse(JSON.stringify(input));
-        var originalSource = input.source;
+    });
 
-        var actual = filter(input);
-        assert(actual !== input);
-        assert(originalSource === input.source);
-        assert.notDeepEqual(actual, input);
-        assert.deepEqual(input, inputClone);
+    it('new context is not deeply equal to original', function () {
+        var actual = reduce(this.input);
+        assert.notDeepEqual(actual, this.input);
+    });
 
+    it('original context should not be changed', function () {
+        var inputClone = JSON.parse(JSON.stringify(this.input));
+        reduce(this.input);
+        assert.deepEqual(this.input, inputClone);
+    });
+
+    it('returns new context', function () {
+        var actual = reduce(this.input);
+        assert(actual !== this.input);
+    });
+
+    it('original context reference should not be changed', function () {
+        var originalSource = this.input.source;
+        reduce(this.input);
+        assert(originalSource === this.input.source);
+    });
+
+    it('add parsed AST, tokens and visitor keys into output', function () {
+        var actual = reduce(this.input);
         var expected = {
             source: {
                 content: 'assert(foo === bar)',
