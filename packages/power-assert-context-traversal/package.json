@@ -13,7 +13,8 @@
   "dependencies": {
     "array-foreach": "^1.0.1",
     "array-reduce": "0.0.0",
-    "estraverse": "^4.1.0"
+    "estraverse": "^4.1.0",
+    "object-assign": "^4.1.0"
   },
   "devDependencies": {
     "babel-types": "^6.1.0",

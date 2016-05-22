@@ -10,9 +10,9 @@ module.exports = function (powerAssertContext) {
     var source = powerAssertContext.source;
     var astAndTokens = parse(source);
     var newSource = assign({}, source, {
-        ast: JSON.stringify(purifyAst(astAndTokens.expression)),
-        tokens: JSON.stringify(astAndTokens.tokens),
-        visitorKeys: JSON.stringify(estraverse.VisitorKeys)
+        ast: purifyAst(astAndTokens.expression),
+        tokens: astAndTokens.tokens,
+        visitorKeys: estraverse.VisitorKeys
     });
     return assign({}, powerAssertContext, { source: newSource });
 };
@@ -81,23 +81,26 @@ function wrappedInAsync (jsCode) {
 }
 
 function offsetAndSlimDownTokens (tokens) {
-    var i, token, result = [];
+    var i, token, newToken, result = [];
     var columnOffset;
     for(i = 0; i < tokens.length; i += 1) {
         token = tokens[i];
         if (i === 0) {
             columnOffset = token.loc.start.column;
         }
-        result.push({
+        newToken = {
             type: {
                 label: token.type.label
-            },
-            value: token.value,
-            range: [
-                token.loc.start.column - columnOffset,
-                token.loc.end.column - columnOffset
-            ]
-        });
+            }
+        };
+        if (typeof token.value !== 'undefined') {
+            newToken.value = token.value;
+        }
+        newToken.range = [
+            token.loc.start.column - columnOffset,
+            token.loc.end.column - columnOffset
+        ];
+        result.push(newToken);
     }
     return result;
 }
