@@ -2,10 +2,10 @@
 
 var BaseRenderer = require('power-assert-renderer-base');
 var inherits = require('util').inherits;
-var forEach = require('array-foreach');
+var forEach = require('core-js/library/fn/array/for-each');
 var stringifier = require('stringifier');
 var stringWidth = require('./lib/string-width');
-var extend = require('xtend');
+var assign = require('core-js/library/fn/object/assign');
 var defaultOptions = require('./lib/default-options');
 
 /**
@@ -20,7 +20,7 @@ var defaultOptions = require('./lib/default-options');
  */
 function DiagramRenderer (config) {
     BaseRenderer.call(this);
-    this.config = extend(defaultOptions(), config);
+    this.config = assign({}, defaultOptions(), config);
     this.events = [];
     if (typeof this.config.stringify !== 'function') {
         this.stringify = stringifier(this.config);

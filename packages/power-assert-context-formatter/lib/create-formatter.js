@@ -1,10 +1,10 @@
 'use strict';
 
-var extend = require('xtend');
+var assign = require('core-js/library/fn/object/assign');
 var ContextTraversal = require('power-assert-context-traversal');
 var StringWriter = require('./string-writer');
 var defaultOptions = require('./default-options');
-var reduce = require('array-reduce');
+var reduce = require('core-js/library/fn/array/reduce');
 
 /**
  * options.reducers [array]
@@ -13,7 +13,7 @@ var reduce = require('array-reduce');
  * options.lineSeparator [string]
  */
 module.exports = function createFormatter (options) {
-    var formatterConfig = extend(defaultOptions(), options);
+    var formatterConfig = assign({}, defaultOptions(), options);
     var reducers = formatterConfig.reducers || [];
     var rendererConfigs = formatterConfig.renderers;
     var len = rendererConfigs.length;

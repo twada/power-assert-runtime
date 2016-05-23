@@ -11,11 +11,10 @@
     "url": "https://github.com/twada/power-assert-runtime/issues"
   },
   "dependencies": {
-    "array-foreach": "^1.0.2",
+    "core-js": "^2.0.0",
     "eastasianwidth": "^0.1.1",
     "power-assert-renderer-base": "^0.1.0",
-    "stringifier": "^1.2.1",
-    "xtend": "^4.0.1"
+    "stringifier": "^1.2.1"
   },
   "devDependencies": {
     "mocha": "^2.4.5",

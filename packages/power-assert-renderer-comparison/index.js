@@ -3,11 +3,11 @@
 var BaseRenderer = require('power-assert-renderer-base');
 var inherits = require('util').inherits;
 var typeName = require('type-name');
-var keys = Object.keys || require('object-keys');
-var forEach = require('array-foreach');
+var keys = require('core-js/library/fn/object/keys');
+var forEach = require('core-js/library/fn/array/for-each');
 var udiff = require('./lib/udiff');
 var stringifier = require('stringifier');
-var extend = require('xtend');
+var assign = require('core-js/library/fn/object/assign');
 var defaultOptions = require('./lib/default-options');
 var literalPattern = /^(?:String|Numeric|Null|Boolean|RegExp)?Literal$/;
 
@@ -27,7 +27,7 @@ function isLiteral (node) {
  */
 function ComparisonRenderer (config) {
     BaseRenderer.call(this);
-    this.config = extend(defaultOptions(), config);
+    this.config = assign({}, defaultOptions(), config);
     if (typeof this.config.stringify !== 'function') {
         this.stringify = stringifier(this.config);
     }
