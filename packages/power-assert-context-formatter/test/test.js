@@ -8,6 +8,7 @@ var baseAssert = require('assert');
 var assert = require('../../../test_helper/empowered-assert');
 var transpile = require('../../../test_helper/transpile');
 var extend = require('xtend');
+var appendAst = require('power-assert-context-reducer-ast');
 
 
 describe('power-assert-context-formatter : renderers option', function () {
@@ -59,6 +60,38 @@ describe('power-assert-context-formatter : renderers option', function () {
             ].join('\n'));
         }
     });
+});
+
+
+describe('power-assert-context-formatter : reducers option', function () {
+
+    it('append ast reducer', function () {
+        var format = createFormatter({
+            reducers: [
+                appendAst
+            ],
+            renderers: [
+                AssertionRenderer,
+                DiagramRenderer
+            ]
+        });
+        try {
+            var foo = { name: 'foo', items: ['one', 'two'] };
+            var bar = { name: 'bar', items: ['toto', 'tata'] };
+            eval(transpile('assert.deepEqual(foo, bar)', false));
+        } catch (e) {
+            var result = format(e.powerAssertContext);
+            baseAssert.equal(result, [
+                '  ',
+                '  assert.deepEqual(foo, bar)',
+                '                   |    |   ',
+                '                   |    Object{name:"bar",items:#Array#}',
+                '                   Object{name:"foo",items:#Array#}',
+                '  '
+            ].join('\n'));
+        }
+    });
+
 });
 
 

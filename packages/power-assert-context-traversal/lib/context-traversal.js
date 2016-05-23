@@ -7,6 +7,7 @@ var forEach = require('array-foreach');
 var reduce = require('array-reduce');
 var locationOf = require('./location');
 var literalPattern = /^(?:String|Numeric|Null|Boolean|RegExp)?Literal$/;
+var assign = require('object-assign');
 
 function ContextTraversal (powerAssertContext) {
     this.powerAssertContext = powerAssertContext;
@@ -16,29 +17,36 @@ inherits(ContextTraversal, EventEmitter);
 
 ContextTraversal.prototype.traverse = function () {
     var _this = this;
+    var source = _this.powerAssertContext.source;
+    parseIfJson(source, 'ast');
+    parseIfJson(source, 'tokens');
+    parseIfJson(source, 'visitorKeys');
     _this.emit('start', this.powerAssertContext);
     forEach(this.powerAssertContext.args, function (capturedArgument) {
-        onEachEsNode(capturedArgument, _this.powerAssertContext.source, function (esNode) {
+        onEachEsNode(capturedArgument, source, function (esNode) {
             _this.emit('data', esNode);
         });
     });
     _this.emit('end');
 };
 
+function parseIfJson (source, propName) {
+    if (typeof source[propName] === 'string') {
+        source[propName] = JSON.parse(source[propName]);
+    }
+}
+
 function onEachEsNode(capturedArgument, source, callback) {
-    var ast = JSON.parse(source.ast);
-    var tokens = JSON.parse(source.tokens);
-    var visitorKeys = JSON.parse(source.visitorKeys);
     var espathToValue = reduce(capturedArgument.events, function (accum, ev) {
         accum[ev.espath] = ev.value;
         return accum;
     }, {});
     var nodeStack = [];
-    estraverse.traverse(ast, {
-        keys: visitorKeys,
+    estraverse.traverse(source.ast, {
+        keys: source.visitorKeys,
         enter: function (currentNode, parentNode) {
             var parentEsNode = (0 < nodeStack.length) ? nodeStack[nodeStack.length - 1] : null;
-            var esNode = createEsNode(this.path(), currentNode, espathToValue, source.content, tokens, parentEsNode);
+            var esNode = createEsNode(this.path(), currentNode, espathToValue, source.content, source.tokens, parentEsNode);
             nodeStack.push(esNode);
             callback(esNode);
         },

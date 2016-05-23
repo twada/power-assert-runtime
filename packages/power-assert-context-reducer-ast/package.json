@@ -1,6 +1,6 @@
 {
-  "name": "power-assert-context-traversal",
-  "description": "traverse power-assert context",
+  "name": "power-assert-context-reducer-ast",
+  "description": "append AST into power-assert context",
   "version": "0.1.0",
   "author": {
     "name": "Takuto Wada",
@@ -11,13 +11,13 @@
     "url": "https://github.com/twada/power-assert-runtime/issues"
   },
   "dependencies": {
-    "array-foreach": "^1.0.1",
-    "array-reduce": "0.0.0",
-    "estraverse": "^4.1.0",
+    "espurify": "^1.5.1",
+    "estraverse": "^4.2.0",
     "object-assign": "^4.1.0"
   },
   "devDependencies": {
-    "babel-types": "^6.1.0",
+    "acorn": "^3.1.0",
+    "acorn-es7-plugin": "^1.0.12",
     "mocha": "^2.4.5"
   },
   "files": [

@@ -10,6 +10,7 @@ MODULES
 
 - [power-assert-context-formatter](./packages/power-assert-context-formatter/)
 - [power-assert-context-traversal](./packages/power-assert-context-traversal/)
+- [power-assert-context-reducer-ast](./packages/power-assert-context-reducer-ast/)
 - [power-assert-renderer-base](./packages/power-assert-renderer-base/)
 - [power-assert-renderer-file](./packages/power-assert-renderer-file/)
 - [power-assert-renderer-assertion](./packages/power-assert-renderer-assertion/)
@@ -21,7 +22,7 @@ MODULES
 DESIGN DECISION
 ---------------------------------------
 
-- Unbundle ECMAScript parser from runtime side
+- Make ECMAScript parser optional at runtime
 - Make each module lightweight and small as possible
 - Avoid unnecessary dependencies
 - Make renderers less dynamic and statically analyzable. No dynamic require.
