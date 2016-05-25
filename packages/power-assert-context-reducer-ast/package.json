@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "core-js": "^2.0.0",
-    "espurify": "^1.5.1",
+    "espurify": "^1.6.0",
     "estraverse": "^4.2.0"
   },
   "devDependencies": {
