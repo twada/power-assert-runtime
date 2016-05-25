@@ -3,11 +3,11 @@
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('util').inherits;
 var estraverse = require('estraverse');
-var forEach = require('array-foreach');
-var reduce = require('array-reduce');
+var forEach = require('core-js/library/fn/array/for-each');
+var reduce = require('core-js/library/fn/array/reduce');
 var locationOf = require('./location');
 var literalPattern = /^(?:String|Numeric|Null|Boolean|RegExp)?Literal$/;
-var assign = require('object-assign');
+var assign = require('core-js/library/fn/object/assign');
 
 function ContextTraversal (powerAssertContext) {
     this.powerAssertContext = powerAssertContext;

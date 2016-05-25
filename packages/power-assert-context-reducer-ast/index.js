@@ -4,7 +4,7 @@ var parser = require('acorn');
 require('acorn-es7-plugin')(parser);
 var estraverse = require('estraverse');
 var purifyAst = require('espurify').customize({extra: ['range']});
-var assign = require('object-assign');
+var assign = require('core-js/library/fn/object/assign');
 
 module.exports = function (powerAssertContext) {
     var source = powerAssertContext.source;

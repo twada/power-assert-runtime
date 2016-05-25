@@ -11,9 +11,9 @@
     "url": "https://github.com/twada/power-assert-runtime/issues"
   },
   "dependencies": {
-    "espurify": "^1.5.1",
-    "estraverse": "^4.2.0",
-    "object-assign": "^4.1.0"
+    "core-js": "^2.0.0",
+    "espurify": "^1.6.0",
+    "estraverse": "^4.2.0"
   },
   "devDependencies": {
     "acorn": "^3.1.0",

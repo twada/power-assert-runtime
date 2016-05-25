@@ -2,7 +2,7 @@
 
 var DiagramRenderer = require('power-assert-renderer-diagram');
 var inherits = require('util').inherits;
-var some = require('array-some');
+var some = require('core-js/library/fn/array/some');
 
 /**
  * options.stringify [function]
