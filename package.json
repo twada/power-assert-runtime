@@ -18,7 +18,7 @@
   ],
   "dependencies": {
     "call-signature": "0.0.2",
-    "core-js": "^1.2.6",
+    "core-js": "^2.0.0",
     "xtend": "^4.0.0"
   },
   "devDependencies": {
