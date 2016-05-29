@@ -3,27 +3,27 @@
  * @license
  * 
  * empower-core:
- *   license: MIT
+ *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Takuto Wada <takuto.wada@gmail.com>
  *   contributors: James Talmage
  *   homepage: http://github.com/twada/empower-core
- *   version: 0.5.0
+ *   version: 0.6.0
  * 
  * call-signature:
- *   license: MIT
+ *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: James Talmage <james@talmage.io>
  *   maintainers: jamestalmage <james@talmage.io>, twada <takuto.wada@gmail.com>
  *   homepage: https://github.com/jamestalmage/call-signature#readme
  *   version: 0.0.2
  * 
  * core-js:
- *   license: MIT
+ *   license: MIT (http://opensource.org/licenses/MIT)
  *   maintainers: zloirock <zloirock@zloirock.ru>
  *   homepage: https://github.com/zloirock/core-js#readme
- *   version: 1.2.6
+ *   version: 2.4.0
  * 
  * xtend:
- *   license: MIT
+ *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Raynos <raynos2@gmail.com>
  *   maintainers: raynos <raynos2@gmail.com>
  *   contributors: Jake Verbaten, Matt Esch
@@ -113,7 +113,7 @@ function isEmpowered (assertObjectOrFunction) {
 empowerCore.defaultOptions = defaultOptions;
 module.exports = empowerCore;
 
-},{"./lib/decorator":3,"./lib/default-options":4,"./lib/define-properties":5,"core-js/library/fn/object/create":11,"xtend/mutable":26}],2:[function(_dereq_,module,exports){
+},{"./lib/decorator":3,"./lib/default-options":4,"./lib/define-properties":5,"core-js/library/fn/object/create":11,"xtend/mutable":62}],2:[function(_dereq_,module,exports){
 'use strict';
 
 var some = _dereq_('core-js/library/fn/array/some');
@@ -389,13 +389,12 @@ function onSuccess(successEvent) {
 'use strict';
 
 var defineProperty = _dereq_('core-js/library/fn/object/define-property');
-var foreach = _dereq_('core-js/library/fn/array/for-each');
+var forEach = _dereq_('core-js/library/fn/array/for-each');
 var keys = _dereq_('core-js/library/fn/object/keys');
 
-var defineProperties = function (object, map) {
-    var props = keys(map);
-    foreach(props, function (name) {
-        defineProperty(object, name, {
+module.exports = function defineProperties (obj, map) {
+    forEach(keys(map), function (name) {
+        defineProperty(obj, name, {
             configurable: true,
             enumerable: false,
             value: map[name],
@@ -403,8 +402,6 @@ var defineProperties = function (object, map) {
         });
     });
 };
-
-module.exports = defineProperties;
 
 },{"core-js/library/fn/array/for-each":8,"core-js/library/fn/object/define-property":12,"core-js/library/fn/object/keys":13}],6:[function(_dereq_,module,exports){
 'use strict';
@@ -492,41 +489,146 @@ function generate(parsed) {
 }
 
 },{}],7:[function(_dereq_,module,exports){
-_dereq_('../../modules/js.array.statics');
-module.exports = _dereq_('../../modules/$.core').Array.filter;
-},{"../../modules/$.core":15,"../../modules/js.array.statics":25}],8:[function(_dereq_,module,exports){
-_dereq_('../../modules/js.array.statics');
-module.exports = _dereq_('../../modules/$.core').Array.forEach;
-},{"../../modules/$.core":15,"../../modules/js.array.statics":25}],9:[function(_dereq_,module,exports){
-_dereq_('../../modules/js.array.statics');
-module.exports = _dereq_('../../modules/$.core').Array.map;
-},{"../../modules/$.core":15,"../../modules/js.array.statics":25}],10:[function(_dereq_,module,exports){
-_dereq_('../../modules/js.array.statics');
-module.exports = _dereq_('../../modules/$.core').Array.some;
-},{"../../modules/$.core":15,"../../modules/js.array.statics":25}],11:[function(_dereq_,module,exports){
-var $ = _dereq_('../../modules/$');
+_dereq_('../../modules/es6.array.filter');
+module.exports = _dereq_('../../modules/_core').Array.filter;
+},{"../../modules/_core":21,"../../modules/es6.array.filter":55}],8:[function(_dereq_,module,exports){
+_dereq_('../../modules/es6.array.for-each');
+module.exports = _dereq_('../../modules/_core').Array.forEach;
+},{"../../modules/_core":21,"../../modules/es6.array.for-each":56}],9:[function(_dereq_,module,exports){
+_dereq_('../../modules/es6.array.map');
+module.exports = _dereq_('../../modules/_core').Array.map;
+},{"../../modules/_core":21,"../../modules/es6.array.map":57}],10:[function(_dereq_,module,exports){
+_dereq_('../../modules/es6.array.some');
+module.exports = _dereq_('../../modules/_core').Array.some;
+},{"../../modules/_core":21,"../../modules/es6.array.some":58}],11:[function(_dereq_,module,exports){
+_dereq_('../../modules/es6.object.create');
+var $Object = _dereq_('../../modules/_core').Object;
 module.exports = function create(P, D){
-  return $.create(P, D);
+  return $Object.create(P, D);
 };
-},{"../../modules/$":21}],12:[function(_dereq_,module,exports){
-var $ = _dereq_('../../modules/$');
+},{"../../modules/_core":21,"../../modules/es6.object.create":59}],12:[function(_dereq_,module,exports){
+_dereq_('../../modules/es6.object.define-property');
+var $Object = _dereq_('../../modules/_core').Object;
 module.exports = function defineProperty(it, key, desc){
-  return $.setDesc(it, key, desc);
+  return $Object.defineProperty(it, key, desc);
 };
-},{"../../modules/$":21}],13:[function(_dereq_,module,exports){
+},{"../../modules/_core":21,"../../modules/es6.object.define-property":60}],13:[function(_dereq_,module,exports){
 _dereq_('../../modules/es6.object.keys');
-module.exports = _dereq_('../../modules/$.core').Object.keys;
-},{"../../modules/$.core":15,"../../modules/es6.object.keys":24}],14:[function(_dereq_,module,exports){
+module.exports = _dereq_('../../modules/_core').Object.keys;
+},{"../../modules/_core":21,"../../modules/es6.object.keys":61}],14:[function(_dereq_,module,exports){
 module.exports = function(it){
   if(typeof it != 'function')throw TypeError(it + ' is not a function!');
   return it;
 };
 },{}],15:[function(_dereq_,module,exports){
-var core = module.exports = {version: '1.2.6'};
+var isObject = _dereq_('./_is-object');
+module.exports = function(it){
+  if(!isObject(it))throw TypeError(it + ' is not an object!');
+  return it;
+};
+},{"./_is-object":36}],16:[function(_dereq_,module,exports){
+// false -> Array#indexOf
+// true  -> Array#includes
+var toIObject = _dereq_('./_to-iobject')
+  , toLength  = _dereq_('./_to-length')
+  , toIndex   = _dereq_('./_to-index');
+module.exports = function(IS_INCLUDES){
+  return function($this, el, fromIndex){
+    var O      = toIObject($this)
+      , length = toLength(O.length)
+      , index  = toIndex(fromIndex, length)
+      , value;
+    // Array#includes uses SameValueZero equality algorithm
+    if(IS_INCLUDES && el != el)while(length > index){
+      value = O[index++];
+      if(value != value)return true;
+    // Array#toIndex ignores holes, Array#includes - not
+    } else for(;length > index; index++)if(IS_INCLUDES || index in O){
+      if(O[index] === el)return IS_INCLUDES || index || 0;
+    } return !IS_INCLUDES && -1;
+  };
+};
+},{"./_to-index":47,"./_to-iobject":49,"./_to-length":50}],17:[function(_dereq_,module,exports){
+// 0 -> Array#forEach
+// 1 -> Array#map
+// 2 -> Array#filter
+// 3 -> Array#some
+// 4 -> Array#every
+// 5 -> Array#find
+// 6 -> Array#findIndex
+var ctx      = _dereq_('./_ctx')
+  , IObject  = _dereq_('./_iobject')
+  , toObject = _dereq_('./_to-object')
+  , toLength = _dereq_('./_to-length')
+  , asc      = _dereq_('./_array-species-create');
+module.exports = function(TYPE, $create){
+  var IS_MAP        = TYPE == 1
+    , IS_FILTER     = TYPE == 2
+    , IS_SOME       = TYPE == 3
+    , IS_EVERY      = TYPE == 4
+    , IS_FIND_INDEX = TYPE == 6
+    , NO_HOLES      = TYPE == 5 || IS_FIND_INDEX
+    , create        = $create || asc;
+  return function($this, callbackfn, that){
+    var O      = toObject($this)
+      , self   = IObject(O)
+      , f      = ctx(callbackfn, that, 3)
+      , length = toLength(self.length)
+      , index  = 0
+      , result = IS_MAP ? create($this, length) : IS_FILTER ? create($this, 0) : undefined
+      , val, res;
+    for(;length > index; index++)if(NO_HOLES || index in self){
+      val = self[index];
+      res = f(val, index, O);
+      if(TYPE){
+        if(IS_MAP)result[index] = res;            // map
+        else if(res)switch(TYPE){
+          case 3: return true;                    // some
+          case 5: return val;                     // find
+          case 6: return index;                   // findIndex
+          case 2: result.push(val);               // filter
+        } else if(IS_EVERY)return false;          // every
+      }
+    }
+    return IS_FIND_INDEX ? -1 : IS_SOME || IS_EVERY ? IS_EVERY : result;
+  };
+};
+},{"./_array-species-create":19,"./_ctx":22,"./_iobject":34,"./_to-length":50,"./_to-object":51}],18:[function(_dereq_,module,exports){
+var isObject = _dereq_('./_is-object')
+  , isArray  = _dereq_('./_is-array')
+  , SPECIES  = _dereq_('./_wks')('species');
+
+module.exports = function(original){
+  var C;
+  if(isArray(original)){
+    C = original.constructor;
+    // cross-realm fallback
+    if(typeof C == 'function' && (C === Array || isArray(C.prototype)))C = undefined;
+    if(isObject(C)){
+      C = C[SPECIES];
+      if(C === null)C = undefined;
+    }
+  } return C === undefined ? Array : C;
+};
+},{"./_is-array":35,"./_is-object":36,"./_wks":54}],19:[function(_dereq_,module,exports){
+// 9.4.2.3 ArraySpeciesCreate(originalArray, length)
+var speciesConstructor = _dereq_('./_array-species-constructor');
+
+module.exports = function(original, length){
+  return new (speciesConstructor(original))(length);
+};
+},{"./_array-species-constructor":18}],20:[function(_dereq_,module,exports){
+var toString = {}.toString;
+
+module.exports = function(it){
+  return toString.call(it).slice(8, -1);
+};
+},{}],21:[function(_dereq_,module,exports){
+var core = module.exports = {version: '2.4.0'};
 if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
-},{}],16:[function(_dereq_,module,exports){
+},{}],22:[function(_dereq_,module,exports){
 // optional / simple context binding
-var aFunction = _dereq_('./$.a-function');
+var aFunction = _dereq_('./_a-function');
 module.exports = function(fn, that, length){
   aFunction(fn);
   if(that === undefined)return fn;
@@ -545,16 +647,35 @@ module.exports = function(fn, that, length){
     return fn.apply(that, arguments);
   };
 };
-},{"./$.a-function":14}],17:[function(_dereq_,module,exports){
+},{"./_a-function":14}],23:[function(_dereq_,module,exports){
 // 7.2.1 RequireObjectCoercible(argument)
 module.exports = function(it){
   if(it == undefined)throw TypeError("Can't call method on  " + it);
   return it;
 };
-},{}],18:[function(_dereq_,module,exports){
-var global    = _dereq_('./$.global')
-  , core      = _dereq_('./$.core')
-  , ctx       = _dereq_('./$.ctx')
+},{}],24:[function(_dereq_,module,exports){
+// Thank's IE8 for his funny defineProperty
+module.exports = !_dereq_('./_fails')(function(){
+  return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
+});
+},{"./_fails":28}],25:[function(_dereq_,module,exports){
+var isObject = _dereq_('./_is-object')
+  , document = _dereq_('./_global').document
+  // in old IE typeof document.createElement is 'object'
+  , is = isObject(document) && isObject(document.createElement);
+module.exports = function(it){
+  return is ? document.createElement(it) : {};
+};
+},{"./_global":29,"./_is-object":36}],26:[function(_dereq_,module,exports){
+// IE 8- don't enum bug keys
+module.exports = (
+  'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
+).split(',');
+},{}],27:[function(_dereq_,module,exports){
+var global    = _dereq_('./_global')
+  , core      = _dereq_('./_core')
+  , ctx       = _dereq_('./_ctx')
+  , hide      = _dereq_('./_hide')
   , PROTOTYPE = 'prototype';
 
 var $export = function(type, name, source){
@@ -565,12 +686,13 @@ var $export = function(type, name, source){
     , IS_BIND   = type & $export.B
     , IS_WRAP   = type & $export.W
     , exports   = IS_GLOBAL ? core : core[name] || (core[name] = {})
+    , expProto  = exports[PROTOTYPE]
     , target    = IS_GLOBAL ? global : IS_STATIC ? global[name] : (global[name] || {})[PROTOTYPE]
     , key, own, out;
   if(IS_GLOBAL)source = name;
   for(key in source){
     // contains in native
-    own = !IS_FORCED && target && key in target;
+    own = !IS_FORCED && target && target[key] !== undefined;
     if(own && key in exports)continue;
     // export native or passed
     out = own ? target[key] : source[key];
@@ -580,25 +702,38 @@ var $export = function(type, name, source){
     : IS_BIND && own ? ctx(out, global)
     // wrap global constructors for prevent change them in library
     : IS_WRAP && target[key] == out ? (function(C){
-      var F = function(param){
-        return this instanceof C ? new C(param) : C(param);
+      var F = function(a, b, c){
+        if(this instanceof C){
+          switch(arguments.length){
+            case 0: return new C;
+            case 1: return new C(a);
+            case 2: return new C(a, b);
+          } return new C(a, b, c);
+        } return C.apply(this, arguments);
       };
       F[PROTOTYPE] = C[PROTOTYPE];
       return F;
     // make static versions for prototype methods
     })(out) : IS_PROTO && typeof out == 'function' ? ctx(Function.call, out) : out;
-    if(IS_PROTO)(exports[PROTOTYPE] || (exports[PROTOTYPE] = {}))[key] = out;
+    // export proto methods to core.%CONSTRUCTOR%.methods.%NAME%
+    if(IS_PROTO){
+      (exports.virtual || (exports.virtual = {}))[key] = out;
+      // export proto methods to core.%CONSTRUCTOR%.prototype.%NAME%
+      if(type & $export.R && expProto && !expProto[key])hide(expProto, key, out);
+    }
   }
 };
 // type bitmap
-$export.F = 1;  // forced
-$export.G = 2;  // global
-$export.S = 4;  // static
-$export.P = 8;  // proto
-$export.B = 16; // bind
-$export.W = 32; // wrap
+$export.F = 1;   // forced
+$export.G = 2;   // global
+$export.S = 4;   // static
+$export.P = 8;   // proto
+$export.B = 16;  // bind
+$export.W = 32;  // wrap
+$export.U = 64;  // safe
+$export.R = 128; // real proto method for `library` 
 module.exports = $export;
-},{"./$.core":15,"./$.ctx":16,"./$.global":20}],19:[function(_dereq_,module,exports){
+},{"./_core":21,"./_ctx":22,"./_global":29,"./_hide":31}],28:[function(_dereq_,module,exports){
 module.exports = function(exec){
   try {
     return !!exec();
@@ -606,70 +741,316 @@ module.exports = function(exec){
     return true;
   }
 };
-},{}],20:[function(_dereq_,module,exports){
+},{}],29:[function(_dereq_,module,exports){
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
 var global = module.exports = typeof window != 'undefined' && window.Math == Math
   ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
 if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
-},{}],21:[function(_dereq_,module,exports){
-var $Object = Object;
-module.exports = {
-  create:     $Object.create,
-  getProto:   $Object.getPrototypeOf,
-  isEnum:     {}.propertyIsEnumerable,
-  getDesc:    $Object.getOwnPropertyDescriptor,
-  setDesc:    $Object.defineProperty,
-  setDescs:   $Object.defineProperties,
-  getKeys:    $Object.keys,
-  getNames:   $Object.getOwnPropertyNames,
-  getSymbols: $Object.getOwnPropertySymbols,
-  each:       [].forEach
+},{}],30:[function(_dereq_,module,exports){
+var hasOwnProperty = {}.hasOwnProperty;
+module.exports = function(it, key){
+  return hasOwnProperty.call(it, key);
 };
-},{}],22:[function(_dereq_,module,exports){
+},{}],31:[function(_dereq_,module,exports){
+var dP         = _dereq_('./_object-dp')
+  , createDesc = _dereq_('./_property-desc');
+module.exports = _dereq_('./_descriptors') ? function(object, key, value){
+  return dP.f(object, key, createDesc(1, value));
+} : function(object, key, value){
+  object[key] = value;
+  return object;
+};
+},{"./_descriptors":24,"./_object-dp":38,"./_property-desc":43}],32:[function(_dereq_,module,exports){
+module.exports = _dereq_('./_global').document && document.documentElement;
+},{"./_global":29}],33:[function(_dereq_,module,exports){
+module.exports = !_dereq_('./_descriptors') && !_dereq_('./_fails')(function(){
+  return Object.defineProperty(_dereq_('./_dom-create')('div'), 'a', {get: function(){ return 7; }}).a != 7;
+});
+},{"./_descriptors":24,"./_dom-create":25,"./_fails":28}],34:[function(_dereq_,module,exports){
+// fallback for non-array-like ES3 and non-enumerable old V8 strings
+var cof = _dereq_('./_cof');
+module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
+  return cof(it) == 'String' ? it.split('') : Object(it);
+};
+},{"./_cof":20}],35:[function(_dereq_,module,exports){
+// 7.2.2 IsArray(argument)
+var cof = _dereq_('./_cof');
+module.exports = Array.isArray || function isArray(arg){
+  return cof(arg) == 'Array';
+};
+},{"./_cof":20}],36:[function(_dereq_,module,exports){
+module.exports = function(it){
+  return typeof it === 'object' ? it !== null : typeof it === 'function';
+};
+},{}],37:[function(_dereq_,module,exports){
+// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
+var anObject    = _dereq_('./_an-object')
+  , dPs         = _dereq_('./_object-dps')
+  , enumBugKeys = _dereq_('./_enum-bug-keys')
+  , IE_PROTO    = _dereq_('./_shared-key')('IE_PROTO')
+  , Empty       = function(){ /* empty */ }
+  , PROTOTYPE   = 'prototype';
+
+// Create object with fake `null` prototype: use iframe Object with cleared prototype
+var createDict = function(){
+  // Thrash, waste and sodomy: IE GC bug
+  var iframe = _dereq_('./_dom-create')('iframe')
+    , i      = enumBugKeys.length
+    , gt     = '>'
+    , iframeDocument;
+  iframe.style.display = 'none';
+  _dereq_('./_html').appendChild(iframe);
+  iframe.src = 'javascript:'; // eslint-disable-line no-script-url
+  // createDict = iframe.contentWindow.Object;
+  // html.removeChild(iframe);
+  iframeDocument = iframe.contentWindow.document;
+  iframeDocument.open();
+  iframeDocument.write('<script>document.F=Object</script' + gt);
+  iframeDocument.close();
+  createDict = iframeDocument.F;
+  while(i--)delete createDict[PROTOTYPE][enumBugKeys[i]];
+  return createDict();
+};
+
+module.exports = Object.create || function create(O, Properties){
+  var result;
+  if(O !== null){
+    Empty[PROTOTYPE] = anObject(O);
+    result = new Empty;
+    Empty[PROTOTYPE] = null;
+    // add "__proto__" for Object.getPrototypeOf polyfill
+    result[IE_PROTO] = O;
+  } else result = createDict();
+  return Properties === undefined ? result : dPs(result, Properties);
+};
+},{"./_an-object":15,"./_dom-create":25,"./_enum-bug-keys":26,"./_html":32,"./_object-dps":39,"./_shared-key":44}],38:[function(_dereq_,module,exports){
+var anObject       = _dereq_('./_an-object')
+  , IE8_DOM_DEFINE = _dereq_('./_ie8-dom-define')
+  , toPrimitive    = _dereq_('./_to-primitive')
+  , dP             = Object.defineProperty;
+
+exports.f = _dereq_('./_descriptors') ? Object.defineProperty : function defineProperty(O, P, Attributes){
+  anObject(O);
+  P = toPrimitive(P, true);
+  anObject(Attributes);
+  if(IE8_DOM_DEFINE)try {
+    return dP(O, P, Attributes);
+  } catch(e){ /* empty */ }
+  if('get' in Attributes || 'set' in Attributes)throw TypeError('Accessors not supported!');
+  if('value' in Attributes)O[P] = Attributes.value;
+  return O;
+};
+},{"./_an-object":15,"./_descriptors":24,"./_ie8-dom-define":33,"./_to-primitive":52}],39:[function(_dereq_,module,exports){
+var dP       = _dereq_('./_object-dp')
+  , anObject = _dereq_('./_an-object')
+  , getKeys  = _dereq_('./_object-keys');
+
+module.exports = _dereq_('./_descriptors') ? Object.defineProperties : function defineProperties(O, Properties){
+  anObject(O);
+  var keys   = getKeys(Properties)
+    , length = keys.length
+    , i = 0
+    , P;
+  while(length > i)dP.f(O, P = keys[i++], Properties[P]);
+  return O;
+};
+},{"./_an-object":15,"./_descriptors":24,"./_object-dp":38,"./_object-keys":41}],40:[function(_dereq_,module,exports){
+var has          = _dereq_('./_has')
+  , toIObject    = _dereq_('./_to-iobject')
+  , arrayIndexOf = _dereq_('./_array-includes')(false)
+  , IE_PROTO     = _dereq_('./_shared-key')('IE_PROTO');
+
+module.exports = function(object, names){
+  var O      = toIObject(object)
+    , i      = 0
+    , result = []
+    , key;
+  for(key in O)if(key != IE_PROTO)has(O, key) && result.push(key);
+  // Don't enum bug & hidden keys
+  while(names.length > i)if(has(O, key = names[i++])){
+    ~arrayIndexOf(result, key) || result.push(key);
+  }
+  return result;
+};
+},{"./_array-includes":16,"./_has":30,"./_shared-key":44,"./_to-iobject":49}],41:[function(_dereq_,module,exports){
+// 19.1.2.14 / 15.2.3.14 Object.keys(O)
+var $keys       = _dereq_('./_object-keys-internal')
+  , enumBugKeys = _dereq_('./_enum-bug-keys');
+
+module.exports = Object.keys || function keys(O){
+  return $keys(O, enumBugKeys);
+};
+},{"./_enum-bug-keys":26,"./_object-keys-internal":40}],42:[function(_dereq_,module,exports){
 // most Object methods by ES6 should accept primitives
-var $export = _dereq_('./$.export')
-  , core    = _dereq_('./$.core')
-  , fails   = _dereq_('./$.fails');
+var $export = _dereq_('./_export')
+  , core    = _dereq_('./_core')
+  , fails   = _dereq_('./_fails');
 module.exports = function(KEY, exec){
   var fn  = (core.Object || {})[KEY] || Object[KEY]
     , exp = {};
   exp[KEY] = exec(fn);
   $export($export.S + $export.F * fails(function(){ fn(1); }), 'Object', exp);
 };
-},{"./$.core":15,"./$.export":18,"./$.fails":19}],23:[function(_dereq_,module,exports){
+},{"./_core":21,"./_export":27,"./_fails":28}],43:[function(_dereq_,module,exports){
+module.exports = function(bitmap, value){
+  return {
+    enumerable  : !(bitmap & 1),
+    configurable: !(bitmap & 2),
+    writable    : !(bitmap & 4),
+    value       : value
+  };
+};
+},{}],44:[function(_dereq_,module,exports){
+var shared = _dereq_('./_shared')('keys')
+  , uid    = _dereq_('./_uid');
+module.exports = function(key){
+  return shared[key] || (shared[key] = uid(key));
+};
+},{"./_shared":45,"./_uid":53}],45:[function(_dereq_,module,exports){
+var global = _dereq_('./_global')
+  , SHARED = '__core-js_shared__'
+  , store  = global[SHARED] || (global[SHARED] = {});
+module.exports = function(key){
+  return store[key] || (store[key] = {});
+};
+},{"./_global":29}],46:[function(_dereq_,module,exports){
+var fails = _dereq_('./_fails');
+
+module.exports = function(method, arg){
+  return !!method && fails(function(){
+    arg ? method.call(null, function(){}, 1) : method.call(null);
+  });
+};
+},{"./_fails":28}],47:[function(_dereq_,module,exports){
+var toInteger = _dereq_('./_to-integer')
+  , max       = Math.max
+  , min       = Math.min;
+module.exports = function(index, length){
+  index = toInteger(index);
+  return index < 0 ? max(index + length, 0) : min(index, length);
+};
+},{"./_to-integer":48}],48:[function(_dereq_,module,exports){
+// 7.1.4 ToInteger
+var ceil  = Math.ceil
+  , floor = Math.floor;
+module.exports = function(it){
+  return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
+};
+},{}],49:[function(_dereq_,module,exports){
+// to indexed object, toObject with fallback for non-array-like ES3 strings
+var IObject = _dereq_('./_iobject')
+  , defined = _dereq_('./_defined');
+module.exports = function(it){
+  return IObject(defined(it));
+};
+},{"./_defined":23,"./_iobject":34}],50:[function(_dereq_,module,exports){
+// 7.1.15 ToLength
+var toInteger = _dereq_('./_to-integer')
+  , min       = Math.min;
+module.exports = function(it){
+  return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
+};
+},{"./_to-integer":48}],51:[function(_dereq_,module,exports){
 // 7.1.13 ToObject(argument)
-var defined = _dereq_('./$.defined');
+var defined = _dereq_('./_defined');
 module.exports = function(it){
   return Object(defined(it));
 };
-},{"./$.defined":17}],24:[function(_dereq_,module,exports){
-// 19.1.2.14 Object.keys(O)
-var toObject = _dereq_('./$.to-object');
+},{"./_defined":23}],52:[function(_dereq_,module,exports){
+// 7.1.1 ToPrimitive(input [, PreferredType])
+var isObject = _dereq_('./_is-object');
+// instead of the ES6 spec version, we didn't implement @@toPrimitive case
+// and the second argument - flag - preferred type is a string
+module.exports = function(it, S){
+  if(!isObject(it))return it;
+  var fn, val;
+  if(S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
+  if(typeof (fn = it.valueOf) == 'function' && !isObject(val = fn.call(it)))return val;
+  if(!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
+  throw TypeError("Can't convert object to primitive value");
+};
+},{"./_is-object":36}],53:[function(_dereq_,module,exports){
+var id = 0
+  , px = Math.random();
+module.exports = function(key){
+  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
+};
+},{}],54:[function(_dereq_,module,exports){
+var store      = _dereq_('./_shared')('wks')
+  , uid        = _dereq_('./_uid')
+  , Symbol     = _dereq_('./_global').Symbol
+  , USE_SYMBOL = typeof Symbol == 'function';
 
-_dereq_('./$.object-sap')('keys', function($keys){
+var $exports = module.exports = function(name){
+  return store[name] || (store[name] =
+    USE_SYMBOL && Symbol[name] || (USE_SYMBOL ? Symbol : uid)('Symbol.' + name));
+};
+
+$exports.store = store;
+},{"./_global":29,"./_shared":45,"./_uid":53}],55:[function(_dereq_,module,exports){
+'use strict';
+var $export = _dereq_('./_export')
+  , $filter = _dereq_('./_array-methods')(2);
+
+$export($export.P + $export.F * !_dereq_('./_strict-method')([].filter, true), 'Array', {
+  // 22.1.3.7 / 15.4.4.20 Array.prototype.filter(callbackfn [, thisArg])
+  filter: function filter(callbackfn /* , thisArg */){
+    return $filter(this, callbackfn, arguments[1]);
+  }
+});
+},{"./_array-methods":17,"./_export":27,"./_strict-method":46}],56:[function(_dereq_,module,exports){
+'use strict';
+var $export  = _dereq_('./_export')
+  , $forEach = _dereq_('./_array-methods')(0)
+  , STRICT   = _dereq_('./_strict-method')([].forEach, true);
+
+$export($export.P + $export.F * !STRICT, 'Array', {
+  // 22.1.3.10 / 15.4.4.18 Array.prototype.forEach(callbackfn [, thisArg])
+  forEach: function forEach(callbackfn /* , thisArg */){
+    return $forEach(this, callbackfn, arguments[1]);
+  }
+});
+},{"./_array-methods":17,"./_export":27,"./_strict-method":46}],57:[function(_dereq_,module,exports){
+'use strict';
+var $export = _dereq_('./_export')
+  , $map    = _dereq_('./_array-methods')(1);
+
+$export($export.P + $export.F * !_dereq_('./_strict-method')([].map, true), 'Array', {
+  // 22.1.3.15 / 15.4.4.19 Array.prototype.map(callbackfn [, thisArg])
+  map: function map(callbackfn /* , thisArg */){
+    return $map(this, callbackfn, arguments[1]);
+  }
+});
+},{"./_array-methods":17,"./_export":27,"./_strict-method":46}],58:[function(_dereq_,module,exports){
+'use strict';
+var $export = _dereq_('./_export')
+  , $some   = _dereq_('./_array-methods')(3);
+
+$export($export.P + $export.F * !_dereq_('./_strict-method')([].some, true), 'Array', {
+  // 22.1.3.23 / 15.4.4.17 Array.prototype.some(callbackfn [, thisArg])
+  some: function some(callbackfn /* , thisArg */){
+    return $some(this, callbackfn, arguments[1]);
+  }
+});
+},{"./_array-methods":17,"./_export":27,"./_strict-method":46}],59:[function(_dereq_,module,exports){
+var $export = _dereq_('./_export')
+// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
+$export($export.S, 'Object', {create: _dereq_('./_object-create')});
+},{"./_export":27,"./_object-create":37}],60:[function(_dereq_,module,exports){
+var $export = _dereq_('./_export');
+// 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
+$export($export.S + $export.F * !_dereq_('./_descriptors'), 'Object', {defineProperty: _dereq_('./_object-dp').f});
+},{"./_descriptors":24,"./_export":27,"./_object-dp":38}],61:[function(_dereq_,module,exports){
+// 19.1.2.14 Object.keys(O)
+var toObject = _dereq_('./_to-object')
+  , $keys    = _dereq_('./_object-keys');
+
+_dereq_('./_object-sap')('keys', function(){
   return function keys(it){
     return $keys(toObject(it));
   };
 });
-},{"./$.object-sap":22,"./$.to-object":23}],25:[function(_dereq_,module,exports){
-// JavaScript 1.6 / Strawman array statics shim
-var $       = _dereq_('./$')
-  , $export = _dereq_('./$.export')
-  , $ctx    = _dereq_('./$.ctx')
-  , $Array  = _dereq_('./$.core').Array || Array
-  , statics = {};
-var setStatics = function(keys, length){
-  $.each.call(keys.split(','), function(key){
-    if(length == undefined && key in $Array)statics[key] = $Array[key];
-    else if(key in [])statics[key] = $ctx(Function.call, [][key], length);
-  });
-};
-setStatics('pop,reverse,shift,keys,values,entries', 1);
-setStatics('indexOf,every,some,forEach,map,filter,find,findIndex,includes', 3);
-setStatics('join,slice,concat,push,splice,unshift,sort,lastIndexOf,' +
-           'reduce,reduceRight,copyWithin,fill');
-$export($export.S, 'Array', statics);
-},{"./$":21,"./$.core":15,"./$.ctx":16,"./$.export":18}],26:[function(_dereq_,module,exports){
+},{"./_object-keys":41,"./_object-sap":42,"./_to-object":51}],62:[function(_dereq_,module,exports){
 module.exports = extend
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
