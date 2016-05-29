@@ -121,7 +121,7 @@ describe('DiagramRenderer', function () {
             '       |      |   |   |         ',
             '       |      |   |   false     ',
             '       |      |   Object{baz:false}',
-            '       true   Object{bar:#Object#}',
+            '       true   Object{bar:Object{baz:false}}',
         ]);
     });
 
@@ -157,7 +157,7 @@ describe('DiagramRenderer', function () {
             '       |  |   |   ',
             '       |  |   false',
             '       |  Object{bar:false}',
-            '       Object{foo:#Object#}'
+            '       Object{foo:Object{bar:false}}'
         ]);
         
         test('undefined property', function (transpiledCode) {
