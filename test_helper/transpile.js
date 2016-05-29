@@ -13,6 +13,7 @@ module.exports = function transpile (code, embedAst) {
             require("babel-preset-react")
         ],
         plugins: [
+            require("babel-plugin-transform-function-bind"),
             createEspowerPlugin(babel, {
                 embedAst: embedAst,
                 sourceRoot: '/absolute/path/to/project'

@@ -408,4 +408,24 @@ describe('DiagramRenderer', function () {
             '                 Object{b:"b",foo:"FOO",bar:"BAR"}'
         ]);
     });
+
+
+    describe('Function Bind Syntax', function () {
+        test('avajs/ava#881', function (transpiledCode) {
+            function validate(name) {
+                return {
+                    name,
+                    valid: true,
+                    value: this
+                };
+            }
+            eval(transpiledCode);
+        }, [
+            'assert.deepEqual(true::validate("foo"), { valid: true, value: true, name: "bar" })',
+            '                 |                      |                                         ',
+            '                 |                      Object{valid:true,value:true,name:"bar"}  ',
+            '                 Object{name:"foo",valid:true,value:true}                         '
+        ]);
+    });
+
 });
