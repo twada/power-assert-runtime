@@ -394,4 +394,18 @@ describe('DiagramRenderer', function () {
         '                 Object{foo:0}          '
     ]);
 
+
+    describe('ObjectRestSpread', function () {
+        test('Spread Properties', function (transpiledCode) {
+            var a = 'a';
+            var b = 'b';
+            var obj = { foo: 'FOO', bar: 'BAR' };
+            eval(transpiledCode);
+        }, [
+            'assert.deepEqual({ b, ...obj }, { a, ...obj })',
+            '                 |              |             ',
+            '                 |              Object{a:"a",foo:"FOO",bar:"BAR"}',
+            '                 Object{b:"b",foo:"FOO",bar:"BAR"}'
+        ]);
+    });
 });
