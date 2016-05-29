@@ -414,7 +414,7 @@ describe('DiagramRenderer', function () {
         test('avajs/ava#881', function (transpiledCode) {
             function validate(name) {
                 return {
-                    name,
+                    name: name,
                     valid: true,
                     value: this
                 };
