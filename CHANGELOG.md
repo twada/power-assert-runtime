@@ -1,3 +1,10 @@
+## [0.6.0](https://github.com/twada/empower-core/releases/tag/v0.6.0) (2016-05-29)
+
+#### Features
+
+  * update core-js to ^2.0.0 ([d152eef5](https://github.com/twada/empower-core/commit/d152eef51be1ba5c909ebe8394e24778ca4cf298))
+
+
 ## [0.5.0](https://github.com/twada/empower-core/releases/tag/v0.5.0) (2016-01-21)
 
 
