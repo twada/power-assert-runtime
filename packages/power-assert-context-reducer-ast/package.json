@@ -11,13 +11,13 @@
     "url": "https://github.com/twada/power-assert-runtime/issues"
   },
   "dependencies": {
+    "acorn": "^3.1.0",
+    "acorn-es7-plugin": "^1.0.12",
     "core-js": "^2.0.0",
     "espurify": "^1.6.0",
     "estraverse": "^4.2.0"
   },
   "devDependencies": {
-    "acorn": "^3.1.0",
-    "acorn-es7-plugin": "^1.0.12",
     "mocha": "^2.4.5"
   },
   "files": [
