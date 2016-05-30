@@ -8,6 +8,9 @@ var assign = require('core-js/library/fn/object/assign');
 
 module.exports = function (powerAssertContext) {
     var source = powerAssertContext.source;
+    if (source.ast && source.tokens && source.visitorKeys) {
+        return powerAssertContext;
+    }
     var astAndTokens = parse(source);
     var newSource = assign({}, source, {
         ast: purifyAst(astAndTokens.expression),

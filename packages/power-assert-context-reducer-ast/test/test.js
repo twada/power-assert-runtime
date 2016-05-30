@@ -90,4 +90,42 @@ describe('power-assert-context-reducer-ast', function () {
         };
         assert.deepEqual(actual, expected);
     });
+
+
+    it('parse if and only if AST is not embedded', function () {
+        var alreadyParsed = {
+            source: {
+                content: 'assert(foo === bar)',
+                filepath: 'test/some_test.js',
+                line: 1,
+                ast: '{"type":"CallExpression","callee":{"type":"Identifier","name":"assert","range":[0,6]},"arguments":[{"type":"BinaryExpression","operator":"===","left":{"type":"Identifier","name":"foo","range":[7,10]},"right":{"type":"Identifier","name":"bar","range":[15,18]},"range":[7,18]}],"range":[0,19]}',
+                tokens: '[{"type":{"label":"name"},"value":"assert","range":[0,6]},{"type":{"label":"("},"range":[6,7]},{"type":{"label":"name"},"value":"foo","range":[7,10]},{"type":{"label":"==/!="},"value":"===","range":[11,14]},{"type":{"label":"name"},"value":"bar","range":[15,18]},{"type":{"label":")"},"range":[18,19]}]',
+                visitorKeys: JSON.stringify(estraverse.VisitorKeys)
+            },
+            args: [
+                {
+                    value: false,
+                    events: [
+                        {
+                            value: "FOO",
+                            espath: "arguments/0/left"
+                        },
+                        {
+                            value: "BAR",
+                            espath: "arguments/0/right"
+                        },
+                        {
+                            value: false,
+                            espath: "arguments/0"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        var actual = reduce(alreadyParsed);
+        assert.deepEqual(actual, alreadyParsed);
+        assert(actual === alreadyParsed);
+    });
+
 });
