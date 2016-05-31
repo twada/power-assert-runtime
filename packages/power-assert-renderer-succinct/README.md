@@ -31,7 +31,7 @@ Function to stringify any target value.
 
 | type     | default value |
 |:---------|:--------------|
-| `number` | `1`           |
+| `number` | `2`           |
 
 Depth of object traversal. If object depth is greater than `maxDepth`, compound object (IOW, `Array` or `object`) will be pruned with `#` like `["foo",#Array#,#Object#]`.
 

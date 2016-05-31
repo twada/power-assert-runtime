@@ -3,7 +3,7 @@
 module.exports = function defaultOptions () {
     return {
         ambiguousEastAsianCharWidth: 2,
-        maxDepth: 1,
+        maxDepth: 2,
         indent: null,
         outputOffset: 2,
         anonymous: 'Object',

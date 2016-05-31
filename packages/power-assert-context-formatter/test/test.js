@@ -30,8 +30,8 @@ describe('power-assert-context-formatter : renderers option', function () {
                 '  ',
                 '  assert.deepEqual(foo, bar)',
                 '                   |    |   ',
-                '                   |    Object{name:"bar",items:#Array#}',
-                '                   Object{name:"foo",items:#Array#}',
+                '                   |    Object{name:"bar",items:["toto","tata"]}',
+                '                   Object{name:"foo",items:["one","two"]}',
                 '  '
             ].join('\n'));
         }
@@ -85,8 +85,8 @@ describe('power-assert-context-formatter : reducers option', function () {
                 '  ',
                 '  assert.deepEqual(foo, bar)',
                 '                   |    |   ',
-                '                   |    Object{name:"bar",items:#Array#}',
-                '                   Object{name:"foo",items:#Array#}',
+                '                   |    Object{name:"bar",items:["toto","tata"]}',
+                '                   Object{name:"foo",items:["one","two"]}',
                 '  '
             ].join('\n'));
         }
