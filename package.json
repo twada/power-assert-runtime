@@ -15,6 +15,7 @@
   "private": true,
   "scripts": {
     "bootstrap": "lerna bootstrap",
+    "lerna": "lerna",
     "test": "mocha --timeout 0 packages/*/test/*.js"
   }
 }
