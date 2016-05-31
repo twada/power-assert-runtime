@@ -12,11 +12,11 @@
   },
   "dependencies": {
     "core-js": "^2.0.0",
-    "power-assert-renderer-diagram": "^0.1.0"
+    "power-assert-renderer-diagram": "^1.0.0"
   },
   "devDependencies": {
     "mocha": "^2.4.5",
-    "power-assert-renderer-assertion": "^0.1.0"
+    "power-assert-renderer-assertion": "^1.0.0"
   },
   "files": [
     "README.md",

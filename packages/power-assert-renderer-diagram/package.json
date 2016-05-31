@@ -13,12 +13,12 @@
   "dependencies": {
     "core-js": "^2.0.0",
     "eastasianwidth": "^0.1.1",
-    "power-assert-renderer-base": "^0.1.0",
+    "power-assert-renderer-base": "^1.0.0",
     "stringifier": "^1.3.0"
   },
   "devDependencies": {
     "mocha": "^2.4.5",
-    "power-assert-renderer-assertion": "^0.1.0"
+    "power-assert-renderer-assertion": "^1.0.0"
   },
   "files": [
     "README.md",
