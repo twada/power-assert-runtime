@@ -60,6 +60,10 @@ function parse (source) {
     var offsetTree = estraverse.replace(exp, {
         keys: estraverse.VisitorKeys,
         enter: function (eachNode) {
+            if (!eachNode.loc && eachNode.range) {
+                // skip already visited node
+                return eachNode;
+            }
             eachNode.range = [
                 eachNode.loc.start.column - columnOffset,
                 eachNode.loc.end.column - columnOffset

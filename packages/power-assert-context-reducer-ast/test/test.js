@@ -129,3 +129,32 @@ describe('power-assert-context-reducer-ast', function () {
     });
 
 });
+
+
+describe('Bug reproduction case', function () {
+    it('Enhanced Object Literals', function () {
+        var input = {
+            source: {
+                content: 'assert.deepEqual({ name, [ `${name} greet` ]: `Hello, I am ${name}` }, null);',
+                filepath: 'test/some_test.js',
+                line: 1
+            },
+            args: [
+            ]
+        };
+        var actual = reduce(input);
+        var expected = {
+            source: {
+                content: 'assert.deepEqual({ name, [ `${name} greet` ]: `Hello, I am ${name}` }, null);',
+                filepath: 'test/some_test.js',
+                line: 1,
+                ast: JSON.parse('{"type":"CallExpression","callee":{"type":"MemberExpression","object":{"type":"Identifier","name":"assert","range":[0,6]},"property":{"type":"Identifier","name":"deepEqual","range":[7,16]},"computed":false,"range":[0,16]},"arguments":[{"type":"ObjectExpression","properties":[{"type":"Property","key":{"type":"Identifier","name":"name","range":[19,23]},"value":{"type":"Identifier","name":"name","range":[19,23]},"kind":"init","method":false,"shorthand":true,"computed":false,"range":[19,23]},{"type":"Property","key":{"type":"TemplateLiteral","quasis":[{"type":"TemplateElement","tail":false,"value":{"raw":"","cooked":""},"range":[28,28]},{"type":"TemplateElement","tail":true,"value":{"raw":" greet","cooked":" greet"},"range":[35,41]}],"expressions":[{"type":"Identifier","name":"name","range":[30,34]}],"range":[27,42]},"value":{"type":"TemplateLiteral","quasis":[{"type":"TemplateElement","tail":false,"value":{"raw":"Hello, I am ","cooked":"Hello, I am "},"range":[47,59]},{"type":"TemplateElement","tail":true,"value":{"raw":"","cooked":""},"range":[66,66]}],"expressions":[{"type":"Identifier","name":"name","range":[61,65]}],"range":[46,67]},"kind":"init","method":false,"shorthand":false,"computed":true,"range":[25,67]}],"range":[17,69]},{"type":"Literal","value":null,"range":[71,75]}],"range":[0,76]}'),
+                tokens: JSON.parse('[{"type":{"label":"name"},"value":"assert","range":[0,6]},{"type":{"label":"."},"range":[6,7]},{"type":{"label":"name"},"value":"deepEqual","range":[7,16]},{"type":{"label":"("},"range":[16,17]},{"type":{"label":"{"},"range":[17,18]},{"type":{"label":"name"},"value":"name","range":[19,23]},{"type":{"label":","},"range":[23,24]},{"type":{"label":"["},"range":[25,26]},{"type":{"label":"`"},"range":[27,28]},{"type":{"label":"template"},"value":"","range":[28,28]},{"type":{"label":"${"},"range":[28,30]},{"type":{"label":"name"},"value":"name","range":[30,34]},{"type":{"label":"}"},"range":[34,35]},{"type":{"label":"template"},"value":" greet","range":[35,41]},{"type":{"label":"`"},"range":[41,42]},{"type":{"label":"]"},"range":[43,44]},{"type":{"label":":"},"range":[44,45]},{"type":{"label":"`"},"range":[46,47]},{"type":{"label":"template"},"value":"Hello, I am ","range":[47,59]},{"type":{"label":"${"},"range":[59,61]},{"type":{"label":"name"},"value":"name","range":[61,65]},{"type":{"label":"}"},"range":[65,66]},{"type":{"label":"template"},"value":"","range":[66,66]},{"type":{"label":"`"},"range":[66,67]},{"type":{"label":"}"},"range":[68,69]},{"type":{"label":","},"range":[69,70]},{"type":{"label":"null"},"value":"null","range":[71,75]},{"type":{"label":")"},"range":[75,76]},{"type":{"label":";"},"range":[76,77]}]'),
+                visitorKeys: estraverse.VisitorKeys
+            },
+            args: [
+            ]
+        };
+        assert.deepEqual(actual, expected);
+    });
+});
