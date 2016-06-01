@@ -36,14 +36,9 @@ module.exports = function createFormatter (options) {
                 renderer = new RendererClass();
             }
             renderer.init(traversal);
-            // for legacy power-assert-formatter compatibility
-            if (typeof renderer.setWritable === 'function') {
-                renderer.setWritable(writer);
-            }
+            renderer.setWritable(writer);
         }
         traversal.traverse();
-        // for legacy power-assert-formatter compatibility
-        traversal.emit('render', writer);
         writer.write('');
         return writer.toString();
     };
