@@ -35,10 +35,15 @@ module.exports = function createFormatter (options) {
                 RendererClass = config;
                 renderer = new RendererClass();
             }
-            renderer.register(traversal);
-            renderer.setDestination(writer);
+            renderer.init(traversal);
+            // for legacy power-assert-formatter compatibility
+            if (typeof renderer.setWritable === 'function') {
+                renderer.setWritable(writer);
+            }
         }
         traversal.traverse();
+        // for legacy power-assert-formatter compatibility
+        traversal.emit('render', writer);
         writer.write('');
         return writer.toString();
     };

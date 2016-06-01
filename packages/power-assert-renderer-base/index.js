@@ -3,7 +3,7 @@
 function BaseRenderer () {
 }
 
-BaseRenderer.prototype.register = function (traversal) {
+BaseRenderer.prototype.init = function (traversal) {
     var _this = this;
     traversal.on('start', function (context) {
         _this.onStart(context);
@@ -16,19 +16,23 @@ BaseRenderer.prototype.register = function (traversal) {
     });
 };
 
-BaseRenderer.prototype.onStart = function (context) {
-};
-
-BaseRenderer.prototype.onData = function (esNode) {
-};
-
-BaseRenderer.prototype.onEnd = function () {
-};
-
-BaseRenderer.prototype.setDestination = function (writable) {
+BaseRenderer.prototype.setWritable = function (writable) {
     this.writable = writable;
 };
 
+// API
+BaseRenderer.prototype.onStart = function (context) {
+};
+
+// API
+BaseRenderer.prototype.onData = function (esNode) {
+};
+
+// API
+BaseRenderer.prototype.onEnd = function () {
+};
+
+// API
 BaseRenderer.prototype.write = function (str) {
     this.writable.write(str);
 };
