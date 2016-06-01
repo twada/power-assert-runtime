@@ -1,7 +1,7 @@
 {
   "name": "power-assert-renderer-base",
   "description": "base renderer for power-assert context",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "author": {
     "name": "Takuto Wada",
     "email": "takuto.wada@gmail.com",
