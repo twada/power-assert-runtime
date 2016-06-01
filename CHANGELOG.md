@@ -1,3 +1,11 @@
+### [1.0.3](https://github.com/twada/power-assert-runtime/releases/tag/v1.0.3) (2016-06-01)
+
+
+#### Bug Fixes
+
+* **power-assert-context-formatter:** remove unnecessary legacy compatibility ([cfb5fe0](https://github.com/twada/power-assert-runtime/commit/cfb5fe04b0644c66c4a9a8b1e8c21b6befa9d779))
+
+
 ### [1.0.2](https://github.com/twada/power-assert-runtime/releases/tag/v1.0.2) (2016-06-01)
 
 
