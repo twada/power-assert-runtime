@@ -2,6 +2,7 @@
 
 var assign = require('core-js/library/fn/object/assign');
 var ContextTraversal = require('power-assert-context-traversal');
+var LegacyContextTraversal = require('./legacy-context-traversal');
 var StringWriter = require('./string-writer');
 var defaultOptions = require('./default-options');
 var reduce = require('core-js/library/fn/array/reduce');
@@ -11,6 +12,7 @@ var reduce = require('core-js/library/fn/array/reduce');
  * options.renderers [array]
  * options.outputOffset [number]
  * options.lineSeparator [string]
+ * options.legacy [boolean]
  */
 module.exports = function createFormatter (options) {
     var formatterConfig = assign({}, defaultOptions(), options);
@@ -22,8 +24,14 @@ module.exports = function createFormatter (options) {
         var context = reduce(reducers, function (prevContext, reducer) {
             return reducer(prevContext);
         }, powerAssertContext);
-        var traversal = new ContextTraversal(context);
         var writer = new StringWriter(formatterConfig);
+        var traversal;
+        if (formatterConfig.legacy) {
+            traversal = new LegacyContextTraversal(context);
+            traversal.setWritable(writer);
+        } else {
+            traversal = new ContextTraversal(context);
+        }
         for (var i = 0; i < len; i += 1) {
             var RendererClass;
             var renderer;
@@ -36,7 +44,9 @@ module.exports = function createFormatter (options) {
                 renderer = new RendererClass();
             }
             renderer.init(traversal);
-            renderer.setWritable(writer);
+            if (typeof renderer.setWritable === 'function') {
+                renderer.setWritable(writer);
+            }
         }
         traversal.traverse();
         writer.write('');

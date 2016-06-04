@@ -60,6 +60,48 @@ describe('power-assert-context-formatter : renderers option', function () {
             ].join('\n'));
         }
     });
+
+    it('with legacy style custom renderer', function () {
+        function CustomRenderer (config) {
+        }
+        CustomRenderer.prototype.init = function (traversal) {
+            var assertionLine;
+            traversal.on('start', function (context) {
+                assertionLine = context.source.content;
+            });
+            traversal.on('render', function (writer) {
+                writer.write('');
+                writer.write('$$ ' + assertionLine + ' $$');
+            });
+        };
+        var format = createFormatter({
+            legacy: true,
+            renderers: [
+                AssertionRenderer,
+                CustomRenderer,
+                AssertionRenderer,
+                CustomRenderer
+            ]
+        });
+        try {
+            var foo = { name: 'foo', items: ['one', 'two'] };
+            var bar = { name: 'bar', items: ['toto', 'tata'] };
+            eval(transpile('assert.deepEqual(foo, bar)'));
+        } catch (e) {
+            var result = format(e.powerAssertContext);
+            baseAssert.equal(result, [
+                '  ',
+                '  assert.deepEqual(foo, bar)',
+                '  ',
+                '  $$ assert.deepEqual(foo, bar) $$',
+                '  ',
+                '  assert.deepEqual(foo, bar)',
+                '  ',
+                '  $$ assert.deepEqual(foo, bar) $$',
+                '  '
+            ].join('\n'));
+        }
+    });
 });
 
 
