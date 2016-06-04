@@ -111,6 +111,15 @@ Number of spaces inserted at the left in power-assert output.
 Line separator in power assert output.
 
 
+#### options.legacy
+
+| type      | default value |
+|:----------|:--------------|
+| `boolean` | `false`       |
+
+When `true`, new renderers and legacy renderer implementations can be used together.
+
+
 ### var formattedText = format(powerAssertContext);
 
 | return type |
