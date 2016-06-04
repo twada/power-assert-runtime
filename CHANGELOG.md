@@ -1,3 +1,11 @@
+### [1.0.4](https://github.com/twada/power-assert-runtime/releases/tag/v1.0.3) (2016-06-04)
+
+
+#### Bug Fixes
+
+* **power-assert-context-formatter:** re-introduce legacy renderer compatibility layer ([d93c2dd](https://github.com/twada/power-assert-runtime/commit/d93c2dd7f2cc91d6ea438f8cb1794e1619085f5a))
+
+
 ### [1.0.3](https://github.com/twada/power-assert-runtime/releases/tag/v1.0.3) (2016-06-01)
 
 
