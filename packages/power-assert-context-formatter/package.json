@@ -1,7 +1,7 @@
 {
   "name": "power-assert-context-formatter",
   "description": "format power-assert context",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": {
     "name": "Takuto Wada",
     "email": "takuto.wada@gmail.com",
