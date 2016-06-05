@@ -22,10 +22,14 @@ function DiagramRenderer (config) {
     BaseRenderer.call(this);
     this.config = assign({}, defaultOptions(), config);
     this.events = [];
-    if (typeof this.config.stringify !== 'function') {
+    if (typeof this.config.stringify === 'function') {
+        this.stringify = this.config.stringify;
+    } else {
         this.stringify = stringifier(this.config);
     }
-    if (typeof this.config.widthOf !== 'function') {
+    if (typeof this.config.widthOf === 'function') {
+        this.widthOf = this.config.widthOf;
+    } else {
         this.widthOf = stringWidth(this.config);
     }
     this.initialVertivalBarLength = 1;
