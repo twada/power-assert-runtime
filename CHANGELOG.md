@@ -1,4 +1,11 @@
+### [0.6.1](https://github.com/twada/empower-core/releases/tag/v0.6.1) (2016-06-05)
+
+
+  * remove xtend from dependencies ([3341ef8](https://github.com/twada/empower-core/commit/3341ef8868c41544c95a621e57d4cefa1ad71ee2))
+
+
 ## [0.6.0](https://github.com/twada/empower-core/releases/tag/v0.6.0) (2016-05-29)
+
 
 #### Features
 
