@@ -120,4 +120,5 @@ function rightToLeft (a, b) {
     return b.leftIndex - a.leftIndex;
 }
 
+DiagramRenderer.stringWidth = stringWidth;
 module.exports = DiagramRenderer;

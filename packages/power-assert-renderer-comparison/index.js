@@ -107,4 +107,5 @@ function isStringDiffTarget(pair) {
     return typeof pair.left.value === 'string' && typeof pair.right.value === 'string';
 }
 
+ComparisonRenderer.udiff = udiff;
 module.exports = ComparisonRenderer;

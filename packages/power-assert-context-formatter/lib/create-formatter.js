@@ -14,7 +14,7 @@ var reduce = require('core-js/library/fn/array/reduce');
  * options.lineSeparator [string]
  * options.legacy [boolean]
  */
-module.exports = function createFormatter (options) {
+function createFormatter (options) {
     var formatterConfig = assign({}, defaultOptions(), options);
     var reducers = formatterConfig.reducers || [];
     var rendererConfigs = formatterConfig.renderers;
@@ -52,4 +52,7 @@ module.exports = function createFormatter (options) {
         writer.write('');
         return writer.toString();
     };
-};
+}
+
+createFormatter.StringWriter = StringWriter;
+module.exports = createFormatter;
