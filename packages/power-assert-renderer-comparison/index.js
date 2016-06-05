@@ -28,10 +28,14 @@ function isLiteral (node) {
 function ComparisonRenderer (config) {
     BaseRenderer.call(this);
     this.config = assign({}, defaultOptions(), config);
-    if (typeof this.config.stringify !== 'function') {
+    if (typeof this.config.stringify === 'function') {
+        this.stringify = this.config.stringify;
+    } else {
         this.stringify = stringifier(this.config);
     }
-    if (typeof this.config.diff !== 'function') {
+    if (typeof this.config.diff === 'function') {
+        this.diff = this.config.diff;
+    } else {
         this.diff = udiff(this.config);
     }
     this.espathToPair = {};
