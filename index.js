@@ -8,7 +8,7 @@
  *   https://github.com/twada/empower-core/blob/master/MIT-LICENSE.txt
  */
 var create = require('core-js/library/fn/object/create');
-var extend = require('xtend/mutable');
+var assign = require('core-js/library/fn/object/assign');
 var defaultOptions = require('./lib/default-options');
 var Decorator = require('./lib/decorator');
 var define = require('./lib/define-properties');
@@ -44,14 +44,14 @@ function empowerCore (assert, options) {
 }
 
 function empowerAssertObject (assertObject, options) {
-    var config = extend(defaultOptions(), options);
+    var config = assign(defaultOptions(), options);
     var target = config.destructive ? assertObject : create(assertObject);
     var decorator = new Decorator(target, config);
-    return extend(target, decorator.enhancement());
+    return assign(target, decorator.enhancement());
 }
 
 function empowerAssertFunction (assertFunction, options) {
-    var config = extend(defaultOptions(), options);
+    var config = assign(defaultOptions(), options);
     if (config.destructive) {
         throw new Error('cannot use destructive:true to function.');
     }
@@ -67,8 +67,8 @@ function empowerAssertFunction (assertFunction, options) {
             return assertFunction.apply(null, slice.apply(arguments));
         };
     }
-    extend(powerAssert, assertFunction);
-    return extend(powerAssert, enhancement);
+    assign(powerAssert, assertFunction);
+    return assign(powerAssert, enhancement);
 }
 
 function isEmpowered (assertObjectOrFunction) {

@@ -18,8 +18,7 @@
   ],
   "dependencies": {
     "call-signature": "0.0.2",
-    "core-js": "^2.0.0",
-    "xtend": "^4.0.0"
+    "core-js": "^2.0.0"
   },
   "devDependencies": {
     "acorn": "^3.1.0",
