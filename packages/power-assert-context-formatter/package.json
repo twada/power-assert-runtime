@@ -1,7 +1,7 @@
 {
   "name": "power-assert-context-formatter",
   "description": "format power-assert context",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": {
     "name": "Takuto Wada",
     "email": "takuto.wada@gmail.com",
@@ -18,7 +18,7 @@
     "mocha": "^2.4.5",
     "power-assert-context-reducer-ast": "^1.0.2",
     "power-assert-renderer-assertion": "^1.0.1",
-    "power-assert-renderer-diagram": "^1.0.1"
+    "power-assert-renderer-diagram": "^1.0.5"
   },
   "files": [
     "README.md",

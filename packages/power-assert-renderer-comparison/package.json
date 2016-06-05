@@ -1,7 +1,7 @@
 {
   "name": "power-assert-renderer-comparison",
   "description": "comparison renderer for power-assert context",
-  "version": "1.0.1",
+  "version": "1.0.5",
   "author": {
     "name": "Takuto Wada",
     "email": "takuto.wada@gmail.com",
