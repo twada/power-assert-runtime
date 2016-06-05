@@ -1,4 +1,12 @@
-### [1.0.4](https://github.com/twada/power-assert-runtime/releases/tag/v1.0.3) (2016-06-04)
+### [1.0.5](https://github.com/twada/power-assert-runtime/releases/tag/v1.0.5) (2016-06-05)
+
+
+#### Bug Fixes
+
+* export support functions for older implementations ([6927774](https://github.com/twada/power-assert-runtime/commit/6927774dc19520e8ceb343cc915c7b52f8da584c))
+
+
+### [1.0.4](https://github.com/twada/power-assert-runtime/releases/tag/v1.0.4) (2016-06-04)
 
 
 #### Bug Fixes
