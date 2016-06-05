@@ -1,3 +1,12 @@
+### [1.0.6](https://github.com/twada/power-assert-runtime/releases/tag/v1.0.6) (2016-06-05)
+
+
+#### Bug Fixes
+
+* **power-assert-renderer-diagram:** fix custom function interop ([34565f9](https://github.com/twada/power-assert-runtime/commit/34565f9baa3235b11d60602d9b979b64d1e7332e))
+* **power-assert-renderer-comparison:** fix custom function interop ([0145182](https://github.com/twada/power-assert-runtime/commit/01451824f369f5520ae696605b26891d1a7ff95c))
+
+
 ### [1.0.5](https://github.com/twada/power-assert-runtime/releases/tag/v1.0.5) (2016-06-05)
 
 
