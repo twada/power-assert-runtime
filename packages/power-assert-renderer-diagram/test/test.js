@@ -328,47 +328,50 @@ describe('DiagramRenderer', function () {
             '       Infinity         false                '
         ]);
     });
-    
 
-    test('LogicalExpression of Identifiers', function (transpiledCode) {
-        var x = false;
-        var y = 0;
-        var z = null;
-        eval(transpiledCode);
-    }, [
-        'assert(x || y || z)',
-        '       | |  | |  | ',
-        '       | |  | |  null',
-        '       | 0  0 null ',
-        '       false       '
-    ]);
 
-    test('LogicalExpression of Identifier evaluation order', function (transpiledCode) {
-        var x = 'yeah';
-        var y = 0;
-        var z = true;
-        eval(transpiledCode);
-    }, [
-        'assert(x && y && z)',
-        '       | |  | |    ',
-        '       | 0  0 0    ',
-        '       "yeah"      '
-    ]);
+    describe('LogicalExpression', function () {
+        test('of Identifiers', function (transpiledCode) {
+            var x = false;
+            var y = 0;
+            var z = null;
+            eval(transpiledCode);
+        }, [
+            'assert(x || y || z)',
+            '       | |  | |  | ',
+            '       | |  | |  null',
+            '       | 0  0 null ',
+            '       false       '
+        ]);
 
-    test('LogicalExpression of CallExpression and MemberExpression', function (transpiledCode) {
-        var x = { foo: function(n) { return false; } };
-        var y = function(n) { return null; };
-        var z = { val: 0 };
-        eval(transpiledCode);
-    }, [
-        'assert(x.foo() || y() || z.val)',
-        '       | |     |  |   |  | |   ',
-        '       | |     |  |   |  | 0   ',
-        '       | |     |  |   0  Object{val:0}',
-        '       | |     |  null         ',
-        '       | false null            ',
-        '       Object{foo:#function#}  '
-    ]);
+        test('of Identifier evaluation order', function (transpiledCode) {
+            var x = 'yeah';
+            var y = 0;
+            var z = true;
+            eval(transpiledCode);
+        }, [
+            'assert(x && y && z)',
+            '       | |  | |    ',
+            '       | 0  0 0    ',
+            '       "yeah"      '
+        ]);
+
+        test('of CallExpression and MemberExpression', function (transpiledCode) {
+            var x = { foo: function(n) { return false; } };
+            var y = function(n) { return null; };
+            var z = { val: 0 };
+            eval(transpiledCode);
+        }, [
+            'assert(x.foo() || y() || z.val)',
+            '       | |     |  |   |  | |   ',
+            '       | |     |  |   |  | 0   ',
+            '       | |     |  |   0  Object{val:0}',
+            '       | |     |  null         ',
+            '       | false null            ',
+            '       Object{foo:#function#}  '
+        ]);
+    });
+
 
     test('ArrayExpression as an argument of CallExpression', function (transpiledCode) {
         var pop = function (ary) { return ary.pop(); };
