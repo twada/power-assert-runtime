@@ -373,6 +373,40 @@ describe('DiagramRenderer', function () {
     });
 
 
+    describe('ConditionalExpression', function () {
+        test('of Identifiers, consequent', function (transpiledCode) {
+            var foo = false;
+            var bar = null;
+            var baz = 0;
+            eval(transpiledCode);
+        }, [
+            'assert(foo ? bar : baz)',
+            '       |           |   ',
+            '       false       0   '
+        ]);
+        test('of Identifiers, alternate', function (transpiledCode) {
+            var foo = true;
+            var bar = null;
+            var baz = 0;
+            eval(transpiledCode);
+        }, [
+            'assert(foo ? bar : baz)',
+            '       |     |         ',
+            '       true  null      '
+        ]);
+        test('of another ConditionalExpression', function (transpiledCode) {
+            var falsy = null;
+            var truthy = 'truth';
+            var anotherFalsy = 0;
+            eval(transpiledCode);
+        }, [
+            'assert(falsy ? truthy : truthy ? anotherFalsy : truthy)',
+            '       |                |        |                     ',
+            '       null             "truth"  0                     '
+        ]);
+    });
+
+
     test('ArrayExpression as an argument of CallExpression', function (transpiledCode) {
         var pop = function (ary) { return ary.pop(); };
         var zero = 0;
