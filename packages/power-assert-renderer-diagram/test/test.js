@@ -407,6 +407,40 @@ describe('DiagramRenderer', function () {
     });
 
 
+    describe('ObjectExpression', function () {
+        test('of Literals', function (transpiledCode) {
+            eval(transpiledCode);
+        }, [
+            'assert.deepEqual({ foo: 0 }, { foo: 1 })',
+            '                 |           |          ',
+            '                 |           Object{foo:1}',
+            '                 Object{foo:0}          '
+        ]);
+        test('of Identifiers', function (transpiledCode) {
+            var bar = 'BAR';
+            var fuga = 'FUGA';
+            eval(transpiledCode);
+        }, [
+            'assert.deepEqual({ foo: bar }, { hoge: fuga })',
+            '                 |      |      |       |      ',
+            '                 |      |      |       "FUGA" ',
+            '                 |      "BAR"  Object{hoge:"FUGA"}',
+            '                 Object{foo:"BAR"}            '
+        ]);
+        test('enhanced object literals', function (transpiledCode) {
+            let name = 'bobby';
+            eval(transpiledCode);
+        }, [
+            'assert.deepEqual({ name, [`greet from ${ name }`]: `Hello, I am ${ name }` }, null)',
+            '                 |        |              |         |               |               ',
+            '                 |        |              |         |               "bobby"         ',
+            '                 |        |              "bobby"   "Hello, I am bobby"             ',
+            '                 |        "greet from bobby"                                       ',
+            '                 Object{name:"bobby","greet from bobby":"Hello, I am bobby"}       '
+        ]);
+    });
+
+
     test('ArrayExpression as an argument of CallExpression', function (transpiledCode) {
         var pop = function (ary) { return ary.pop(); };
         var zero = 0;
@@ -419,16 +453,6 @@ describe('DiagramRenderer', function () {
         '       |   ||     |    |     |   1   ',
         '       |   |0     1    2     false   ',
         '       2   [0,1]                     '
-    ]);
-
-
-    test('ObjectExpression', function (transpiledCode) {
-        eval(transpiledCode);
-    }, [
-        'assert.deepEqual({ foo: 0 }, { foo: 1 })',
-        '                 |           |          ',
-        '                 |           Object{foo:1}',
-        '                 Object{foo:0}          '
     ]);
 
 
