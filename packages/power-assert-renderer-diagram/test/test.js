@@ -428,7 +428,7 @@ describe('DiagramRenderer', function () {
             '                 Object{foo:"BAR"}            '
         ]);
         test('enhanced object literals', function (transpiledCode) {
-            let name = 'bobby';
+            var name = 'bobby';
             eval(transpiledCode);
         }, [
             'assert.deepEqual({ name, [`greet from ${ name }`]: `Hello, I am ${ name }` }, null)',
