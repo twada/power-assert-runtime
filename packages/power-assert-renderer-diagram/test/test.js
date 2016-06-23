@@ -489,4 +489,16 @@ describe('DiagramRenderer', function () {
         ]);
     });
 
+
+    describe('SequenceExpression i.e., comma operator', function () {
+        test('power-assert-js/power-assert#59', function (transpiledCode) {
+            eval(transpiledCode);
+        }, [
+            'assert((-0, -1) + 1 === -0 + -1)',
+            '        |   |   |   |   |  | |  ',
+            '        |   |   |   |   |  | -1 ',
+            '        |   |   |   |   0  -1   ',
+            '        0   -1  0   false       '
+        ]);
+    });
 });
