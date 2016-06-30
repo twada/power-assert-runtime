@@ -1,6 +1,6 @@
 'use strict';
 
-var DiffMatchPatch = require('googlediff');
+var DiffMatchPatch = require('diff-match-patch');
 var dmp = new DiffMatchPatch();
 
 function udiff (config) {
