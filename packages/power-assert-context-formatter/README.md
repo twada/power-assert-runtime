@@ -1,6 +1,8 @@
 [![power-assert][power-assert-banner]][power-assert-url]
 
 [![Build Status][travis-image]][travis-url]
+[![NPM version][npm-image]][npm-url]
+[![License][license-image]][license-url]
 
 
 Create function to format `powerAssertContext` object provided by power-assert at runtime.
@@ -184,3 +186,9 @@ Licensed under the [MIT](https://github.com/twada/power-assert-runtime/blob/mast
 
 [travis-url]: https://travis-ci.org/twada/power-assert-runtime
 [travis-image]: https://secure.travis-ci.org/twada/power-assert-runtime.svg?branch=master
+
+[npm-url]: https://npmjs.org/package/power-assert-context-formatter
+[npm-image]: https://badge.fury.io/js/power-assert-context-formatter.svg
+
+[license-url]: http://twada.mit-license.org/
+[license-image]: https://img.shields.io/badge/license-MIT-brightgreen.svg
