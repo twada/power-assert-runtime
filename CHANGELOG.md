@@ -1,3 +1,11 @@
+### [1.0.7](https://github.com/twada/power-assert-runtime/releases/tag/v1.0.7) (2016-07-01)
+
+
+#### Bug Fixes
+
+* **power-assert-renderer-comparison:** [Use diff-match-patch instead of googlediff since googlediff manipulates this directly](https://github.com/twada/power-assert-runtime/pull/13)
+
+
 ### [1.0.6](https://github.com/twada/power-assert-runtime/releases/tag/v1.0.6) (2016-06-05)
 
 
