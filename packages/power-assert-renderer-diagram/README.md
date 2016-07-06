@@ -71,7 +71,7 @@ Name to show when target object is detected as circular structure.
 
 | type       | default value |
 |:-----------|:--------------|
-| `function` | [string-width.js](https://github.com/twada/power-assert-runtime/blob/master/packages/power-assert-renderer-diagram/lib/string-width.js) |
+| `function` | [power-assert-util-string-width](https://github.com/twada/power-assert-runtime/blob/master/packages/power-assert-util-string-width) |
 
 Function to calculate width of string.
 

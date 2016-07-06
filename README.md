@@ -17,6 +17,7 @@ MODULES
 - [power-assert-renderer-comparison](./packages/power-assert-renderer-comparison/)
 - [power-assert-renderer-diagram](./packages/power-assert-renderer-diagram/)
 - [power-assert-renderer-succinct](./packages/power-assert-renderer-succinct/)
+- [power-assert-util-string-width](./packages/power-assert-util-string-width/)
 
 
 DESIGN DECISION
