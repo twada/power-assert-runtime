@@ -16,9 +16,9 @@ var stringWidth = require('power-assert-util-string-width');
 stringWidth('abcde'); //=> 5
 stringWidth('あいうえお'); //=> 10
 stringWidth('ｱｲｳｴｵ'); //=> 5
-stringWidth('※ただしイケメンに限る');  //=> 22
+stringWidth('※脚注');  //=> 6
 // stringWidth.narrow treats ambiguous-width characters as narrow (= `1`)
-stringWidth.narrow('※ただしイケメンに限る');  //=> 21
+stringWidth.narrow('※脚注');  //=> 5
 ```
 
 

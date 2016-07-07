@@ -36,12 +36,12 @@ describe('stringWidth', function () {
 
 describe('ambiguous EastAsianWidth', function () {
     beforeEach(function () {
-        this.strWithAmbiguousEastAsian = '※ただしイケメンに限る';
+        this.strWithAmbiguousEastAsian = '※脚注';
     });
     it('Treat ambiguous-width characters as fullwidth (= `2`) by default.', function () {
-        assert.equal(stringWidth(this.strWithAmbiguousEastAsian), 22);
+        assert.equal(stringWidth(this.strWithAmbiguousEastAsian), 6);
     });
     it('stringWidth.narrow treats ambiguous-width characters as narrow (= `1`)', function () {
-        assert.equal(stringWidth.narrow(this.strWithAmbiguousEastAsian), 21);
+        assert.equal(stringWidth.narrow(this.strWithAmbiguousEastAsian), 5);
     });
 });
