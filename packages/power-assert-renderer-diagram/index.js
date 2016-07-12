@@ -4,7 +4,7 @@ var BaseRenderer = require('power-assert-renderer-base');
 var inherits = require('util').inherits;
 var forEach = require('core-js/library/fn/array/for-each');
 var stringifier = require('stringifier');
-var stringWidth = require('./lib/string-width');
+var stringWidth = require('power-assert-util-string-width');
 var assign = require('core-js/library/fn/object/assign');
 var defaultOptions = require('./lib/default-options');
 
@@ -30,7 +30,7 @@ function DiagramRenderer (config) {
     if (typeof this.config.widthOf === 'function') {
         this.widthOf = this.config.widthOf;
     } else {
-        this.widthOf = stringWidth(this.config);
+        this.widthOf = (this.config.ambiguousEastAsianCharWidth === 1) ? stringWidth.narrow : stringWidth;
     }
     this.initialVertivalBarLength = 1;
 }
@@ -124,5 +124,4 @@ function rightToLeft (a, b) {
     return b.leftIndex - a.leftIndex;
 }
 
-DiagramRenderer.stringWidth = stringWidth;
 module.exports = DiagramRenderer;

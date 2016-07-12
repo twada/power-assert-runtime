@@ -2,8 +2,7 @@
 
 var eaw = require('eastasianwidth');
 
-function stringWidth (config) {
-    var ambiguousCharWidth = (config && config.ambiguousEastAsianCharWidth) || 1;
+function stringWidth (ambiguousCharWidth) {
     return function widthOf (str) {
         var i, code, width = 0;
         for(i = 0; i < str.length; i+=1) {
@@ -27,4 +26,5 @@ function stringWidth (config) {
     };
 }
 
-module.exports = stringWidth;
+module.exports = stringWidth(2);
+module.exports.narrow = stringWidth(1);
