@@ -11,10 +11,12 @@
     "url": "https://github.com/twada/power-assert-runtime/issues"
   },
   "dependencies": {
-    "power-assert-renderer-base": "^1.0.7"
+    "power-assert-renderer-base": "^1.0.7",
+    "power-assert-util-string-width": "^1.0.7"
   },
   "devDependencies": {
-    "mocha": "^2.4.5"
+    "mocha": "^2.4.5",
+    "power-assert-context-reducer-ast": "^1.0.7"
   },
   "files": [
     "README.md",
