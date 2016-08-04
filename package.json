@@ -8,6 +8,7 @@
     "babel-preset-react": "^6.1.0",
     "babel-preset-stage-2": "^6.1.0",
     "babel-plugin-transform-function-bind": "^6.1.0",
+    "core-js": "^2.0.0",
     "empower-core": "^0.6.0",
     "lerna": "^1.1.2",
     "mocha": "^2.4.5"
