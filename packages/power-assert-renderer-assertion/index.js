@@ -26,8 +26,9 @@ AssertionRenderer.prototype.onEnd = function () {
             this.renderValueAt(syntaxErrorIndex, '?');
             this.renderValueAt(syntaxErrorIndex, '?');
             this.renderValueAt(syntaxErrorIndex, e.toString());
-            this.renderValueAt(syntaxErrorIndex, 'If you are using `babel-plugin-espower` and want to use experimental syntax in your assert(), you should set `embedAst` option to true.');
-            this.renderValueAt(syntaxErrorIndex, 'see: https://github.com/power-assert-js/babel-plugin-espower#optionsembedast');
+            this.renderValueAt(0, '');
+            this.renderValueAt(0, 'If you are using `babel-plugin-espower` and want to use experimental syntax in your assert(), you should set `embedAst` option to true.');
+            this.renderValueAt(0, 'see: https://github.com/power-assert-js/babel-plugin-espower#optionsembedast');
         }
     }
 };

@@ -157,8 +157,9 @@ describe('power-assert-context-formatter : reducers option', function () {
                 '                        ?                       ',
                 '                        ?                       ',
                 '                        SyntaxError: Unexpected token (1:22)',
-                '                        If you are using `babel-plugin-espower` and want to use experimental syntax in your assert(), you should set `embedAst` option to true.',
-                '                        see: https://github.com/power-assert-js/babel-plugin-espower#optionsembedast',
+                '                                                ',
+                '  If you are using `babel-plugin-espower` and want to use experimental syntax in your assert(), you should set `embedAst` option to true.',
+                '  see: https://github.com/power-assert-js/babel-plugin-espower#optionsembedast',
                 '                                                ',
                 '                                                ',
                 '  '
