@@ -157,4 +157,21 @@ describe('Bug reproduction case', function () {
         };
         assert.deepEqual(actual, expected);
     });
+
+
+    it('degrade gracefully when there are some parse errors caused by not supported syntax', function () {
+        var input = {
+            source: {
+                content: 'assert(shallow(<Foo />).contains(<div className="foo" />));',
+                filepath: 'test/some_test.js',
+                line: 1
+            },
+            args: [
+            ]
+        };
+        var actual = reduce(input);
+        assert(actual.source.error);
+        assert(actual.source.error instanceof SyntaxError);
+    });
+
 });

@@ -10,7 +10,9 @@ module.exports = function createRendererTester (renderer) {
         it(title + ': ' + expression, function () {
             testRendering(function () {
                 body(transpile(expression));
-            }, [''].concat(expectedLines), [AssertionRenderer, renderer]);
+            }, [''].concat(expectedLines), {
+                renderers: [AssertionRenderer, renderer]
+            });
         });
     };
 }

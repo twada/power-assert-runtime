@@ -15,7 +15,7 @@ describe('FileRenderer', function () {
             eval(transpile('assert(foo === bar)'));
         }, [
             '# test/some_test.js:1'
-        ], [FileRenderer]);
+        ], { renderers: [FileRenderer] });
     });
 
     it('line number detection', function () {
@@ -24,7 +24,7 @@ describe('FileRenderer', function () {
             eval(transpile('var i = 0;\n\nassert(falsyStr)'));
         }, [
             '# test/some_test.js:3'
-        ], [FileRenderer]);
+        ], { renderers: [FileRenderer] });
     });
 
 });

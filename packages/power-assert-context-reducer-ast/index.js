@@ -11,7 +11,12 @@ module.exports = function (powerAssertContext) {
     if (source.ast && source.tokens && source.visitorKeys) {
         return powerAssertContext;
     }
-    var astAndTokens = parse(source);
+    var astAndTokens;
+    try {
+        astAndTokens = parse(source);
+    } catch (e) {
+        return assign({}, powerAssertContext, { source: assign({}, source, { error: e }) });
+    }
     var newSource = assign({}, source, {
         ast: purifyAst(astAndTokens.expression),
         tokens: astAndTokens.tokens,

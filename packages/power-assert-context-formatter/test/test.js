@@ -134,6 +134,39 @@ describe('power-assert-context-formatter : reducers option', function () {
         }
     });
 
+    it('degrade gracefully when there are some parse errors caused by not supported syntax', function () {
+        var format = createFormatter({
+            reducers: [
+                appendAst
+            ],
+            renderers: [
+                AssertionRenderer,
+                DiagramRenderer
+            ]
+        });
+        try {
+            var a = 'a';
+            var b = 'b';
+            var obj = { foo: 'FOO', bar: 'BAR' };
+            eval(transpile('assert.deepEqual({ b, ...obj }, { a, ...obj })', false));
+        } catch (e) {
+            var result = format(e.powerAssertContext);
+            baseAssert.equal(result, [
+                '  ',
+                '  assert.deepEqual({ b, ...obj }, { a, ...obj })',
+                '                        ?                       ',
+                '                        ?                       ',
+                '                        SyntaxError: Unexpected token (1:22)',
+                '                                                ',
+                '  If you are using `babel-plugin-espower` and want to use experimental syntax in your assert(), you should set `embedAst` option to true.',
+                '  see: https://github.com/power-assert-js/babel-plugin-espower#optionsembedast',
+                '                                                ',
+                '                                                ',
+                '  '
+            ].join('\n'));
+        }
+    });
+
 });
 
 
