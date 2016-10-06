@@ -112,5 +112,5 @@ Licensed under the [MIT](https://github.com/twada/power-assert-runtime/blob/mast
 [npm-url]: https://npmjs.org/package/power-assert-renderer-diagram
 [npm-image]: https://badge.fury.io/js/power-assert-renderer-diagram.svg
 
-[license-url]: http://twada.mit-license.org/
+[license-url]: https://github.com/twada/power-assert-runtime/blob/master/LICENSE
 [license-image]: https://img.shields.io/badge/license-MIT-brightgreen.svg
