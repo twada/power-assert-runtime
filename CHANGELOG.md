@@ -1,3 +1,16 @@
+### [1.1.0](https://github.com/twada/power-assert-runtime/releases/tag/v1.1.0) (2016-10-07)
+
+
+#### Features
+
+* [Degrade gracefully when there are some parse errors](https://github.com/twada/power-assert-runtime/pull/15)
+
+
+#### Chore
+
+* [Extract power-assert-util-string-width module out](https://github.com/twada/power-assert-runtime/pull/14)
+
+
 ### [1.0.7](https://github.com/twada/power-assert-runtime/releases/tag/v1.0.7) (2016-07-01)
 
 
