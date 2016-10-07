@@ -1,7 +1,7 @@
 {
   "name": "power-assert-renderer-assertion",
   "description": "assertion renderer for power-assert context",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "author": {
     "name": "Takuto Wada",
     "email": "takuto.wada@gmail.com",
@@ -11,12 +11,12 @@
     "url": "https://github.com/twada/power-assert-runtime/issues"
   },
   "dependencies": {
-    "power-assert-renderer-base": "^1.0.7",
-    "power-assert-util-string-width": "^1.0.7"
+    "power-assert-renderer-base": "^1.1.0",
+    "power-assert-util-string-width": "^1.1.0"
   },
   "devDependencies": {
     "mocha": "^2.4.5",
-    "power-assert-context-reducer-ast": "^1.0.7"
+    "power-assert-context-reducer-ast": "^1.1.0"
   },
   "files": [
     "README.md",
