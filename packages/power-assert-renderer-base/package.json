@@ -23,8 +23,5 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/twada/power-assert-runtime.git"
-  },
-  "scripts": {
-    "test": "mocha"
   }
 }

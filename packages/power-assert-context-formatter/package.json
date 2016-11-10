@@ -15,7 +15,7 @@
     "power-assert-context-traversal": "^1.1.0"
   },
   "devDependencies": {
-    "mocha": "^2.4.5",
+    "mocha": "^3.0.0",
     "power-assert-context-reducer-ast": "^1.1.0",
     "power-assert-renderer-assertion": "^1.1.0",
     "power-assert-renderer-diagram": "^1.1.0"

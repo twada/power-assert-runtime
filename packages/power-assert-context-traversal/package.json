@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "babel-types": "^6.1.0",
-    "mocha": "^2.4.5"
+    "mocha": "^3.0.0"
   },
   "files": [
     "README.md",

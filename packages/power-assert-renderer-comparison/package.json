@@ -18,7 +18,7 @@
     "type-name": "^2.0.1"
   },
   "devDependencies": {
-    "mocha": "^2.4.5",
+    "mocha": "^3.0.0",
     "power-assert-renderer-assertion": "^1.1.0"
   },
   "files": [
