@@ -1,7 +1,7 @@
 {
   "name": "power-assert-renderer-file",
   "description": "filepath renderer for power-assert context",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": {
     "name": "Takuto Wada",
     "email": "takuto.wada@gmail.com",
@@ -11,11 +11,11 @@
     "url": "https://github.com/twada/power-assert-runtime/issues"
   },
   "dependencies": {
-    "power-assert-renderer-base": "^1.1.0"
+    "power-assert-renderer-base": "^1.1.1"
   },
   "devDependencies": {
     "mocha": "^3.0.0",
-    "power-assert-renderer-assertion": "^1.1.0"
+    "power-assert-renderer-assertion": "^1.1.1"
   },
   "files": [
     "README.md",
