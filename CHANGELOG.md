@@ -1,3 +1,11 @@
+### [1.1.1](https://github.com/twada/power-assert-runtime/releases/tag/v1.1.1) (2016-11-10)
+
+
+#### Chore
+
+* **power-assert-context-reducer-ast:** upgrade acorn to ^4.0.0
+
+
 ### [1.1.0](https://github.com/twada/power-assert-runtime/releases/tag/v1.1.0) (2016-10-07)
 
 
