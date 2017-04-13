@@ -174,4 +174,27 @@ describe('Bug reproduction case', function () {
         assert(actual.source.error instanceof SyntaxError);
     });
 
+    it('support async function', function () {
+        var input = {
+            source: {
+                async: true,
+                content: 'assert(await a === await b)',
+                filepath: 'test/some_test.js',
+            },
+            args: []
+        };
+        var actual = reduce(input);
+        var expected = {
+            source: {
+              async: true,
+              content: 'assert(await a === await b)',
+              filepath: 'test/some_test.js',
+              ast: JSON.parse('{"type":"CallExpression","callee":{"type":"Identifier","name":"assert","range":[0,6]},"arguments":[{"type":"BinaryExpression","operator":"===","left":{"type":"AwaitExpression","argument":{"type":"Identifier","name":"a","range":[13,14]},"range":[7,14]},"right":{"type":"AwaitExpression","argument":{"type":"Identifier","name":"b","range":[25,26]},"range":[19,26]},"range":[7,26]}],"range":[0,27]}'),
+              tokens: JSON.parse('[{"type":{"label":"name"},"value":"assert","range":[0,6]},{"type":{"label":"("},"range":[6,7]},{"type":{"label":"name"},"value":"await","range":[7,12]},{"type":{"label":"name"},"value":"a","range":[13,14]},{"type":{"label":"==/!="},"value":"===","range":[15,18]},{"type":{"label":"name"},"value":"await","range":[19,24]},{"type":{"label":"name"},"value":"b","range":[25,26]},{"type":{"label":")"},"range":[26,27]}]'),
+              visitorKeys: estraverse.VisitorKeys
+            },
+            args: []
+        };
+        assert.deepEqual(actual, expected);
+    });
 });
