@@ -97,6 +97,11 @@ AUTHOR
 * [Takuto Wada](https://github.com/twada)
 
 
+CONTRIBUTORS
+---------------------------------------
+* [Haoliang Gao (popomore)](https://github.com/popomore)
+
+
 LICENSE
 ---------------------------------------
 Licensed under the [MIT](https://github.com/twada/power-assert-runtime/blob/master/LICENSE) license.

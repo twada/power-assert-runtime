@@ -10,6 +10,12 @@
   "bugs": {
     "url": "https://github.com/twada/power-assert-runtime/issues"
   },
+  "contributors": [
+    {
+      "name": "Haoliang Gao",
+      "url": "https://github.com/popomore"
+    }
+  ],
   "dependencies": {
     "acorn": "^4.0.0",
     "acorn-es7-plugin": "^1.0.12",
