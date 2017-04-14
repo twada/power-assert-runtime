@@ -136,7 +136,7 @@ describe('DiagramRenderer', function () {
             '       |  false',
             '       Object{foo:false}'
         ]);
-        
+
         test('computed: false', function (transpiledCode) {
             var propName = 'foo';
             var en = { foo: false };
@@ -148,7 +148,7 @@ describe('DiagramRenderer', function () {
             '       | false      ',
             '       Object{foo:false}'
         ]);
-        
+
         test('chained member', function (transpiledCode) {
             var en = { foo: { bar: false } };
             eval(transpiledCode);
@@ -159,7 +159,7 @@ describe('DiagramRenderer', function () {
             '       |  Object{bar:false}',
             '       Object{foo:Object{bar:false}}'
         ]);
-        
+
         test('undefined property', function (transpiledCode) {
             eval(transpiledCode);
         }, [
@@ -184,7 +184,7 @@ describe('DiagramRenderer', function () {
             '       |   "bar" 23   ',
             '       false          '
         ]);
-        
+
         test('deep CallExpression', function (transpiledCode) {
             var bar = function () { return 'baz'; };
             var en = { foo: function (n) { return false; } };
@@ -197,7 +197,7 @@ describe('DiagramRenderer', function () {
             '       Object{foo:#function#}'
         ]);
     });
-    
+
 
     describe('BinaryExpression', function () {
         test('of BinaryExpression', function (transpiledCode) {
@@ -230,7 +230,7 @@ describe('DiagramRenderer', function () {
             '       |   false   ',
             '       "foo"       ',
         ]);
-        
+
         test('of Identifier and StringLiteral', function (transpiledCode) {
             var foo = 'foo';
             eval(transpiledCode);
