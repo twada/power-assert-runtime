@@ -431,12 +431,12 @@ describe('DiagramRenderer', function () {
             var name = 'bobby';
             eval(transpiledCode);
         }, [
-            'assert.deepEqual({ name, [`greet from ${ name }`]: `Hello, I am ${ name }` }, null)',
-            '                 |        |              |         |               |               ',
-            '                 |        |              |         |               "bobby"         ',
-            '                 |        |              "bobby"   "Hello, I am bobby"             ',
-            '                 |        "greet from bobby"                                       ',
-            '                 Object{name:"bobby","greet from bobby":"Hello, I am bobby"}       '
+            'assert.deepEqual({ name, [`greet from ${name}`]: `Hello, I am ${name}` }, null)',
+            '                 |        |             |        |              |              ',
+            '                 |        |             |        |              "bobby"        ',
+            '                 |        |             "bobby"  "Hello, I am bobby"           ',
+            '                 |        "greet from bobby"                                   ',
+            '                 Object{name:"bobby","greet from bobby":"Hello, I am bobby"}   '
         ]);
     });
 
