@@ -1,7 +1,7 @@
 {
   "name": "power-assert-context-reducer-ast",
   "description": "append AST into power-assert context",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "author": {
     "name": "Takuto Wada",
     "email": "takuto.wada@gmail.com",
