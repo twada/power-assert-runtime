@@ -1,3 +1,11 @@
+### [1.1.2](https://github.com/twada/power-assert-runtime/releases/tag/v1.1.2) (2017-04-14)
+
+
+#### Bug Fixes
+
+* **power-assert-context-reducer-ast:** [fix: ecmaVersion 7 => 2017 to support async function](https://github.com/twada/power-assert-runtime/pull/17) by [@popomore](https://github.com/popomore)
+
+
 ### [1.1.1](https://github.com/twada/power-assert-runtime/releases/tag/v1.1.1) (2016-11-10)
 
 
