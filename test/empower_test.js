@@ -68,7 +68,7 @@ test('default options behavior', function () {
                 }
             ]
         });
-        baseAssert.equal(e.name, 'AssertionError');
+        baseAssert(/^AssertionError/.test(e.name));
     }
 });
 
@@ -95,7 +95,7 @@ test('Bug reproduction. should not fail if argument is null Literal.', function 
                 }
             ]
         });
-        baseAssert.equal(e.name, 'AssertionError');
+        baseAssert(/^AssertionError/.test(e.name));
     }
 });
 
@@ -121,7 +121,7 @@ test('assertion with optional message argument.', function () {
                 }
             ]
         });
-        baseAssert.equal(e.name, 'AssertionError');
+        baseAssert(/^AssertionError/.test(e.name));
     }
 });
 
@@ -147,7 +147,7 @@ test('empowered function also acts like an assert function', function () {
                 }
             ]
         });
-        baseAssert.equal(e.name, 'AssertionError');
+        baseAssert(/^AssertionError/.test(e.name));
     }
 });
 
@@ -174,7 +174,7 @@ suite('assertion method with one argument', function () {
                     }
                 ]
             });
-            baseAssert.equal(e.name, 'AssertionError');
+            baseAssert(/^AssertionError/.test(e.name));
         }
     });
 });
@@ -204,7 +204,7 @@ suite('assertion method with two arguments', function () {
                     }
                 ]
             });
-            baseAssert.equal(e.name, 'AssertionError');
+            baseAssert(/^AssertionError/.test(e.name));
         }
     });
 
@@ -227,7 +227,7 @@ suite('assertion method with two arguments', function () {
                     }
                 ]
             });
-            baseAssert.equal(e.name, 'AssertionError');
+            baseAssert(/^AssertionError/.test(e.name));
         }
     });
 
@@ -250,7 +250,7 @@ suite('assertion method with two arguments', function () {
                     }
                 ]
             });
-            baseAssert.equal(e.name, 'AssertionError');
+            baseAssert(/^AssertionError/.test(e.name));
         }
     });
 });
@@ -281,7 +281,7 @@ suite('yield for assertion inside generator', function () {
                         }
                     ]
                 });
-                baseAssert.equal(e.name, 'AssertionError');
+                baseAssert(/^AssertionError/.test(e.name));
             } catch (e) {
                 return done (e);
             }
@@ -334,7 +334,7 @@ suite('await assertion inside async async function', function () {
                         }
                     ]
                 });
-                baseAssert.equal(e.name, 'AssertionError');
+                baseAssert(/^AssertionError/.test(e.name));
             } catch (e) {
                 return done (e);
             }
@@ -380,7 +380,7 @@ test('the case when assertion function call is not listed in patterns (even if m
         baseAssert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
         baseAssert.equal(e.message, '0 == true', 'should not be empowered');
-        baseAssert.equal(e.name, 'AssertionError');
+        baseAssert(/^AssertionError/.test(e.name));
     }
 });
 

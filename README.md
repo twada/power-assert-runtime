@@ -108,7 +108,7 @@ Both methods are called with a single `event` argument, it will have the followi
   ```js
   function onError (errorEvent) {
     var e = errorEvent.error;
-    if (errorEvent.powerAssertContext && e.name === 'AssertionError') {
+    if (errorEvent.powerAssertContext && /^AssertionError/.test(e.name)) {
         e.powerAssertContext = errorEvent.powerAssertContext;
     }
     throw e;
