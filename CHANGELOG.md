@@ -1,3 +1,11 @@
+### [0.6.2](http://github.com/twada/empower-core/releases/tag/v0.6.2) (2017-06-03)
+
+
+#### Bug Fixes
+
+* [dealing with `err.name` on Node v8](https://github.com/twada/empower-core/pull/9)
+
+
 ### [0.6.1](https://github.com/twada/empower-core/releases/tag/v0.6.1) (2016-06-05)
 
 
