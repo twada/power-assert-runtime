@@ -77,7 +77,7 @@
                 'assert(falsy)',
                 '[{"value":0,"espath":"arguments/0"}]'
             ].join('\n'));
-            baseAssert.equal(e.name, 'AssertionError');
+            baseAssert(/^AssertionError/.test(e.name));
         }
     });
 
@@ -94,7 +94,7 @@
                     'assert.isNull(falsy)',
                     '[{"value":0,"espath":"arguments/0"}]: Expected 0 to be null'
                 ].join('\n'));
-                baseAssert.equal(e.name, 'AssertionError');
+                baseAssert(/^AssertionError/.test(e.name));
             }
         });
     });
@@ -112,7 +112,7 @@
                     'assert.same(foo, bar)',
                     '[{"value":"foo","espath":"arguments/0"},{"value":"bar","espath":"arguments/1"}]: foo expected to be the same object as bar'
                 ].join('\n'));
-                baseAssert.equal(e.name, 'AssertionError');
+                baseAssert(/^AssertionError/.test(e.name));
             }
         });
 
@@ -127,7 +127,7 @@
                     'assert.same("foo", bar)',
                     '[{"value":"bar","espath":"arguments/1"}]: foo expected to be the same object as bar'
                 ].join('\n'));
-                baseAssert.equal(e.name, 'AssertionError');
+                baseAssert(/^AssertionError/.test(e.name));
             }
         });
 
@@ -142,7 +142,7 @@
                     'assert.same(foo, "bar")',
                     '[{"value":"foo","espath":"arguments/0"}]: foo expected to be the same object as bar'
                 ].join('\n'));
-                baseAssert.equal(e.name, 'AssertionError');
+                baseAssert(/^AssertionError/.test(e.name));
             }
         });
     });
@@ -160,7 +160,7 @@
                     'assert.near(actualVal, expectedVal, delta)',
                     '[{"value":10.6,"espath":"arguments/0"},{"value":10,"espath":"arguments/1"},{"value":0.5,"espath":"arguments/2"}]: Expected 10.6 to be equal to 10 +/- 0.5'
                 ].join('\n'));
-                baseAssert.equal(e.name, 'AssertionError');
+                baseAssert(/^AssertionError/.test(e.name));
             }
         });
 
@@ -175,7 +175,7 @@
                     'assert.near(actualVal, expectedVal, delta, messageStr)',
                     '[{"value":10.6,"espath":"arguments/0"},{"value":10,"espath":"arguments/1"},{"value":0.5,"espath":"arguments/2"}]: Expected 10.6 to be equal to 10 +/- 0.5'
                 ].join('\n'));
-                baseAssert.equal(e.name, 'AssertionError');
+                baseAssert(/^AssertionError/.test(e.name));
             }
         });
     });

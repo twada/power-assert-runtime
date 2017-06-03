@@ -108,7 +108,7 @@ Both methods are called with a single `event` argument, it will have the followi
   ```js
   function onError (errorEvent) {
     var e = errorEvent.error;
-    if (errorEvent.powerAssertContext && e.name === 'AssertionError') {
+    if (errorEvent.powerAssertContext && /^AssertionError/.test(e.name)) {
         e.powerAssertContext = errorEvent.powerAssertContext;
     }
     throw e;
@@ -250,6 +250,16 @@ Install
 Then load (`empowerCore` function is exported)
 
     <script type="text/javascript" src="./path/to/bower_components/empower-core/build/empower-core.js"></script>
+
+
+OUR SUPPORT POLICY
+---------------------------------------
+
+We support Node under maintenance. In other words, we stop supporting old Node version when [their maintenance ends](https://github.com/nodejs/LTS).
+
+We also support "modern enough" browsers such as Chrome, Firefox, Safari, Edge etc.
+
+Any other environments are not supported officially (means that we do not test against them on CI service). empower-core is known to work with old browsers, and trying to keep them working though.
 
 
 AUTHOR
