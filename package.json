@@ -34,7 +34,7 @@
     "gulp-derequire": "^2.1.0",
     "gulp-dereserve": "^0.2.1",
     "gulp-mocha": "^2.2.0",
-    "gulp-mocha-phantomjs": "^0.11.0",
+    "gulp-mocha-phantomjs": "^0.12.1",
     "gulp-util": "^3.0.7",
     "gulp-webserver": "^0.9.1",
     "licensify": "^3.1.1",
