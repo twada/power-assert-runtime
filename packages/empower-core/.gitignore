@@ -1,0 +1,7 @@
+/.idea
+/node_modules
+/npm-debug.log
+/bower_components
+/coverage.lcov
+/coverage.html
+/local_build
