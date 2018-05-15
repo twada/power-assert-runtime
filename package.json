@@ -10,7 +10,7 @@
     "babel-plugin-transform-function-bind": "^6.1.0",
     "core-js": "^2.0.0",
     "lerna": "^2.11.0",
-    "mocha": "^3.0.0"
+    "mocha": "^5.0.0"
   },
   "private": true,
   "scripts": {
