@@ -45,7 +45,7 @@
     };
 
 
-test('default options behavior', function () {
+it('default options behavior', function () {
     var assert = empower(baseAssert);
 
     var falsy = 0;
@@ -72,11 +72,11 @@ test('default options behavior', function () {
     }
 });
 
-suite('default options: ', function () {
+describe('default options: ', function () {
 
 var assert = empower(baseAssert);
 
-test('Bug reproduction. should not fail if argument is null Literal.', function () {
+it('Bug reproduction. should not fail if argument is null Literal.', function () {
     var foo = 'foo';
     try {
         eval(weave('assert.equal(foo, null);'));
@@ -100,7 +100,7 @@ test('Bug reproduction. should not fail if argument is null Literal.', function 
 });
 
 
-test('assertion with optional message argument.', function () {
+it('assertion with optional message argument.', function () {
     var falsy = 0;
     try {
         eval(weave('assert(falsy, "assertion message");'));
@@ -126,7 +126,7 @@ test('assertion with optional message argument.', function () {
 });
 
 
-test('empowered function also acts like an assert function', function () {
+it('empowered function also acts like an assert function', function () {
     var falsy = 0;
     try {
         eval(weave('assert(falsy);'));
@@ -152,8 +152,8 @@ test('empowered function also acts like an assert function', function () {
 });
 
 
-suite('assertion method with one argument', function () {
-    test('Identifier', function () {
+describe('assertion method with one argument', function () {
+    it('Identifier', function () {
         var falsy = 0;
         try {
             eval(weave('assert.ok(falsy);'));
@@ -180,8 +180,8 @@ suite('assertion method with one argument', function () {
 });
 
 
-suite('assertion method with two arguments', function () {
-    test('both Identifier', function () {
+describe('assertion method with two arguments', function () {
+    it('both Identifier', function () {
         var foo = 'foo', bar = 'bar';
         try {
             eval(weave('assert.equal(foo, bar);'));
@@ -208,7 +208,7 @@ suite('assertion method with two arguments', function () {
         }
     });
 
-    test('first argument is Literal', function () {
+    it('first argument is Literal', function () {
         var bar = 'bar';
         try {
             eval(weave('assert.equal("foo", bar);'));
@@ -231,7 +231,7 @@ suite('assertion method with two arguments', function () {
         }
     });
 
-    test('second argument is Literal', function () {
+    it('second argument is Literal', function () {
         var foo = 'foo';
         try {
             eval(weave('assert.equal(foo, "bar");'));
@@ -256,8 +256,8 @@ suite('assertion method with two arguments', function () {
 });
 
 
-suite('yield for assertion inside generator', function () {
-    test('yield falsy', function (done) {
+describe('yield for assertion inside generator', function () {
+    it('yield falsy', function (done) {
         var falsy = Promise.resolve(0);
 
         function onError(e) {
@@ -309,8 +309,8 @@ suite('yield for assertion inside generator', function () {
     });
 });
 
-suite('await assertion inside async async function', function () {
-    test('yield falsy', function (done) {
+describe('await assertion inside async async function', function () {
+    it('yield falsy', function (done) {
         var falsy = Promise.resolve(0);
 
         function onError(e) {
@@ -360,7 +360,7 @@ suite('await assertion inside async async function', function () {
 });
 
 
-test('the case when assertion function call is not listed in patterns (even if methods do)', function () {
+it('the case when assertion function call is not listed in patterns (even if methods do)', function () {
     var patterns = [
         'assert.ok(value, [message])',
         'assert.equal(actual, expected, [message])',
@@ -385,8 +385,8 @@ test('the case when assertion function call is not listed in patterns (even if m
 });
 
 
-suite('on rethrowing Error', function () {
-    test('rethrow behavior - name replacement', function () {
+describe('on rethrowing Error', function () {
+    it('rethrow behavior - name replacement', function () {
         try {
             try {
                 throw new baseAssert.AssertionError({
@@ -404,7 +404,7 @@ suite('on rethrowing Error', function () {
             baseAssert.equal(e.message, 'BARRRRRRRR');
         }
     });
-    test('rethrow behavior - new props', function () {
+    it('rethrow behavior - new props', function () {
         try {
             try {
                 throw new baseAssert.AssertionError({
@@ -423,7 +423,7 @@ suite('on rethrowing Error', function () {
     });
 });
 
-suite('custom logging event handlers', function () {
+describe('custom logging event handlers', function () {
     var log;
     var assert = empower(baseAssert, {
         onError: function () {
@@ -438,11 +438,11 @@ suite('custom logging event handlers', function () {
         }
     });
 
-    setup(function () {
+    beforeEach(function () {
         log = [];
     });
 
-    test('log assertion failures with onError', function () {
+    it('log assertion failures with onError', function () {
         var data = eval(weave('assert.equal(2 + 2, 5, "Where did you learn math?")'));
         baseAssert.strictEqual(log.length, 1);
         assert.strictEqual(data, log[0], 'it returns the result of onError');
@@ -454,7 +454,7 @@ suite('custom logging event handlers', function () {
         baseAssert(event.powerAssertContext, 'has a powerAssertContext');
     });
 
-    test('log successful assertions with onSuccess', function () {
+    it('log successful assertions with onSuccess', function () {
         var data = eval(weave('assert.equal(2 + 2, 4, "Good job!")'));
         baseAssert.strictEqual(log.length, 1);
         assert.strictEqual(data, log[0], 'it returns the result of onSuccess');
@@ -466,7 +466,7 @@ suite('custom logging event handlers', function () {
         baseAssert.equal(event.powerAssertContext.source.content, 'assert.equal(2 + 2, 4, "Good job!")');
     });
 
-    test('non-instrumented code: log assertion failures with onError', function () {
+    it('non-instrumented code: log assertion failures with onError', function () {
         var data = assert.equal(2 + 2, 5, 'Maybe in an alternate universe.');
         baseAssert.strictEqual(log.length, 1);
         assert.strictEqual(data, log[0], 'it returns the result of onError');
@@ -479,7 +479,7 @@ suite('custom logging event handlers', function () {
         baseAssert.deepEqual(event.args, [4, 5, 'Maybe in an alternate universe.'], 'attaches event.args');
     });
 
-    test('non-instrumented code: log successful assertions with onSuccess', function () {
+    it('non-instrumented code: log successful assertions with onSuccess', function () {
         var data = assert.equal(2 + 2, 4, 'Gold star!');
         baseAssert.strictEqual(log.length, 1);
         assert.strictEqual(data, log[0], 'it returns the result of onSuccess');
@@ -492,7 +492,7 @@ suite('custom logging event handlers', function () {
     });
 });
 
-suite('onSuccess can throw', function () {
+describe('onSuccess can throw', function () {
     var assert = empower(baseAssert, {
         onSuccess: function (event) {
             var error = new Error('successful assertion');
@@ -501,7 +501,7 @@ suite('onSuccess can throw', function () {
         }
     });
 
-    test('instrumented code', function () {
+    it('instrumented code', function () {
         try {
             eval(weave('assert.equal(2 + 2, 4, "yes. yes it is");'));
         } catch (e) {
@@ -512,7 +512,7 @@ suite('onSuccess can throw', function () {
         baseAssert.fail('should have thrown');
     });
 
-    test('non-instrumented code', function () {
+    it('non-instrumented code', function () {
         try {
             assert.equal(2 + 2, 4, 'yes. yes it is');
         } catch (e) {
@@ -524,7 +524,7 @@ suite('onSuccess can throw', function () {
     });
 });
 
-suite('metadata for enhanced methods', function () {
+describe('metadata for enhanced methods', function () {
     var assert = empower(
       {
           fail: function (message) {
@@ -553,7 +553,7 @@ suite('metadata for enhanced methods', function () {
       }
     );
 
-    test('instrumented', function () {
+    it('instrumented', function () {
         var event = eval(weave("assert.fail('doh!');"));
         baseAssert.equal(event.defaultMessage, 'User! You have failed this assertion!');
         baseAssert.strictEqual(event.enhanced, true);
@@ -568,7 +568,7 @@ suite('metadata for enhanced methods', function () {
         });
     });
 
-    test('non-instrumented', function () {
+    it('non-instrumented', function () {
         var event = assert.fail('doh!');
         baseAssert.equal(event.defaultMessage, 'User! You have failed this assertion!');
         baseAssert.strictEqual(event.enhanced, true);
@@ -576,7 +576,7 @@ suite('metadata for enhanced methods', function () {
     });
 });
 
-suite('wrapOnlyPatterns', function () {
+describe('wrapOnlyPatterns', function () {
     var assert = empower(
       {
           fail: function (message) {
@@ -605,7 +605,7 @@ suite('wrapOnlyPatterns', function () {
       }
     );
 
-    test('instrumented code: success', function () {
+    it('instrumented code: success', function () {
         var event = eval(weave('assert.pass("woot!")'));
         baseAssert.equal(event.assertionThrew, false);
         baseAssert.strictEqual(event.enhanced, false);
@@ -614,7 +614,7 @@ suite('wrapOnlyPatterns', function () {
         baseAssert.strictEqual(event.assertionFunction, assert.pass);
     });
 
-    test('instrumented code: error', function () {
+    it('instrumented code: error', function () {
         var event = eval(weave('assert.fail("Oh no!")'));
         baseAssert.equal(event.assertionThrew, true);
         baseAssert.strictEqual(event.enhanced, false);
@@ -624,7 +624,7 @@ suite('wrapOnlyPatterns', function () {
         baseAssert.strictEqual(event.assertionFunction, assert.fail);
     });
 
-    test('non-instrumented code: success', function () {
+    it('non-instrumented code: success', function () {
         var event = assert.pass('woot!');
         baseAssert.equal(event.assertionThrew, false);
         baseAssert.strictEqual(event.enhanced, false);
@@ -633,7 +633,7 @@ suite('wrapOnlyPatterns', function () {
         baseAssert.strictEqual(event.assertionFunction, assert.pass);
     });
 
-    test('non-instrumented code: error', function () {
+    it('non-instrumented code: error', function () {
         var event = assert.fail('Oh no!');
         baseAssert.equal(event.assertionThrew, true);
         baseAssert.strictEqual(event.enhanced, false);
@@ -644,8 +644,8 @@ suite('wrapOnlyPatterns', function () {
     });
 });
 
-suite('enhancing a prototype', function () {
-    test('you can enhance a prototype', function () {
+describe('enhancing a prototype', function () {
+    it('you can enhance a prototype', function () {
         function AssertionApi(name) {
             this.name = name;
             this.assertions = [];

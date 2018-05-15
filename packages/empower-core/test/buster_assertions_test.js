@@ -66,7 +66,7 @@
     });
 
 
-    test('buster assertion is also an assert function', function () {
+    it('buster assertion is also an assert function', function () {
         var falsy = 0;
         try {
             eval(weave('assert(falsy);'));
@@ -82,8 +82,8 @@
     });
 
 
-    suite('buster assertion with one argument', function () {
-        test('isNull method', function () {
+    describe('buster assertion with one argument', function () {
+        it('isNull method', function () {
             var falsy = 0;
             try {
                 eval(weave('assert.isNull(falsy);'));
@@ -100,8 +100,8 @@
     });
 
 
-    suite('buster assertion method with two arguments', function () {
-        test('both Identifier', function () {
+    describe('buster assertion method with two arguments', function () {
+        it('both Identifier', function () {
             var foo = 'foo', bar = 'bar';
             try {
                 eval(weave('assert.same(foo, bar);'));
@@ -116,7 +116,7 @@
             }
         });
 
-        test('first argument is Literal', function () {
+        it('first argument is Literal', function () {
             var bar = 'bar';
             try {
                 eval(weave('assert.same("foo", bar);'));
@@ -131,7 +131,7 @@
             }
         });
 
-        test('second argument is Literal', function () {
+        it('second argument is Literal', function () {
             var foo = 'foo';
             try {
                 eval(weave('assert.same(foo, "bar");'));
@@ -148,8 +148,8 @@
     });
 
 
-    suite('buster assertion method with three arguments', function () {
-        test('when every argument is Identifier', function () {
+    describe('buster assertion method with three arguments', function () {
+        it('when every argument is Identifier', function () {
             var actualVal = 10.6, expectedVal = 10, delta = 0.5;
             try {
                 eval(weave('assert.near(actualVal, expectedVal, delta);'));
@@ -164,7 +164,7 @@
             }
         });
 
-        test('optional fourth argument', function () {
+        it('optional fourth argument', function () {
             var actualVal = 10.6, expectedVal = 10, delta = 0.5, messageStr = 'not in delta';
             try {
                 eval(weave('assert.near(actualVal, expectedVal, delta, messageStr);'));

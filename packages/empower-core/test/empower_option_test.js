@@ -12,18 +12,18 @@
     assert
 ) {
 
-suite('empower.defaultOptions()', function () {
-    setup (function () {
+describe('empower.defaultOptions()', function () {
+    beforeEach(function () {
         this.options = empower.defaultOptions();
     });
-    test('destructive: false', function () {
+    it('destructive: false', function () {
         assert.equal(this.options.destructive, false);
     });
-    test('onError: function', function () {
+    it('onError: function', function () {
         assert.equal(typeof this.options.onError, 'function');
         assert.equal(typeof this.options.onSuccess, 'function');
     });
-    test('patterns: Array', function () {
+    it('patterns: Array', function () {
         assert.deepEqual(this.options.patterns, [
             'assert(value, [message])',
             'assert.ok(value, [message])',
@@ -40,10 +40,10 @@ suite('empower.defaultOptions()', function () {
 });
 
 
-suite('empower argument preconditions', function () {
+describe('empower argument preconditions', function () {
     function argumentTest (name, arg, expectedMessage) {
         expectedMessage = expectedMessage || 'empower-core argument should be a function or object.';
-        test(name, function () {
+        it(name, function () {
             assert.throws(
                 function() {
                     empower(arg);
@@ -63,40 +63,40 @@ suite('empower argument preconditions', function () {
 
 
 function sharedTestsForEmpowerFunctionReturnValue () {
-    test('has ok method', function () {
+    it('has ok method', function () {
         assert.equal(typeof this.empoweredAssert.ok, 'function');
     });
-    test('does not have _capt method', function () {
+    it('does not have _capt method', function () {
         assert.equal(typeof this.empoweredAssert._capt, 'undefined');
     });
-    test('does not have _expr method', function () {
+    it('does not have _expr method', function () {
         assert.equal(typeof this.empoweredAssert._expr, 'undefined');
     });
-    test('has equal method', function () {
+    it('has equal method', function () {
         assert.equal(typeof this.empoweredAssert.equal, 'function');
     });
-    test('has strictEqual method', function () {
+    it('has strictEqual method', function () {
         assert.equal(typeof this.empoweredAssert.strictEqual, 'function');
     });
-    test('ok method works as assert.ok', function () {
+    it('ok method works as assert.ok', function () {
         var empoweredAssert = this.empoweredAssert;
         assert.throws(function () {
             empoweredAssert.ok(false, 'empoweredAssert.ok');
         }, /FakeAssert: assertion failed. empoweredAssert.ok/);
     });
-    test('equal method works', function () {
+    it('equal method works', function () {
         var empoweredAssert = this.empoweredAssert;
         assert.throws(function () {
             empoweredAssert.equal(1, 'hoge', 'empoweredAssert.equal');
         }, /FakeAssert: assertion failed. empoweredAssert.equal/);
     });
-    test('strictEqual method works', function () {
+    it('strictEqual method works', function () {
         var empoweredAssert = this.empoweredAssert;
         assert.throws(function () {
             empoweredAssert.strictEqual(1, '1', 'empoweredAssert.strictEqual');
         }, /FakeAssert: assertion failed. empoweredAssert.strictEqual/);
     });
-    test('preserve return value if target assertion method returns something', function () {
+    it('preserve return value if target assertion method returns something', function () {
         var empoweredAssert = this.empoweredAssert,
             ret = empoweredAssert.equal(1, '1');
         empoweredAssert.strictEqual(ret, true);
@@ -104,8 +104,8 @@ function sharedTestsForEmpowerFunctionReturnValue () {
 }
 
 
-suite('assert object empowerment', function () {
-    setup(function () {
+describe('assert object empowerment', function () {
+    beforeEach(function () {
         function fail(actual, expected, message, operator) {
             throw new assert.AssertionError({
                 message: message,
@@ -136,8 +136,8 @@ suite('assert object empowerment', function () {
         this.fakeAssertObject = fakeAssertObject;
     });
 
-    suite('destructive: false', function () {
-        setup(function () {
+    describe('destructive: false', function () {
+        beforeEach(function () {
             this.options = {
                 destructive: false,
                 patterns: [
@@ -148,26 +148,26 @@ suite('assert object empowerment', function () {
             };
             this.empoweredAssert = empower(this.fakeAssertObject, this.options);
         });
-        suite('returned assert', function () {
+        describe('returned assert', function () {
             sharedTestsForEmpowerFunctionReturnValue();
-            test('is also an object', function () {
+            it('is also an object', function () {
                 assert.ok(typeof this.empoweredAssert, 'object');
             });
-            test('is not the same instance as target assert object', function () {
+            it('is not the same instance as target assert object', function () {
                 assert.notEqual(this.empoweredAssert, this.fakeAssertObject);
             });
-            test('ok method is not refered to target.ok', function () {
+            it('ok method is not refered to target.ok', function () {
                 assert.notEqual(this.empoweredAssert.ok, this.fakeAssertObject.ok);
             });
         });
-        test('avoid empowering multiple times', function () {
+        it('avoid empowering multiple times', function () {
             var empoweredAgain = empower(this.empoweredAssert, this.options);
             assert.equal(empoweredAgain, this.empoweredAssert);
         });
     });
 
-    suite('destructive: true', function () {
-        setup(function () {
+    describe('destructive: true', function () {
+        beforeEach(function () {
             this.options = {
                 destructive: true,
                 patterns: [
@@ -178,19 +178,19 @@ suite('assert object empowerment', function () {
             };
             this.empoweredAssert = empower(this.fakeAssertObject, this.options);
         });
-        suite('returned assert', function () {
+        describe('returned assert', function () {
             sharedTestsForEmpowerFunctionReturnValue();
-            test('is also an object', function () {
+            it('is also an object', function () {
                 assert.ok(typeof this.empoweredAssert, 'object');
             });
-            test('is the same instance as target assert object', function () {
+            it('is the same instance as target assert object', function () {
                 assert.equal(this.empoweredAssert, this.fakeAssertObject);
             });
-            test('ok method is refered to target.ok', function () {
+            it('ok method is refered to target.ok', function () {
                 assert.equal(this.empoweredAssert.ok, this.fakeAssertObject.ok);
             });
         });
-        test('avoid empowering multiple times', function () {
+        it('avoid empowering multiple times', function () {
             var empoweredAgain = empower(this.fakeAssertObject, this.options);
             assert.equal(empoweredAgain, this.fakeAssertObject);
         });
@@ -198,8 +198,8 @@ suite('assert object empowerment', function () {
 });
 
 
-suite('assert function empowerment', function () {
-    setup(function () {
+describe('assert function empowerment', function () {
+    beforeEach(function () {
         function fail(actual, expected, message, operator) {
             throw new assert.AssertionError({
                 message: message,
@@ -229,8 +229,8 @@ suite('assert function empowerment', function () {
         this.fakeAssertFunction = assertOk;
     });
 
-    suite('destructive: false', function () {
-        setup(function () {
+    describe('destructive: false', function () {
+        beforeEach(function () {
             this.options = {
                 destructive: false,
                 patterns: [
@@ -242,43 +242,43 @@ suite('assert function empowerment', function () {
             };
             this.empoweredAssert = empower(this.fakeAssertFunction, this.options);
         });
-        suite('returned assert', function () {
+        describe('returned assert', function () {
             sharedTestsForEmpowerFunctionReturnValue();
-            test('works as assert function', function () {
+            it('works as assert function', function () {
                 var empoweredAssert = this.empoweredAssert;
                 assert.throws(function () {
                     empoweredAssert(false, 'empoweredAssert');
                 }, /FakeAssert: assertion failed. empoweredAssert/);
             });
-            test('is also a function', function () {
+            it('is also a function', function () {
                 assert.ok(typeof this.empoweredAssert, 'function');
             });
-            test('is not the same instance as target assert function', function () {
+            it('is not the same instance as target assert function', function () {
                 assert.notEqual(this.empoweredAssert, this.fakeAssertFunction);
             });
-            test('ok method is not refered to target.ok', function () {
+            it('ok method is not refered to target.ok', function () {
                 assert.notEqual(this.empoweredAssert.ok, this.fakeAssertFunction.ok);
             });
-            test('ok method is not refered to target assert function', function () {
+            it('ok method is not refered to target assert function', function () {
                 assert.notEqual(this.empoweredAssert.ok, this.fakeAssertFunction.ok);
             });
-            test('preserve return value if target assertion function itself returns something', function () {
+            it('preserve return value if target assertion function itself returns something', function () {
                 var empoweredAssert = this.empoweredAssert,
                     ret = empoweredAssert('truthy');
                 empoweredAssert.strictEqual(ret, true);
             });
         });
-        test('avoid empowering multiple times', function () {
+        it('avoid empowering multiple times', function () {
             var empoweredAgain = empower(this.empoweredAssert, this.options);
             assert.equal(empoweredAgain, this.empoweredAssert);
         });
     });
 
-    test('does not support destructive:true', function () {
+    it('does not support destructive:true', function () {
         var func = this.fakeAssertFunction;
         assert.throws(function () {
             empower(func, {destructive: true});
-        }, 'cannot use destructive:true to function\.');
+        }, /cannot use destructive:true to function\./);
     });
 });
 

@@ -12,11 +12,11 @@
     baseAssert
 ) {
 
-suite('not-espowered: ', function () {
+describe('not-espowered: ', function () {
 
 var assert = empower(baseAssert);
 
-test('argument is null Literal.', function () {
+it('argument is null Literal.', function () {
     var foo = 'foo';
     try {
         eval('assert.equal(foo, null);');
@@ -29,7 +29,7 @@ test('argument is null Literal.', function () {
 });
 
 
-test('empowered function also acts like an assert function', function () {
+it('empowered function also acts like an assert function', function () {
     var falsy = 0;
     try {
         eval('assert(falsy);');
@@ -42,8 +42,8 @@ test('empowered function also acts like an assert function', function () {
 });
 
 
-suite('assertion method with one argument', function () {
-    test('Identifier', function () {
+describe('assertion method with one argument', function () {
+    it('Identifier', function () {
         var falsy = 0;
         try {
             eval('assert.ok(falsy);');
@@ -57,8 +57,8 @@ suite('assertion method with one argument', function () {
 });
 
 
-suite('assertion method with two arguments', function () {
-    test('both Identifier', function () {
+describe('assertion method with two arguments', function () {
+    it('both Identifier', function () {
         var foo = 'foo', bar = 'bar';
         try {
             eval('assert.equal(foo, bar);');
@@ -70,7 +70,7 @@ suite('assertion method with two arguments', function () {
         }
     });
 
-    test('first argument is Literal', function () {
+    it('first argument is Literal', function () {
         var bar = 'bar';
         try {
             eval('assert.equal("foo", bar);');
@@ -82,7 +82,7 @@ suite('assertion method with two arguments', function () {
         }
     });
 
-    test('second argument is Literal', function () {
+    it('second argument is Literal', function () {
         var foo = 'foo';
         try {
             eval('assert.equal(foo, "bar");');
