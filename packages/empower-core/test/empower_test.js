@@ -40,8 +40,7 @@
         }
         var jsAST = acorn.parse(line, {ecmaVersion: 7, locations: true, sourceType: 'module', sourceFile: filepath, plugins: {asyncawait: true}});
         var espoweredAST = espower(jsAST, espowerOptions);
-        var code = escodegen.generate(espoweredAST, {format: {compact: true}});
-        return babel.transform(code).code;
+        return escodegen.generate(espoweredAST, {format: {compact: true}});
     };
 
 
@@ -309,6 +308,18 @@ describe('yield for assertion inside generator', function () {
     });
 });
 
+
+var isAsyncAwaitSupported = (function () {
+    try {
+        eval('async function a() { await b(); }');
+        return true;
+    } catch (e) {
+        if (e instanceof SyntaxError) return false;
+        throw e;
+    }
+})();
+
+if (isAsyncAwaitSupported) {
 describe('await assertion inside async async function', function () {
     it('yield falsy', function (done) {
         var falsy = Promise.resolve(0);
@@ -357,6 +368,8 @@ describe('await assertion inside async async function', function () {
         eval(weave(code));
     });
 });
+}
+
 });
 
 
