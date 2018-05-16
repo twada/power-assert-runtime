@@ -3,12 +3,13 @@
 [![Build Status][travis-image]][travis-url]
 [![License][license-image]][license-url]
 
-Reorganize [power-assert-formatter](https://github.com/power-assert-js/power-assert-formatter) and [power-assert-renderers](https://github.com/twada/power-assert-renderers) into [monorepo](https://github.com/babel/babel/blob/master/doc/design/monorepo.md) structure.
+Reorganize [empower](https://github.com/power-assert-js/empower), [power-assert-formatter](https://github.com/power-assert-js/power-assert-formatter) and [power-assert-renderers](https://github.com/twada/power-assert-renderers) into [monorepo](https://github.com/babel/babel/blob/master/doc/design/monorepo.md) structure.
 
 
 MODULES
 ---------------------------------------
 
+- [empower-core](./packages/empower-core/)
 - [power-assert-context-formatter](./packages/power-assert-context-formatter/)
 - [power-assert-context-traversal](./packages/power-assert-context-traversal/)
 - [power-assert-context-reducer-ast](./packages/power-assert-context-reducer-ast/)

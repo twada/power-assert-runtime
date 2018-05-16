@@ -33,7 +33,6 @@
   },
   "files": [
     "CHANGELOG.md",
-    "MIT-LICENSE.txt",
     "README.md",
     "index.js",
     "lib",
