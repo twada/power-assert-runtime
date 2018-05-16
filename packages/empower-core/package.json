@@ -5,10 +5,10 @@
   "author": {
     "name": "Takuto Wada",
     "email": "takuto.wada@gmail.com",
-    "url": "http://github.com/twada"
+    "url": "https://github.com/twada"
   },
   "bugs": {
-    "url": "http://github.com/twada/empower-core/issues"
+    "url": "https://github.com/twada/power-assert-runtime/issues"
   },
   "contributors": [
     {
@@ -39,7 +39,7 @@
     "lib",
     "package.json"
   ],
-  "homepage": "http://github.com/twada/empower-core",
+  "homepage": "https://github.com/twada/power-assert-runtime",
   "keywords": [
     "power-assert",
     "assert",
@@ -51,7 +51,7 @@
   "main": "./index.js",
   "repository": {
     "type": "git",
-    "url": "http://github.com/twada/empower-core.git"
+    "url": "https://github.com/twada/power-assert-runtime.git"
   },
   "scripts": {
     "test": "mocha test"
