@@ -228,7 +228,7 @@ describe('power-assert-context-formatter : lineSeparator option', function () {
                     'assert(foo === "bar")',
                     ''
                 ].join(expectedSeparator));
-                baseAssert.equal(e.name, 'AssertionError');
+                baseAssert(/^AssertionError/.test(e.name));
             }
         });
     }
