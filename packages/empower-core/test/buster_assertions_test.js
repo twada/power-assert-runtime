@@ -1,18 +1,11 @@
 'use strict';
 
-var empowerCore = require('..');
+var empower = require('..');
 var espower = require('espower');
 var acorn = require('acorn');
 var escodegen = require('escodegen');
-var capturable = require('./capturable');
 var baseAssert = require('assert');
 var busterAssertions = require('buster-assertions');
-
-    var empower = function (a, opts) {
-        var enhanced = empowerCore(a, opts);
-        Object.assign(enhanced, capturable());
-        return enhanced;
-    };
 
     var weave = function (line) {
         var filepath = '/absolute/path/to/project/test/some_test.js';
