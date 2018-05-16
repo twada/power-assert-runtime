@@ -1,16 +1,7 @@
-(function (root, factory) {
-    'use strict';
-    if (typeof define === 'function' && define.amd) {
-        define(['empower-core', 'assert'], factory);
-    } else if (typeof exports === 'object') {
-        factory(require('..'), require('assert'));
-    } else {
-        factory(root.empowerCore, root.assert);
-    }
-}(this, function (
-    empower,
-    assert
-) {
+'use strict';
+
+var empower = require('..');
+var assert = require('assert');
 
 describe('empower.defaultOptions()', function () {
     beforeEach(function () {
@@ -281,5 +272,3 @@ describe('assert function empowerment', function () {
         }, /cannot use destructive:true to function\./);
     });
 });
-
-}));

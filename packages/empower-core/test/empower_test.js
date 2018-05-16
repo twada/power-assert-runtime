@@ -1,24 +1,14 @@
-(function (root, factory) {
-    'use strict';
+'use strict';
 
-    if (typeof define === 'function' && define.amd) {
-        define(['empower-core', 'espower', 'acorn', 'acorn-es7-plugin', 'babel', 'escodegen', 'capturable', 'assert'], factory);
-    } else if (typeof exports === 'object') {
-        factory(require('..'), require('espower'), require('acorn'), require('acorn-es7-plugin'), require('babel-core'), require('escodegen'), require('./capturable'), require('assert'));
-    } else {
-        factory(root.empowerCore, root.espower, root.acorn, root.acornEs7Plugin, root.babel, root.escodegen, root.capturable, root.assert);
-    }
-}(this, function (
-    empowerCore,
-    espower,
-    acorn,
-    acornEs7Plugin,
-    babel,
-    escodegen,
-    capturable,
-    baseAssert
-) {
-    acornEs7Plugin(acorn);
+var empowerCore = require('..');
+var espower = require('espower');
+var acorn = require('acorn');
+var acornEs7Plugin = require('acorn-es7-plugin');
+acornEs7Plugin(acorn);
+var escodegen = require('escodegen');
+var capturable = require('./capturable');
+var baseAssert = require('assert');
+
     var empower = function (a, opts) {
         var enhanced = empowerCore(a, opts);
         Object.assign(enhanced, capturable());
@@ -699,5 +689,3 @@ describe('enhancing a prototype', function () {
         baseAssert.strictEqual(b, assertB);
     });
 });
-
-}));
