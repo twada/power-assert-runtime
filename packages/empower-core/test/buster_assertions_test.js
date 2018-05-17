@@ -1,26 +1,11 @@
-(function (root, factory) {
-    'use strict';
-    if (typeof define === 'function' && define.amd) {
-        define(['empower-core', 'espower', 'acorn', 'escodegen', 'capturable', 'assert', 'buster-assertions'], factory);
-    } else if (typeof exports === 'object') {
-        factory(require('..'), require('espower'), require('acorn'), require('escodegen'), require('./capturable'), require('assert'), require('buster-assertions'));
-    } else {
-        factory(root.empowerCore, root.espower, root.acorn, root.escodegen, root.capturable, root.assert, root.buster);
-    }
-}(this, function (
-    empowerCore,
-    espower,
-    acorn,
-    escodegen,
-    capturable,
-    baseAssert,
-    busterAssertions
-) {
-    var empower = function (a, opts) {
-        var enhanced = empowerCore(a, opts);
-        Object.assign(enhanced, capturable());
-        return enhanced;
-    };
+'use strict';
+
+var empower = require('..');
+var espower = require('espower');
+var acorn = require('acorn');
+var escodegen = require('escodegen');
+var baseAssert = require('assert');
+var busterAssertions = require('buster-assertions');
 
     var weave = function (line) {
         var filepath = '/absolute/path/to/project/test/some_test.js';
@@ -179,5 +164,3 @@
             }
         });
     });
-
-}));

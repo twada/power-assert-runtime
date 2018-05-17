@@ -1,16 +1,7 @@
-(function (root, factory) {
-    'use strict';
-    if (typeof define === 'function' && define.amd) {
-        define(['empower-core', 'assert'], factory);
-    } else if (typeof exports === 'object') {
-        factory(require('..'), require('assert'));
-    } else {
-        factory(root.empowerCore, root.assert);
-    }
-}(this, function (
-    empower,
-    baseAssert
-) {
+'use strict';
+
+var empower = require('..');
+var baseAssert = require('assert');
 
 describe('not-espowered: ', function () {
 
@@ -96,5 +87,3 @@ describe('assertion method with two arguments', function () {
 });
 
 });
-
-}));

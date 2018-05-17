@@ -5,10 +5,10 @@
   "author": {
     "name": "Takuto Wada",
     "email": "takuto.wada@gmail.com",
-    "url": "http://github.com/twada"
+    "url": "https://github.com/twada"
   },
   "bugs": {
-    "url": "http://github.com/twada/empower-core/issues"
+    "url": "https://github.com/twada/power-assert-runtime/issues"
   },
   "contributors": [
     {
@@ -21,41 +21,24 @@
     "core-js": "^2.0.0"
   },
   "devDependencies": {
-    "acorn": "^3.1.0",
+    "acorn": "^5.0.0",
     "acorn-es7-plugin": "^1.0.14",
-    "babel-core": "^5.8.33",
-    "blanket": "^1.2.3",
-    "browserify": "^13.0.1",
     "buster-assertions": "^0.10.4",
-    "del": "^2.2.0",
     "escodegen": "^1.8.0",
-    "espower": "^1.2.1",
-    "gulp": "^3.9.1",
-    "gulp-derequire": "^2.1.0",
-    "gulp-dereserve": "^0.2.1",
-    "gulp-mocha": "^2.2.0",
-    "gulp-mocha-phantomjs": "^0.12.1",
-    "gulp-util": "^3.0.7",
-    "gulp-webserver": "^0.9.1",
-    "licensify": "^3.1.1",
-    "mocha": "^5.0.0",
-    "mocha-lcov-reporter": "^1.2.0",
-    "through2": "^2.0.1",
-    "vinyl-source-stream": "^1.1.0"
+    "espower": "^2.0.0",
+    "mocha": "^5.0.0"
   },
   "directories": {
     "lib": "./lib"
   },
   "files": [
     "CHANGELOG.md",
-    "MIT-LICENSE.txt",
     "README.md",
     "index.js",
     "lib",
-    "build/empower-core.js",
     "package.json"
   ],
-  "homepage": "http://github.com/twada/empower-core",
+  "homepage": "https://github.com/twada/power-assert-runtime",
   "keywords": [
     "power-assert",
     "assert",
@@ -67,16 +50,9 @@
   "main": "./index.js",
   "repository": {
     "type": "git",
-    "url": "http://github.com/twada/empower-core.git"
+    "url": "https://github.com/twada/power-assert-runtime.git"
   },
   "scripts": {
-    "preversion": "npm test",
-    "version": "npm run dist && git add -A build",
-    "bower": "bower install --config.interactive=false",
-    "dist": "npm prune && npm dedupe && gulp dist",
-    "test": "gulp test",
-    "unit": "gulp unit",
-    "watch": "gulp watch",
-    "coveralls": "gulp coverage && cat ./coverage.lcov | coveralls"
+    "test": "mocha test"
   }
 }

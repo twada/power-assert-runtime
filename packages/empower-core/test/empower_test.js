@@ -1,29 +1,12 @@
-(function (root, factory) {
-    'use strict';
+'use strict';
 
-    if (typeof define === 'function' && define.amd) {
-        define(['empower-core', 'espower', 'acorn', 'acorn-es7-plugin', 'babel', 'escodegen', 'capturable', 'assert'], factory);
-    } else if (typeof exports === 'object') {
-        factory(require('..'), require('espower'), require('acorn'), require('acorn-es7-plugin'), require('babel-core'), require('escodegen'), require('./capturable'), require('assert'));
-    } else {
-        factory(root.empowerCore, root.espower, root.acorn, root.acornEs7Plugin, root.babel, root.escodegen, root.capturable, root.assert);
-    }
-}(this, function (
-    empowerCore,
-    espower,
-    acorn,
-    acornEs7Plugin,
-    babel,
-    escodegen,
-    capturable,
-    baseAssert
-) {
-    acornEs7Plugin(acorn);
-    var empower = function (a, opts) {
-        var enhanced = empowerCore(a, opts);
-        Object.assign(enhanced, capturable());
-        return enhanced;
-    };
+var empower = require('..');
+var espower = require('espower');
+var acorn = require('acorn');
+var acornEs7Plugin = require('acorn-es7-plugin');
+acornEs7Plugin(acorn);
+var escodegen = require('escodegen');
+var baseAssert = require('assert');
 
     var slice = Array.prototype.slice;
 
@@ -38,10 +21,9 @@
         if (patterns) {
             espowerOptions.patterns = patterns;
         }
-        var jsAST = acorn.parse(line, {ecmaVersion: 7, locations: true, sourceType: 'module', sourceFile: filepath, plugins: {asyncawait: true}});
+        var jsAST = acorn.parse(line, {ecmaVersion: 2018, locations: true, sourceType: 'module', sourceFile: filepath, plugins: {asyncawait: true}});
         var espoweredAST = espower(jsAST, espowerOptions);
-        var code = escodegen.generate(espoweredAST, {format: {compact: true}});
-        return babel.transform(code).code;
+        return escodegen.generate(espoweredAST, {format: {compact: true}});
     };
 
 
@@ -309,6 +291,18 @@ describe('yield for assertion inside generator', function () {
     });
 });
 
+
+var isAsyncAwaitSupported = (function () {
+    try {
+        eval('async function a() { await b(); }');
+        return true;
+    } catch (e) {
+        if (e instanceof SyntaxError) return false;
+        throw e;
+    }
+})();
+
+if (isAsyncAwaitSupported) {
 describe('await assertion inside async async function', function () {
     it('yield falsy', function (done) {
         var falsy = Promise.resolve(0);
@@ -357,6 +351,8 @@ describe('await assertion inside async async function', function () {
         eval(weave(code));
     });
 });
+}
+
 });
 
 
@@ -686,5 +682,3 @@ describe('enhancing a prototype', function () {
         baseAssert.strictEqual(b, assertB);
     });
 });
-
-}));
