@@ -21,20 +21,24 @@ describe('AssertionRenderer', function () {
     });
 
     it('show syntax error when there are some parse errors caused by not supported syntax', function () {
-        var a = 'a';
-        var b = 'b';
-        var obj = { foo: 'FOO', bar: 'BAR' };
+        function validate(name) {
+            return {
+                name: name,
+                valid: true,
+                value: this
+            };
+        }
         testRendering(function () {
-            eval(transpile('assert.deepEqual({ b, ...obj }, { a, ...obj })', false));
+            eval(transpile('assert.deepEqual(true::validate("foo"), { valid: true, value: true, name: "bar" })', false));
         }, [
             '',
-            'assert.deepEqual({ b, ...obj }, { a, ...obj })',
-            '                      ?                       ',
-            '                      ?                       ',
-            '                      SyntaxError: Unexpected token (1:22)',
-            '                                              ',
+            'assert.deepEqual(true::validate("foo"), { valid: true, value: true, name: "bar" })',
+            '                     ?                                                            ',
+            '                     ?                                                            ',
+            '                     SyntaxError: Unexpected token (1:21)                         ',
+            '                                                                                  ',
             'If you are using `babel-plugin-espower` and want to use experimental syntax in your assert(), you should set `embedAst` option to true.',
-            'see: https://github.com/power-assert-js/babel-plugin-espower#optionsembedast'
+            'see: https://github.com/power-assert-js/babel-plugin-espower#optionsembedast      '
         ], {
             reducers: [
                 appendAst
