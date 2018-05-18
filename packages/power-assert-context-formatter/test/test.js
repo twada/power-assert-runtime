@@ -144,24 +144,28 @@ describe('power-assert-context-formatter : reducers option', function () {
                 DiagramRenderer
             ]
         });
+        function validate(name) {
+            return {
+                name: name,
+                valid: true,
+                value: this
+            };
+        }
         try {
-            var a = 'a';
-            var b = 'b';
-            var obj = { foo: 'FOO', bar: 'BAR' };
-            eval(transpile('assert.deepEqual({ b, ...obj }, { a, ...obj })', false));
+            eval(transpile('assert.deepEqual(true::validate("foo"), { valid: true, value: true, name: "bar" })', false));
         } catch (e) {
             var result = format(e.powerAssertContext);
             baseAssert.equal(result, [
                 '  ',
-                '  assert.deepEqual({ b, ...obj }, { a, ...obj })',
-                '                        ?                       ',
-                '                        ?                       ',
-                '                        SyntaxError: Unexpected token (1:22)',
-                '                                                ',
+                '  assert.deepEqual(true::validate("foo"), { valid: true, value: true, name: "bar" })',
+                '                       ?                                                            ',
+                '                       ?                                                            ',
+                '                       SyntaxError: Unexpected token (1:21)                         ',
+                '                                                                                    ',
                 '  If you are using `babel-plugin-espower` and want to use experimental syntax in your assert(), you should set `embedAst` option to true.',
-                '  see: https://github.com/power-assert-js/babel-plugin-espower#optionsembedast',
-                '                                                ',
-                '                                                ',
+                '  see: https://github.com/power-assert-js/babel-plugin-espower#optionsembedast      ',
+                '                                                                                    ',
+                '                                                                                    ',
                 '  '
             ].join('\n'));
         }

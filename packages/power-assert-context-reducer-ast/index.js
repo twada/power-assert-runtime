@@ -28,7 +28,7 @@ module.exports = function (powerAssertContext) {
 function parserOptions(tokens) {
     return {
         sourceType: 'module',
-        ecmaVersion: 2017,
+        ecmaVersion: 2018,
         locations: true,
         ranges: false,
         onToken: tokens,
