@@ -23,8 +23,8 @@
   "homepage": "https://github.com/twada/power-assert-runtime",
   "keywords": [
     "string",
-    "width",
-    "unicode"
+    "unicode",
+    "width"
   ],
   "license": "MIT",
   "main": "index.js",

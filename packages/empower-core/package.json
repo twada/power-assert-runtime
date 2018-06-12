@@ -40,9 +40,9 @@
   ],
   "homepage": "https://github.com/twada/power-assert-runtime",
   "keywords": [
-    "power-assert",
     "assert",
     "assertion",
+    "power-assert",
     "test",
     "testing"
   ],
