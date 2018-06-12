@@ -9,7 +9,7 @@
 
 #### Breaking Changes
 
-* **empower-core:** (v0.6.2 -> v1.2.0 since integrated into monorepo) We stopped providing prebuilt bundle for browsers. Please build your own using browserify, webpack and so on. We also dropped bower support. Please use npm instead.
+* **empower-core:** [v0.6.2 -> v1.2.0 since integrated into monorepo](https://github.com/twada/power-assert-runtime/pull/21) We stopped providing prebuilt bundle for browsers. Please build your own using browserify, webpack and so on. We also dropped bower support. Please use npm instead.
 
 
 ### [1.1.2](https://github.com/twada/power-assert-runtime/releases/tag/v1.1.2) (2017-04-14)
