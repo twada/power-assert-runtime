@@ -372,10 +372,10 @@ it('the case when assertion function call is not listed in patterns (even if met
 
     var falsy = 0;
     try {
-        eval(weave('assert(falsy);', patterns));
+        eval(weave('assert(falsy, "assertion message");', patterns));
         baseAssert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
-        baseAssert.equal(e.message, '0 == true', 'should not be empowered');
+        baseAssert.equal(e.message, 'assertion message', 'should not be empowered');
         baseAssert(/^AssertionError/.test(e.name));
     }
 });

@@ -23,25 +23,25 @@ it('argument is null Literal.', function () {
 it('empowered function also acts like an assert function', function () {
     var falsy = 0;
     try {
-        eval('assert(falsy);');
+        eval('assert(falsy, "assertion message");');
         assert.ok(false, 'AssertionError should be thrown');
     } catch (e) {
         baseAssert(/^AssertionError/.test(e.name));
-        baseAssert.equal(e.message, '0 == true');
+        baseAssert.equal(e.message, 'assertion message');
         baseAssert(e.powerAssertContext === undefined);
     }
 });
 
 
-describe('assertion method with one argument', function () {
+describe('assertion method with one argument and optional message', function () {
     it('Identifier', function () {
         var falsy = 0;
         try {
-            eval('assert.ok(falsy);');
+            eval('assert.ok(falsy, "assertion message");');
             assert.ok(false, 'AssertionError should be thrown');
         } catch (e) {
             baseAssert(/^AssertionError/.test(e.name));
-            baseAssert.equal(e.message, '0 == true');
+            baseAssert.equal(e.message, 'assertion message');
             baseAssert(e.powerAssertContext === undefined);
         }
     });
