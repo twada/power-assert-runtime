@@ -15,7 +15,7 @@
     "estraverse": "^4.1.0"
   },
   "devDependencies": {
-    "babel-types": "^6.1.0",
+    "@babel/types": "^7.0.0-beta.54",
     "mocha": "^5.0.0"
   },
   "files": [

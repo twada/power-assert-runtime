@@ -464,8 +464,10 @@ describe('DiagramRenderer', function () {
             eval(transpiledCode);
         }, [
             'assert.deepEqual({ b, ...obj }, { a, ...obj })',
-            '                 |              |             ',
-            '                 |              Object{a:"a",foo:"FOO",bar:"BAR"}',
+            '                 |       |      |       |     ',
+            '                 |       |      |       Object{foo:"FOO",bar:"BAR"}',
+            '                 |       |      Object{a:"a",foo:"FOO",bar:"BAR"}',
+            '                 |       Object{foo:"FOO",bar:"BAR"}',
             '                 Object{b:"b",foo:"FOO",bar:"BAR"}'
         ]);
     });

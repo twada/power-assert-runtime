@@ -2,7 +2,7 @@
 
 delete require.cache[require.resolve('..')];
 var ContextTraversal = require('..');
-var types = require('babel-types');
+var types = require('@babel/types');
 var baseAssert = require('assert');
 var assert = require('../../../test_helper/empowered-assert');
 var transpile = require('../../../test_helper/transpile');
