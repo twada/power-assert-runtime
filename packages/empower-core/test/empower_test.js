@@ -26,6 +26,16 @@ var baseAssert = require('assert');
         return escodegen.generate(espoweredAST, {format: {compact: true}});
     };
 
+var isAsyncAwaitSupported = (function () {
+    try {
+        eval('async function a() { await b(); }');
+        return true;
+    } catch (e) {
+        if (e instanceof SyntaxError) return false;
+        throw e;
+    }
+})();
+
 
 it('default options behavior', function () {
     var assert = empower(baseAssert);
@@ -290,17 +300,6 @@ describe('yield for assertion inside generator', function () {
         eval(weave(code));
     });
 });
-
-
-var isAsyncAwaitSupported = (function () {
-    try {
-        eval('async function a() { await b(); }');
-        return true;
-    } catch (e) {
-        if (e instanceof SyntaxError) return false;
-        throw e;
-    }
-})();
 
 if (isAsyncAwaitSupported) {
 describe('await assertion inside async async function', function () {
@@ -682,3 +681,9 @@ describe('enhancing a prototype', function () {
         baseAssert.strictEqual(b, assertB);
     });
 });
+
+
+if (isAsyncAwaitSupported && typeof baseAssert.rejects === 'function') {
+    var testsUsingAsyncAwait = require('./async_await_fixture');
+    testsUsingAsyncAwait({empower, baseAssert, weave});
+}

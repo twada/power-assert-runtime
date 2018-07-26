@@ -53,6 +53,6 @@
     "url": "https://github.com/twada/power-assert-runtime.git"
   },
   "scripts": {
-    "test": "mocha test"
+    "test": "mocha test/*test.js"
   }
 }

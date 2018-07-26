@@ -19,6 +19,12 @@ describe('empower.defaultOptions()', function () {
     it('onSuccess: function', function () {
         assert.equal(typeof this.options.onSuccess, 'function');
     });
+    it('onRejected: function', function () {
+        assert.equal(typeof this.options.onRejected, 'function');
+    });
+    it('onFulfilled: function', function () {
+        assert.equal(typeof this.options.onFulfilled, 'function');
+    });
     it('patterns: Array', function () {
         assert.deepEqual(this.options.patterns, [
             'assert(value, [message])',
@@ -30,7 +36,9 @@ describe('empower.defaultOptions()', function () {
             'assert.deepEqual(actual, expected, [message])',
             'assert.notDeepEqual(actual, expected, [message])',
             'assert.deepStrictEqual(actual, expected, [message])',
-            'assert.notDeepStrictEqual(actual, expected, [message])'
+            'assert.notDeepStrictEqual(actual, expected, [message])',
+            'assert.rejects(block, [error], [message])',
+            'assert.doesNotReject(block, [error], [message])'
         ]);
     });
     it('wrapOnlyPatterns: empty Array', function () {

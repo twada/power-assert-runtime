@@ -13,6 +13,8 @@ function Decorator (receiver, config) {
     this.config = config;
     this.onError = config.onError;
     this.onSuccess = config.onSuccess;
+    this.onRejected = config.onRejected;
+    this.onFulfilled = config.onFulfilled;
     this.signatures = map(config.patterns, parse);
     this.wrapOnlySignatures = map(config.wrapOnlyPatterns, parse);
 }
@@ -103,11 +105,31 @@ Decorator.prototype.concreteAssert = function (callSpec, invocation, context) {
     return this._callFunc(func, thisObj, args, data);
 };
 
+function isPromiseLike (obj) {
+    return obj !== null &&
+        typeof obj === 'object' &&
+        typeof obj.then === 'function' &&
+        typeof obj.catch === 'function';
+}
+
 // see: https://github.com/twada/empower-core/pull/8#issuecomment-173480982
 Decorator.prototype._callFunc = function (func, thisObj, args, data) {
-    var ret;
+    var ret, _this = this;
     try {
         ret = func.apply(thisObj, args);
+        if (isPromiseLike(ret)) {
+            return new Promise(function (resolve, reject) {
+                ret.then(function onFulfilled (t) {
+                    data.assertionThrew = false;
+                    data.returnValue = t;
+                    return resolve(_this.onFulfilled.call(thisObj, data));
+                }, function onRejected(e) {
+                    data.assertionThrew = true;
+                    data.error = e;
+                    return reject(_this.onRejected.call(thisObj, data));
+                });
+            });
+        }
     } catch (e) {
         data.assertionThrew = true;
         data.error = e;
