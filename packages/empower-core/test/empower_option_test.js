@@ -10,8 +10,13 @@ describe('empower.defaultOptions()', function () {
     it('destructive: false', function () {
         assert.equal(this.options.destructive, false);
     });
+    it('bindReceiver: true', function () {
+        assert.equal(this.options.bindReceiver, true);
+    });
     it('onError: function', function () {
         assert.equal(typeof this.options.onError, 'function');
+    });
+    it('onSuccess: function', function () {
         assert.equal(typeof this.options.onSuccess, 'function');
     });
     it('patterns: Array', function () {
@@ -27,6 +32,9 @@ describe('empower.defaultOptions()', function () {
             'assert.deepStrictEqual(actual, expected, [message])',
             'assert.notDeepStrictEqual(actual, expected, [message])'
         ]);
+    });
+    it('wrapOnlyPatterns: empty Array', function () {
+        assert.deepEqual(this.options.wrapOnlyPatterns, []);
     });
 });
 
