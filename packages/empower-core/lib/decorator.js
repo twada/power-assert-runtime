@@ -126,7 +126,12 @@ Decorator.prototype._callFunc = function (func, thisObj, args, data) {
                 }, function onRejected(e) {
                     data.assertionThrew = true;
                     data.error = e;
-                    return reject(_this.onRejected.call(thisObj, data));
+                    try {
+                        _this.onRejected.call(thisObj, data);
+                    } catch (powered) {
+                        return reject(powered);
+                    }
+                    return reject(e);
                 });
             });
         }

@@ -43,8 +43,7 @@ module.exports = function ({empower, baseAssert, weave}) {
                         operator: e.operator,
                         stackStartFunction: e.stackStartFunction || onRejected
                     });
-                    // throw pe;
-                    return pe;
+                    throw pe;
                 },
                 onFulfilled: function (event) {
                     log.push('onFulfilled');
