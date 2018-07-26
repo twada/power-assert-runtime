@@ -25,13 +25,13 @@ module.exports = function ({empower, baseAssert, weave}) {
                     'assert.rejects(block, [error], [message])'
                 ],
                 onSuccess: function (event) {
-                    baseAssert.fail('onSuccess should not be called');
+                    log.push('onSuccess');
+                    log.push(event);
+                    baseAssert.equal(event.assertionThrew, false);
+                    return event.returnValue;
                 },
-                onError: function (event) {
-                    baseAssert.fail('onError should not be called');
-                },
-                onRejected: function onRejected (event) {
-                    log.push('onRejected');
+                onError: function onError (event) {
+                    log.push('onError');
                     log.push(event);
                     baseAssert(event.error !== undefined);
                     baseAssert.equal(event.assertionThrew, true);
@@ -41,15 +41,9 @@ module.exports = function ({empower, baseAssert, weave}) {
                         actual: e.actual,
                         expected: e.expected,
                         operator: e.operator,
-                        stackStartFunction: e.stackStartFunction || onRejected
+                        stackStartFunction: e.stackStartFunction || onError
                     });
                     throw pe;
-                },
-                onFulfilled: function (event) {
-                    log.push('onFulfilled');
-                    log.push(event);
-                    baseAssert.equal(event.assertionThrew, false);
-                    return event.returnValue;
                 }
             });
 
@@ -61,7 +55,8 @@ module.exports = function ({empower, baseAssert, weave}) {
                 var prms = willReject(new Error('foo'));
                 var res = await eval(weave("assert.rejects(prms);"));
                 baseAssert.equal(log.length, 2);
-                baseAssert.equal(log[0], 'onFulfilled');
+                baseAssert.equal(log[0], 'onSuccess');
+                baseAssert(res === undefined, 'assert.rejects resolves with undefined');
                 var event = log[1];
                 baseAssert(event.error === undefined);
                 baseAssert.strictEqual(event.hasOwnProperty('returnValue'), true);
@@ -75,12 +70,13 @@ module.exports = function ({empower, baseAssert, weave}) {
                 try {
                     var prms = willResolve('good');
                     await eval(weave("assert.rejects(prms);"));
+                    baseAssert.fail('should not be happen');
                 } catch (e) {
                     baseAssert(e instanceof baseAssert.AssertionError);
                     baseAssert(/^AssertionError/.test(e.name));
                     baseAssert.strictEqual(e.message, 'powered error: Missing expected rejection.');
                     baseAssert.equal(log.length, 2);
-                    baseAssert.equal(log[0], 'onRejected');
+                    baseAssert.equal(log[0], 'onError');
                     var event = log[1];
                     baseAssert(event.error !== undefined);
                     baseAssert.strictEqual(event.hasOwnProperty('returnValue'), false);

@@ -95,6 +95,7 @@ Decorator.prototype.concreteAssert = function (callSpec, invocation, context) {
         defaultMessage: matcherSpec.defaultMessage,
         matcherSpec: matcherSpec,
         enhanced: enhanced,
+        config: this.config,
         args: args
     };
 
@@ -122,16 +123,19 @@ Decorator.prototype._callFunc = function (func, thisObj, args, data) {
                 ret.then(function onFulfilled (t) {
                     data.assertionThrew = false;
                     data.returnValue = t;
-                    return resolve(_this.onFulfilled.call(thisObj, data));
+                    try {
+                        _this.onFulfilled.call(thisObj, data, resolve, reject);
+                    } catch (avoidUnhandled) {
+                        reject(avoidUnhandled);
+                    }
                 }, function onRejected(e) {
                     data.assertionThrew = true;
                     data.error = e;
                     try {
-                        _this.onRejected.call(thisObj, data);
-                    } catch (powered) {
-                        return reject(powered);
+                        _this.onRejected.call(thisObj, data, resolve, reject);
+                    } catch (avoidUnhandled) {
+                        reject(avoidUnhandled);
                     }
-                    return reject(e);
                 });
             });
         }

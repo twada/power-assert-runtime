@@ -38,14 +38,24 @@ function onSuccess(successEvent) {
     return successEvent.returnValue;
 }
 
-function onRejected (errorEvent) {
-    var e = errorEvent.error;
-    if (errorEvent.powerAssertContext && /^AssertionError/.test(e.name)) {
-        e.powerAssertContext = errorEvent.powerAssertContext;
+function onRejected (errorEvent, resolve, reject) {
+    var originalError = errorEvent.error;
+    var config = errorEvent.config;
+    try {
+        var handlerResult = config.onError.call(this, errorEvent);
+        if (typeof handlerResult !== 'undefined') {
+            reject(handlerResult);
+            return;
+        }
+    } catch (rethrown) {
+        reject(rethrown);
+        return;
     }
-    return e;
+    reject(originalError);
 }
 
-function onFulfilled(successEvent) {
-    return successEvent.returnValue;
+function onFulfilled(successEvent, resolve, reject) {
+    var config = successEvent.config;
+    var handlerResult = config.onSuccess.call(this, successEvent);
+    resolve(handlerResult);
 }
