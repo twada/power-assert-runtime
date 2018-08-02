@@ -8,6 +8,7 @@ function decorate (callSpec, decorator) {
 
     return function decoratedAssert () {
         var context, message, hasMessage = false;
+        var assertionRecorder;
 
         // see: https://github.com/twada/empower-core/pull/8#issue-127859465
         // see: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#32-leaking-arguments
@@ -16,6 +17,19 @@ function decorate (callSpec, decorator) {
             args[i] = arguments[i];
         }
 
+        // check and pop the last argument
+        if (0 < args.length) {
+            var lastOne = args[args.length - 1];
+            if (typeof lastOne === 'object' &&
+                lastOne !== null &&
+                typeof lastOne.argRecs === 'function' &&
+                typeof lastOne.metadata === 'function')
+            {
+                assertionRecorder = args.pop();
+            }
+        }
+
+        // TODO consolidate
         if (numArgsToCapture === (args.length - 1)) {
             message = args.pop();
             hasMessage = true;
@@ -28,8 +42,29 @@ function decorate (callSpec, decorator) {
             hasMessage: hasMessage
         };
 
-        if (some(args, isCaptured)) {
-            invocation.values = map(args.slice(0, numArgsToCapture), function (arg) {
+        if (assertionRecorder) {
+            context = {
+                source: assertionRecorder.metadata(),
+                args: []
+            };
+            var recordedArgs = map(assertionRecorder.argRecs().slice(0, numArgsToCapture), function (argRec) { return argRec.eject(); });
+            invocation.values = map(recordedArgs, function (arg, idx) {
+                // TODO isNotCaptured??
+                if (!arg) {
+                    // TODO assert?
+                    return arg;
+                }
+                context.args.push({
+                    // config: arg.config,
+                    value: arg.value,
+                    events: arg.logs
+                });
+                return arg.value;
+            });
+
+            return decorator.concreteAssert(callSpec, invocation, context);
+        } else if (some(args, isCaptured)) {
+            invocation.values = map(args.slice(0, numArgsToCapture), function (arg, idx) {
                 if (isNotCaptured(arg)) {
                     return arg;
                 }
