@@ -5,6 +5,7 @@ var filter = require('core-js/library/fn/array/filter');
 var map = require('core-js/library/fn/array/map');
 var signature = require('call-signature');
 var decorate = require('./decorate');
+var define = require('./define-properties');
 var keys = require('core-js/library/fn/object/keys');
 
 
@@ -38,6 +39,7 @@ Decorator.prototype.enhancement = function () {
             enhanced: enhanced
         };
         container[methodName] = callSpec.enhancedFunc = decorate(callSpec, that);
+        define(callSpec.enhancedFunc, { _empowered: true });
         wrappedMethods.push(methodName);
     }
 
