@@ -1,5 +1,6 @@
 'use strict';
 
+var forEach = require('core-js/library/fn/array/for-each');
 var some = require('core-js/library/fn/array/some');
 var map = require('core-js/library/fn/array/map');
 
@@ -17,7 +18,7 @@ function decorate (callSpec, decorator) {
             args[i] = arguments[i];
         }
 
-        // check and pop the last argument
+        // check the last argument
         if (0 < args.length) {
             var lastOne = args[args.length - 1];
             if (typeof lastOne === 'object' &&
@@ -25,12 +26,11 @@ function decorate (callSpec, decorator) {
                 typeof lastOne.argRecs === 'function' &&
                 typeof lastOne.metadata === 'function')
             {
-                assertionRecorder = args.pop();
+                assertionRecorder = lastOne;
             }
         }
 
-        // TODO consolidate
-        if (numArgsToCapture === (args.length - 1)) {
+        if (!assertionRecorder && numArgsToCapture === (args.length - 1)) {
             message = args.pop();
             hasMessage = true;
         }
@@ -47,21 +47,17 @@ function decorate (callSpec, decorator) {
                 source: assertionRecorder.metadata(),
                 args: []
             };
-            var recordedArgs = map(assertionRecorder.argRecs().slice(0, numArgsToCapture), function (argRec) { return argRec.eject(); });
-            invocation.values = map(recordedArgs, function (arg, idx) {
-                // TODO isNotCaptured??
-                if (!arg) {
-                    // TODO assert?
-                    return arg;
+            forEach(map(assertionRecorder.argRecs(), eject), function (record) {
+                if (!record) {
+                    return;
                 }
                 context.args.push({
                     // config: arg.config,
-                    value: arg.value,
-                    events: arg.logs
+                    value: record.value,
+                    events: record.logs
                 });
-                return arg.value;
             });
-
+            // TODO: restore original message from argumentRecorder
             return decorator.concreteAssert(callSpec, invocation, context);
         } else if (some(args, isCaptured)) {
             invocation.values = map(args.slice(0, numArgsToCapture), function (arg, idx) {
@@ -86,6 +82,10 @@ function decorate (callSpec, decorator) {
             return decorator.concreteAssert(callSpec, invocation);
         }
     };
+}
+
+function eject (argRec) {
+    return argRec.eject();
 }
 
 function isNotCaptured (value) {
