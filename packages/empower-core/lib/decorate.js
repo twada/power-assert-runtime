@@ -21,11 +21,7 @@ function decorate (callSpec, decorator) {
         // check the last argument
         if (0 < args.length) {
             var lastOne = args[args.length - 1];
-            if (typeof lastOne === 'object' &&
-                lastOne !== null &&
-                typeof lastOne.argRecs === 'function' &&
-                typeof lastOne.metadata === 'function')
-            {
+            if (isAssertionRecorder(lastOne)) {
                 assertionRecorder = lastOne;
             }
         }
@@ -42,22 +38,49 @@ function decorate (callSpec, decorator) {
             hasMessage: hasMessage
         };
 
+        // Each argument is an ArgumentRecorder or an AssertionRecorder or a Literal
         if (assertionRecorder) {
             context = {
                 source: assertionRecorder.metadata(),
                 args: []
             };
-            forEach(map(assertionRecorder.argRecs(), eject), function (record) {
-                if (!record) {
-                    return;
+            invocation.values = map(args, function (arg) {
+                if (isAssertionRecorder(arg)) {
+                    arg = arg.message(); // that is ArgumentRecorder or literal
                 }
+                if (!isRecorded(arg)) {
+                    return arg;
+                }
+                var record = arg.eject();
                 context.args.push({
-                    // config: arg.config,
+                    // config: arg.config,  // per argument configuration
                     value: record.value,
                     events: record.logs
                 });
+                return record.value;
             });
             // TODO: restore original message from argumentRecorder
+            // invocation.message = assertionRecorder.message();
+            return decorator.concreteAssert(callSpec, invocation, context);
+        } else if (some(args, isRecorded)) {
+            invocation.values = map(args, function (arg) {
+                if (!isRecorded(arg)) {
+                    return arg;
+                }
+                if (!context) {
+                    context = {
+                        source: arg.metadata(),
+                        args: []
+                    };
+                }
+                var record = arg.eject();
+                context.args.push({
+                    // config: arg.config,  // per argument configuration
+                    value: record.value,
+                    events: record.logs
+                });
+                return record.value;
+            });
             return decorator.concreteAssert(callSpec, invocation, context);
         } else if (some(args, isCaptured)) {
             invocation.values = map(args.slice(0, numArgsToCapture), function (arg, idx) {
@@ -76,7 +99,6 @@ function decorate (callSpec, decorator) {
                 });
                 return arg.powerAssertContext.value;
             });
-
             return decorator.concreteAssert(callSpec, invocation, context);
         } else {
             return decorator.concreteAssert(callSpec, invocation);
@@ -96,6 +118,20 @@ function isCaptured (value) {
     return (typeof value === 'object') &&
         (value !== null) &&
         (typeof value.powerAssertContext !== 'undefined');
+}
+
+function isRecorded (value) {
+    return typeof value === 'object' &&
+        value !== null &&
+        typeof value.value === 'function' &&
+        typeof value.eject === 'function';
+}
+
+function isAssertionRecorder (o) {
+    return typeof o === 'object' &&
+        o !== null &&
+        typeof o.argRecs === 'function' &&
+        typeof o.metadata === 'function';
 }
 
 module.exports = decorate;
