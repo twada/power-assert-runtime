@@ -82,13 +82,19 @@ Decorator.prototype.concreteAssert = function (callSpec, invocation, context) {
     var thisObj = this.config.bindReceiver ? callSpec.thisObj : invocation.thisObj;
     var enhanced = callSpec.enhanced;
     var args = invocation.values;
-    var message = invocation.message;
     var matcherSpec = callSpec.matcherSpec;
-
+    var message;
+    if (invocation.hasMessage) {
+        message = args[args.length - 1];
+    }
     if (context && typeof this.config.modifyMessageBeforeAssert === 'function') {
         message = this.config.modifyMessageBeforeAssert({originalMessage: message, powerAssertContext: context});
+        if (invocation.hasMessage) {
+            args[args.length - 1] = message;
+        } else {
+            args.push(message);
+        }
     }
-    args = args.concat(message);
 
     var data = {
         thisObj: invocation.thisObj,
