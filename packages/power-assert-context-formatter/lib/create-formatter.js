@@ -21,9 +21,11 @@ function createFormatter (options) {
     var len = rendererConfigs.length;
 
     return function (powerAssertContext) {
-        var context = reduce(reducers, function (prevContext, reducer) {
+        var reducedContext = reduce(reducers, function (prevContext, reducer) {
             return reducer(prevContext);
         }, powerAssertContext);
+        // update argument itself to make side-effect visible from caller
+        var context = assign(powerAssertContext, reducedContext);
         var writer = new StringWriter(formatterConfig);
         var traversal;
         if (formatterConfig.legacy) {

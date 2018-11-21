@@ -122,7 +122,14 @@ describe('power-assert-context-formatter : reducers option', function () {
             var bar = { name: 'bar', items: ['toto', 'tata'] };
             eval(transpile('assert.deepEqual(foo, bar)', false));
         } catch (e) {
+            baseAssert(e.powerAssertContext.source !== undefined);
+            baseAssert(e.powerAssertContext.source.ast === undefined);
+            baseAssert(e.powerAssertContext.source.tokens === undefined);
+            baseAssert(e.powerAssertContext.source.visitorKeys === undefined);
             var result = format(e.powerAssertContext);
+            baseAssert(e.powerAssertContext.source.ast !== undefined);
+            baseAssert(e.powerAssertContext.source.tokens !== undefined);
+            baseAssert(e.powerAssertContext.source.visitorKeys !== undefined);
             baseAssert.equal(result, [
                 '  ',
                 '  assert.deepEqual(foo, bar)',
