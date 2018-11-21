@@ -18,7 +18,6 @@ module.exports = function transpile (code, embedAst) {
                     ]
                 }
             }],
-            require("@babel/preset-stage-2"),
             require("@babel/preset-react")
         ],
         plugins: [
