@@ -37,6 +37,8 @@ describe('empower.defaultOptions()', function () {
             'assert.notDeepEqual(actual, expected, [message])',
             'assert.deepStrictEqual(actual, expected, [message])',
             'assert.notDeepStrictEqual(actual, expected, [message])',
+            'assert.throws(block, [error], [message])',
+            'assert.doesNotThrow(block, [error], [message])',
             'assert.rejects(block, [error], [message])',
             'assert.doesNotReject(block, [error], [message])'
         ]);
