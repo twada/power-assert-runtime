@@ -5,7 +5,7 @@ var AssertionRenderer = require('..');
 var assert = require('../../../test_helper/empowered-assert');
 var transpile = require('../../../test_helper/transpile');
 var testRendering = require('../../../test_helper/test-rendering');
-var appendAst = require('power-assert-context-reducer-ast');
+var AstReducer = require('power-assert-context-reducer-ast');
 
 describe('AssertionRenderer', function () {
 
@@ -17,7 +17,7 @@ describe('AssertionRenderer', function () {
         }, [
             '',
             'assert(foo === bar)'
-        ], { renderers: [AssertionRenderer] });
+        ], { pipeline: [AstReducer, AssertionRenderer] });
     });
 
     it('show syntax error when there are some parse errors caused by not supported syntax', function () {
@@ -40,10 +40,7 @@ describe('AssertionRenderer', function () {
             'If you are using `babel-plugin-espower` and want to use experimental syntax in your assert(), you should set `embedAst` option to true.',
             'see: https://github.com/power-assert-js/babel-plugin-espower#optionsembedast      '
         ], {
-            reducers: [
-                appendAst
-            ],
-            renderers: [AssertionRenderer]
+            pipeline: [AstReducer, AssertionRenderer]
         });
     });
 

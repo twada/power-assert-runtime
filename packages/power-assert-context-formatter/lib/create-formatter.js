@@ -8,46 +8,39 @@ var defaultOptions = require('./default-options');
 var reduce = require('core-js/library/fn/array/reduce');
 
 /**
- * options.reducers [array]
- * options.renderers [array]
+ * options.pipeline [array]
  * options.outputOffset [number]
  * options.lineSeparator [string]
  * options.legacy [boolean]
  */
 function createFormatter (options) {
     var formatterConfig = assign({}, defaultOptions(), options);
-    var reducers = formatterConfig.reducers || [];
-    var rendererConfigs = formatterConfig.renderers;
-    var len = rendererConfigs.length;
+    var pipelineConfig = formatterConfig.pipeline;
+    var len = pipelineConfig.length;
 
     return function (powerAssertContext) {
-        var reducedContext = reduce(reducers, function (prevContext, reducer) {
-            return reducer(prevContext);
-        }, powerAssertContext);
-        // update argument itself to make side-effect visible from caller
-        var context = assign(powerAssertContext, reducedContext);
         var writer = new StringWriter(formatterConfig);
         var traversal;
         if (formatterConfig.legacy) {
-            traversal = new LegacyContextTraversal(context);
+            traversal = new LegacyContextTraversal(powerAssertContext);
             traversal.setWritable(writer);
         } else {
-            traversal = new ContextTraversal(context);
+            traversal = new ContextTraversal(powerAssertContext);
         }
         for (var i = 0; i < len; i += 1) {
-            var RendererClass;
-            var renderer;
-            var config = rendererConfigs[i];
+            var HandlerClass;
+            var handler;
+            var config = pipelineConfig[i];
             if (typeof config === 'object') {
-                RendererClass = config.ctor;
-                renderer = new RendererClass(config.options);
+                HandlerClass = config.ctor;
+                handler = new HandlerClass(config.options);
             } else if (typeof config === 'function') {
-                RendererClass = config;
-                renderer = new RendererClass();
+                HandlerClass = config;
+                handler = new HandlerClass();
             }
-            renderer.init(traversal);
-            if (typeof renderer.setWritable === 'function') {
-                renderer.setWritable(writer);
+            handler.init(traversal);
+            if (typeof handler.setWritable === 'function') {
+                handler.setWritable(writer);
             }
         }
         traversal.traverse();

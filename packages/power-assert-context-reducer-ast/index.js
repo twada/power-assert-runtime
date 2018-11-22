@@ -5,24 +5,42 @@ require('acorn-es7-plugin')(parser);
 var estraverse = require('estraverse');
 var purifyAst = require('espurify').customize({extra: ['range']});
 var assign = require('core-js/library/fn/object/assign');
+var BaseRenderer = require('power-assert-renderer-base');
+var inherits = require('util').inherits;
 
-module.exports = function (powerAssertContext) {
+function parseIfJson (source, propName) {
+    if (typeof source[propName] === 'string') {
+        source[propName] = JSON.parse(source[propName]);
+    }
+}
+
+function AstReducer () {
+    BaseRenderer.call(this);
+}
+inherits(AstReducer, BaseRenderer);
+
+AstReducer.prototype.onStart = function (powerAssertContext) {
     var source = powerAssertContext.source;
     if (source.ast && source.tokens && source.visitorKeys) {
-        return powerAssertContext;
+        parseIfJson(source, 'ast');
+        parseIfJson(source, 'tokens');
+        parseIfJson(source, 'visitorKeys');
+        return;
     }
     var astAndTokens;
     try {
         astAndTokens = parse(source);
     } catch (e) {
-        return assign({}, powerAssertContext, { source: assign({}, source, { error: e }) });
+        assign(powerAssertContext, { source: assign({}, source, { error: e }) });
+        return;
     }
     var newSource = assign({}, source, {
         ast: purifyAst(astAndTokens.expression),
         tokens: astAndTokens.tokens,
         visitorKeys: estraverse.VisitorKeys
     });
-    return assign({}, powerAssertContext, { source: newSource });
+    assign(powerAssertContext, { source: newSource });
+    return;
 };
 
 function parserOptions(tokens) {
@@ -116,3 +134,5 @@ function offsetAndSlimDownTokens (tokens) {
     }
     return result;
 }
+
+module.exports = AstReducer;

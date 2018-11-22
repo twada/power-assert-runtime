@@ -2,6 +2,7 @@
 
 delete require.cache[require.resolve('..')];
 var createFormatter = require('..');
+var AstReducer = require('power-assert-context-reducer-ast');
 var AssertionRenderer = require('power-assert-renderer-assertion');
 var DiagramRenderer = require('power-assert-renderer-diagram');
 var baseAssert = require('assert');
@@ -11,11 +12,12 @@ var assign = require('core-js/library/fn/object/assign');
 var appendAst = require('power-assert-context-reducer-ast');
 
 
-describe('power-assert-context-formatter : renderers option', function () {
+describe('power-assert-context-formatter : pipeline option', function () {
 
     it('bare constructors, without options', function () {
         var format = createFormatter({
-            renderers: [
+            pipeline: [
+                AstReducer,
                 AssertionRenderer,
                 DiagramRenderer
             ]
@@ -39,7 +41,8 @@ describe('power-assert-context-formatter : renderers option', function () {
 
     it('constructors with options', function () {
         var format = createFormatter({
-            renderers: [
+            pipeline: [
+                { ctor: AstReducer },
                 { ctor: AssertionRenderer },
                 { ctor: DiagramRenderer, options: { maxDepth: 2 } }
             ]
@@ -76,7 +79,8 @@ describe('power-assert-context-formatter : renderers option', function () {
         };
         var format = createFormatter({
             legacy: true,
-            renderers: [
+            pipeline: [
+                AstReducer,
                 AssertionRenderer,
                 CustomRenderer,
                 AssertionRenderer,
@@ -102,17 +106,11 @@ describe('power-assert-context-formatter : renderers option', function () {
             ].join('\n'));
         }
     });
-});
-
-
-describe('power-assert-context-formatter : reducers option', function () {
 
     it('append ast reducer', function () {
         var format = createFormatter({
-            reducers: [
-                appendAst
-            ],
-            renderers: [
+            pipeline: [
+                AstReducer,
                 AssertionRenderer,
                 DiagramRenderer
             ]
@@ -143,10 +141,8 @@ describe('power-assert-context-formatter : reducers option', function () {
 
     it('degrade gracefully when there are some parse errors caused by not supported syntax', function () {
         var format = createFormatter({
-            reducers: [
-                appendAst
-            ],
-            renderers: [
+            pipeline: [
+                AstReducer,
                 AssertionRenderer,
                 DiagramRenderer
             ]
@@ -185,7 +181,10 @@ describe('power-assert-context-formatter : outputOffset option', function () {
 
     it('default is 2', function () {
         var format = createFormatter({
-            renderers: [ AssertionRenderer ]
+            pipeline: [
+                AstReducer,
+                AssertionRenderer
+            ]
         });
         try {
             var foo = 'foo';
@@ -204,7 +203,10 @@ describe('power-assert-context-formatter : outputOffset option', function () {
     it('when 0', function () {
         var format = createFormatter({
             outputOffset: 0,
-            renderers: [ AssertionRenderer ]
+            pipeline: [
+                AstReducer,
+                AssertionRenderer
+            ]
         });
         try {
             var foo = 'foo';
@@ -227,7 +229,10 @@ describe('power-assert-context-formatter : lineSeparator option', function () {
         it(name, function () {
             var format = createFormatter(assign({
                 outputOffset: 0,
-                renderers: [ AssertionRenderer ]
+                pipeline: [
+                    AstReducer,
+                    AssertionRenderer
+                ]
             }, option));
             try {
                 var foo = 'foo';

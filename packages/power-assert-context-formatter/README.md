@@ -19,7 +19,7 @@ var DiagramRenderer = require('power-assert-renderer-diagram');
 var ComparisonRenderer = require('power-assert-renderer-comparison');
 
 var format = createFormatter({
-    renderers: [
+    pipeline: [
         FileRenderer,
         AssertionRenderer,
         DiagramRenderer,
@@ -61,13 +61,13 @@ Returns creator function of formatter.
 Create format function to format `powerAssertContext` object provided by power-assert.
 
 
-#### options.renderers
+#### options.pipeline
 
 | type                                         | default value |
 |:---------------------------------------------|:--------------|
 | `Array` of `function` or `Array` of `object` | null          |
 
-Array of constructor function of various Renderers.
+Array of constructor function of various Renderers or Reducers.
 Each Renderer is instantiated for each assertion and registered to `ContextTraversal`.
 
 ##### customization
@@ -76,7 +76,7 @@ Each renderer accepts its options via form of object literal.
 
 ```javascript
 var format = createFormatter({
-    renderers: [
+    pipeline: [
         { ctor: FileRenderer },
         { ctor: AssertionRenderer },
         { ctor: DiagramRenderer, options: { maxDepth: 2 } },
@@ -84,15 +84,6 @@ var format = createFormatter({
     ]
 });
 ```
-
-
-#### options.reducers
-
-| type                  | default value |
-|:----------------------|:--------------|
-| `Array` of `function` | empty array   |
-
-Array of reducer function to be applied to `powerAssertContext`.
 
 
 #### options.outputOffset

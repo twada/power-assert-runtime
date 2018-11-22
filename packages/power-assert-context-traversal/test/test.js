@@ -2,6 +2,7 @@
 
 delete require.cache[require.resolve('..')];
 var ContextTraversal = require('..');
+var AstReducer = require('power-assert-context-reducer-ast');
 var types = require('@babel/types');
 var baseAssert = require('assert');
 var assert = require('../../../test_helper/empowered-assert');
@@ -27,6 +28,7 @@ describe('ContextTraversal of assert(foo === bar)', function () {
                     body(nodes);
                     done();
                 });
+                new AstReducer().init(traversal);
                 traversal.traverse();
             }
         });

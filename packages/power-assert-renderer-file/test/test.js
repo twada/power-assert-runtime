@@ -2,6 +2,7 @@
 
 delete require.cache[require.resolve('..')];
 var FileRenderer = require('..');
+var AstReducer = require('power-assert-context-reducer-ast');
 var assert = require('../../../test_helper/empowered-assert');
 var transpile = require('../../../test_helper/transpile');
 var testRendering = require('../../../test_helper/test-rendering');
@@ -15,7 +16,7 @@ describe('FileRenderer', function () {
             eval(transpile('assert(foo === bar)'));
         }, [
             '# test/some_test.js:1'
-        ], { renderers: [FileRenderer] });
+        ], { pipeline: [AstReducer, FileRenderer] });
     });
 
     it('line number detection', function () {
@@ -24,7 +25,7 @@ describe('FileRenderer', function () {
             eval(transpile('var i = 0;\n\nassert(falsyStr)'));
         }, [
             '# test/some_test.js:3'
-        ], { renderers: [FileRenderer] });
+        ], { pipeline: [AstReducer, FileRenderer] });
     });
 
 });

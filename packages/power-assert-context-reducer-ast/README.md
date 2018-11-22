@@ -5,16 +5,13 @@
 [![License][license-image]][license-url]
 
 
-`powerAssertContext` reducer function to parse assertion expression at runtime.
+`powerAssertContext` pipeline function to parse assertion expression at runtime.
 
 Use this function when transpiler side does not add `ast`, `tokens` and `visitorKeys` at compile time.
 
 
-API
+USAGE
 ---------------------------------------
-
-### var appendAst = require('power-assert-context-reducer-ast');
-### var appendedContext = appendAst(powerAssertContext);
 
 Given `powerAssertContext` object, having structure below but does not have `ast`, `tokens` and `visitorKeys`, append them to output context.
 
@@ -49,7 +46,7 @@ input:
 }
 ```
 
-output:
+result:
 
 ```js
 {

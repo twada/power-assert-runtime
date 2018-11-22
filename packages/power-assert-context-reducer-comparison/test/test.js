@@ -2,6 +2,7 @@
 
 delete require.cache[require.resolve('..')];
 var ComparisonReducer = require('..');
+var AstReducer = require('power-assert-context-reducer-ast');
 var createFormatter = require('power-assert-context-formatter');
 var baseAssert = require('assert');
 var assert = require('../../../test_helper/empowered-assert');
@@ -11,7 +12,8 @@ describe('ComparisonReducer', function () {
 
     it('add `expected`, `actual` and `operator` to powerAssertContext', function () {
         var format = createFormatter({
-            renderers: [
+            pipeline: [
+                AstReducer,
                 ComparisonReducer
             ]
         });
@@ -32,7 +34,8 @@ describe('ComparisonReducer', function () {
 
     it('affects only for top-level BinaryExpression', function () {
         var format = createFormatter({
-            renderers: [
+            pipeline: [
+                AstReducer,
                 ComparisonReducer
             ]
         });

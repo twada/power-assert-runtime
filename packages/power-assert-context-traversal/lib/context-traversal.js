@@ -17,24 +17,14 @@ inherits(ContextTraversal, EventEmitter);
 
 ContextTraversal.prototype.traverse = function () {
     var _this = this;
-    var source = _this.powerAssertContext.source;
-    parseIfJson(source, 'ast');
-    parseIfJson(source, 'tokens');
-    parseIfJson(source, 'visitorKeys');
-    _this.emit('start', this.powerAssertContext);
+    this.emit('start', this.powerAssertContext);
     forEach(this.powerAssertContext.args, function (capturedArgument) {
-        onEachEsNode(capturedArgument, source, function (esNode) {
+        onEachEsNode(capturedArgument, _this.powerAssertContext.source, function (esNode) {
             _this.emit('data', esNode);
         });
     });
-    _this.emit('end');
+    this.emit('end');
 };
-
-function parseIfJson (source, propName) {
-    if (typeof source[propName] === 'string') {
-        source[propName] = JSON.parse(source[propName]);
-    }
-}
 
 function onEachEsNode(capturedArgument, source, callback) {
     var espathToValue = reduce(capturedArgument.events, function (accum, ev) {
