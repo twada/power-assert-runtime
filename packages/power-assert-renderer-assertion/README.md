@@ -15,7 +15,7 @@ Produces assertion line output.
 USAGE
 ---------------------------------------
 
-`var AssertionRenderer = require('power-assert-renderer-assertion');`
+`const AssertionRenderer = require('power-assert-renderer-assertion');`
 
 
 

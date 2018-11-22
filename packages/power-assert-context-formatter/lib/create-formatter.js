@@ -1,10 +1,8 @@
 'use strict';
 
-var assign = require('core-js/library/fn/object/assign');
-var ContextTraversal = require('power-assert-context-traversal');
-var StringWriter = require('./string-writer');
-var defaultOptions = require('./default-options');
-var reduce = require('core-js/library/fn/array/reduce');
+const ContextTraversal = require('power-assert-context-traversal');
+const StringWriter = require('./string-writer');
+const defaultOptions = require('./default-options');
 
 /**
  * options.pipeline [array]
@@ -12,17 +10,15 @@ var reduce = require('core-js/library/fn/array/reduce');
  * options.lineSeparator [string]
  */
 function createFormatter (options) {
-    var formatterConfig = assign({}, defaultOptions(), options);
-    var pipelineConfig = formatterConfig.pipeline;
-    var len = pipelineConfig.length;
+    const formatterConfig = Object.assign({}, defaultOptions(), options);
+    const pipelineConfigs = formatterConfig.pipeline;
+    const len = pipelineConfigs.length;
 
-    return function (powerAssertContext) {
-        var writer = new StringWriter(formatterConfig);
-        var traversal = new ContextTraversal(powerAssertContext);
-        for (var i = 0; i < len; i += 1) {
-            var HandlerClass;
-            var handler;
-            var config = pipelineConfig[i];
+    return (powerAssertContext) => {
+        const writer = new StringWriter(formatterConfig);
+        const traversal = new ContextTraversal(powerAssertContext);
+        pipelineConfigs.forEach((config) => {
+            let HandlerClass, handler;
             if (typeof config === 'object') {
                 HandlerClass = config.ctor;
                 handler = new HandlerClass(config.options);
@@ -34,7 +30,7 @@ function createFormatter (options) {
             if (typeof handler.setWritable === 'function') {
                 handler.setWritable(writer);
             }
-        }
+        });
         traversal.traverse();
         writer.write('');
         return writer.toString();

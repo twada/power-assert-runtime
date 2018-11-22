@@ -1,28 +1,23 @@
 'use strict';
 
-var DiffMatchPatch = require('diff-match-patch');
-var dmp = new DiffMatchPatch();
+const DiffMatchPatch = require('diff-match-patch');
+const dmp = new DiffMatchPatch();
+const shouldUseLineLevelDiff = (text, config) => config.lineDiffThreshold < text.split(/\r\n|\r|\n/).length;
 
 function udiff (config) {
     return function diff (text1, text2) {
-        var patch;
         if (config && shouldUseLineLevelDiff(text1, config)) {
-            patch = udiffLines(text1, text2);
+            return decodeURIComponent(udiffLines(text1, text2));
         } else {
-            patch = udiffChars(text1, text2);
+            return decodeURIComponent(udiffChars(text1, text2));
         }
-        return decodeURIComponent(patch);
     };
-}
-
-function shouldUseLineLevelDiff (text, config) {
-    return config.lineDiffThreshold < text.split(/\r\n|\r|\n/).length;
 }
 
 function udiffLines(text1, text2) {
     /*jshint camelcase: false */
-    var a = dmp.diff_linesToChars_(text1, text2);
-    var diffs = dmp.diff_main(a.chars1, a.chars2, false);
+    const a = dmp.diff_linesToChars_(text1, text2);
+    const diffs = dmp.diff_main(a.chars1, a.chars2, false);
     dmp.diff_charsToLines_(diffs, a.lineArray);
     dmp.diff_cleanupSemantic(diffs);
     return dmp.patch_toText(dmp.patch_make(text1, diffs));
@@ -30,7 +25,7 @@ function udiffLines(text1, text2) {
 
 function udiffChars (text1, text2) {
     /*jshint camelcase: false */
-    var diffs = dmp.diff_main(text1, text2, false);
+    const diffs = dmp.diff_main(text1, text2, false);
     dmp.diff_cleanupSemantic(diffs);
     return dmp.patch_toText(dmp.patch_make(text1, diffs));
 }

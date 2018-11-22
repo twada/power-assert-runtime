@@ -1,166 +1,159 @@
 'use strict';
 
-var forEach = require('core-js/library/fn/array/for-each');
-var filter = require('core-js/library/fn/array/filter');
-var map = require('core-js/library/fn/array/map');
-var signature = require('call-signature');
-var decorate = require('./decorate');
-var define = require('./define-properties');
-var keys = require('core-js/library/fn/object/keys');
+const signature = require('call-signature');
+const decorate = require('./decorate');
+const define = require('./define-properties');
+const functionCall = (matcherSpec) => matcherSpec.parsed.callee.type === 'Identifier';
+const methodCall = (matcherSpec) => matcherSpec.parsed.callee.type === 'MemberExpression';
+const detectMethodName = (callee) => (callee.type === 'MemberExpression') ? callee.member : null;
+const isPromiseLike = (obj) => obj !== null &&
+          typeof obj === 'object' &&
+          typeof obj.then === 'function' &&
+          typeof obj.catch === 'function';
 
-
-function Decorator (receiver, config) {
-    this.receiver = receiver;
-    this.config = config;
-    this.onError = config.onError;
-    this.onSuccess = config.onSuccess;
-    this.onRejected = config.onRejected;
-    this.onFulfilled = config.onFulfilled;
-    this.signatures = map(config.patterns, parse);
-    this.wrapOnlySignatures = map(config.wrapOnlyPatterns, parse);
-}
-
-Decorator.prototype.enhancement = function () {
-    var that = this;
-    var container = this.container();
-    var wrappedMethods = [];
-
-    function attach(matcherSpec, enhanced) {
-        var matcher = matcherSpec.parsed;
-        var methodName = detectMethodName(matcher.callee);
-        if (typeof that.receiver[methodName] !== 'function' || wrappedMethods.indexOf(methodName) !== -1) {
-            return;
-        }
-        var callSpec = {
-            thisObj: that.receiver,
-            func: that.receiver[methodName],
-            numArgsToCapture: numberOfArgumentsToCapture(matcherSpec),
-            matcherSpec: matcherSpec,
-            enhanced: enhanced
-        };
-        container[methodName] = callSpec.enhancedFunc = decorate(callSpec, that);
-        define(callSpec.enhancedFunc, { _empowered: true });
-        wrappedMethods.push(methodName);
+class Decorator {
+    constructor (receiver, config) {
+        this.receiver = receiver;
+        this.config = config;
+        this.onError = config.onError;
+        this.onSuccess = config.onSuccess;
+        this.onRejected = config.onRejected;
+        this.onFulfilled = config.onFulfilled;
+        this.signatures = config.patterns.map(parse);
+        this.wrapOnlySignatures = config.wrapOnlyPatterns.map(parse);
     }
 
-    forEach(filter(this.signatures, methodCall), function (matcher) {
-        attach(matcher, true);
-    });
-
-    forEach(filter(this.wrapOnlySignatures, methodCall), function (matcher) {
-        attach(matcher, false);
-    });
-
-    return container;
-};
-
-Decorator.prototype.container = function () {
-    var basement = {};
-    if (typeof this.receiver === 'function') {
-        var candidates = filter(this.signatures, functionCall);
-        var enhanced = true;
-        if (candidates.length === 0) {
-            enhanced = false;
-            candidates = filter(this.wrapOnlySignatures, functionCall);
-        }
-        if (candidates.length === 1) {
-            var callSpec = {
-                thisObj: null,
-                func: this.receiver,
-                numArgsToCapture: numberOfArgumentsToCapture(candidates[0]),
-                matcherSpec: candidates[0],
+    enhancement () {
+        const container = this.container();
+        const wrappedMethods = [];
+        const attach = (matcherSpec, enhanced) => {
+            const matcher = matcherSpec.parsed;
+            const methodName = detectMethodName(matcher.callee);
+            if (typeof this.receiver[methodName] !== 'function' || wrappedMethods.indexOf(methodName) !== -1) {
+                return;
+            }
+            const callSpec = {
+                thisObj: this.receiver,
+                func: this.receiver[methodName],
+                numArgsToCapture: numberOfArgumentsToCapture(matcherSpec),
+                matcherSpec: matcherSpec,
                 enhanced: enhanced
             };
-            basement = callSpec.enhancedFunc = decorate(callSpec, this);
-        }
+            container[methodName] = callSpec.enhancedFunc = decorate(callSpec, this);
+            define(callSpec.enhancedFunc, { _empowered: true });
+            wrappedMethods.push(methodName);
+        };
+        this.signatures.filter(methodCall).forEach((matcher) => {
+            attach(matcher, true);
+        });
+        this.wrapOnlySignatures.filter(methodCall).forEach((matcher) => {
+            attach(matcher, false);
+        });
+        return container;
     }
-    return basement;
-};
 
-Decorator.prototype.concreteAssert = function (callSpec, invocation, context) {
-    var func = callSpec.func;
-    var thisObj = this.config.bindReceiver ? callSpec.thisObj : invocation.thisObj;
-    var enhanced = callSpec.enhanced;
-    var args = invocation.values;
-    var matcherSpec = callSpec.matcherSpec;
-    var message;
-    if (invocation.hasMessage) {
-        message = args[args.length - 1];
+    container () {
+        let basement = {};
+        if (typeof this.receiver === 'function') {
+            let candidates = this.signatures.filter(functionCall);
+            let enhanced = true;
+            if (candidates.length === 0) {
+                enhanced = false;
+                candidates = this.wrapOnlySignatures.filter(functionCall);
+            }
+            if (candidates.length === 1) {
+                const callSpec = {
+                    thisObj: null,
+                    func: this.receiver,
+                    numArgsToCapture: numberOfArgumentsToCapture(candidates[0]),
+                    matcherSpec: candidates[0],
+                    enhanced: enhanced
+                };
+                basement = callSpec.enhancedFunc = decorate(callSpec, this);
+            }
+        }
+        return basement;
     }
-    if (context && typeof this.config.modifyMessageBeforeAssert === 'function') {
-        message = this.config.modifyMessageBeforeAssert({originalMessage: message, powerAssertContext: context});
+
+    concreteAssert (callSpec, invocation, context) {
+        const func = callSpec.func;
+        const thisObj = this.config.bindReceiver ? callSpec.thisObj : invocation.thisObj;
+        const enhanced = callSpec.enhanced;
+        const args = invocation.values;
+        const matcherSpec = callSpec.matcherSpec;
+        let message;
         if (invocation.hasMessage) {
-            args[args.length - 1] = message;
-        } else {
-            args.push(message);
+            message = args[args.length - 1];
         }
+        // TODO: deprecate
+        if (context && typeof this.config.modifyMessageBeforeAssert === 'function') {
+            message = this.config.modifyMessageBeforeAssert({originalMessage: message, powerAssertContext: context});
+            if (invocation.hasMessage) {
+                args[args.length - 1] = message;
+            } else {
+                args.push(message);
+            }
+        }
+
+        const data = {
+            thisObj: invocation.thisObj,
+            assertionFunction: callSpec.enhancedFunc,
+            originalMessage: message,
+            defaultMessage: matcherSpec.defaultMessage,
+            matcherSpec: matcherSpec,
+            enhanced: enhanced,
+            config: this.config,
+            args: args
+        };
+
+        if (context) {
+            data.powerAssertContext = context;
+        }
+
+        return this._callFunc(func, thisObj, args, data);
     }
 
-    var data = {
-        thisObj: invocation.thisObj,
-        assertionFunction: callSpec.enhancedFunc,
-        originalMessage: message,
-        defaultMessage: matcherSpec.defaultMessage,
-        matcherSpec: matcherSpec,
-        enhanced: enhanced,
-        config: this.config,
-        args: args
-    };
-
-    if (context) {
-        data.powerAssertContext = context;
+    // see: https://github.com/twada/empower-core/pull/8#issuecomment-173480982
+    _callFunc (func, thisObj, args, data) {
+        let ret;
+        try {
+            ret = func.apply(thisObj, args);
+            if (isPromiseLike(ret)) {
+                return new Promise((resolve, reject) => {
+                    ret.then((t) => { // onFulfilled
+                        data.assertionThrew = false;
+                        data.returnValue = t;
+                        try {
+                            this.onFulfilled.call(thisObj, data, resolve, reject);
+                        } catch (avoidUnhandled) {
+                            reject(avoidUnhandled);
+                        }
+                    }, (e) => { // onRejected
+                        data.assertionThrew = true;
+                        data.error = e;
+                        try {
+                            this.onRejected.call(thisObj, data, resolve, reject);
+                        } catch (avoidUnhandled) {
+                            reject(avoidUnhandled);
+                        }
+                    });
+                });
+            }
+        } catch (e) {
+            data.assertionThrew = true;
+            data.error = e;
+            return this.onError.call(thisObj, data);
+        }
+        data.assertionThrew = false;
+        data.returnValue = ret;
+        return this.onSuccess.call(thisObj, data);
     }
-
-    return this._callFunc(func, thisObj, args, data);
-};
-
-function isPromiseLike (obj) {
-    return obj !== null &&
-        typeof obj === 'object' &&
-        typeof obj.then === 'function' &&
-        typeof obj.catch === 'function';
 }
 
-// see: https://github.com/twada/empower-core/pull/8#issuecomment-173480982
-Decorator.prototype._callFunc = function (func, thisObj, args, data) {
-    var ret, _this = this;
-    try {
-        ret = func.apply(thisObj, args);
-        if (isPromiseLike(ret)) {
-            return new Promise(function (resolve, reject) {
-                ret.then(function onFulfilled (t) {
-                    data.assertionThrew = false;
-                    data.returnValue = t;
-                    try {
-                        _this.onFulfilled.call(thisObj, data, resolve, reject);
-                    } catch (avoidUnhandled) {
-                        reject(avoidUnhandled);
-                    }
-                }, function onRejected(e) {
-                    data.assertionThrew = true;
-                    data.error = e;
-                    try {
-                        _this.onRejected.call(thisObj, data, resolve, reject);
-                    } catch (avoidUnhandled) {
-                        reject(avoidUnhandled);
-                    }
-                });
-            });
-        }
-    } catch (e) {
-        data.assertionThrew = true;
-        data.error = e;
-        return this.onError.call(thisObj, data);
-    }
-    data.assertionThrew = false;
-    data.returnValue = ret;
-    return this.onSuccess.call(thisObj, data);
-};
-
 function numberOfArgumentsToCapture (matcherSpec) {
-    var matcher = matcherSpec.parsed;
-    var len = matcher.args.length;
-    var lastArg;
+    const matcher = matcherSpec.parsed;
+    let len = matcher.args.length;
+    let lastArg;
     if (0 < len) {
         lastArg = matcher.args[len - 1];
         if (lastArg.name === 'message' && lastArg.optional) {
@@ -170,35 +163,16 @@ function numberOfArgumentsToCapture (matcherSpec) {
     return len;
 }
 
-
-function detectMethodName (callee) {
-    if (callee.type === 'MemberExpression') {
-        return callee.member;
-    }
-    return null;
-}
-
-
-function functionCall (matcherSpec) {
-    return matcherSpec.parsed.callee.type === 'Identifier';
-}
-
-
-function methodCall (matcherSpec) {
-    return matcherSpec.parsed.callee.type === 'MemberExpression';
-}
-
 function parse(matcherSpec) {
     if (typeof matcherSpec === 'string') {
         matcherSpec = {pattern: matcherSpec};
     }
-    var ret = {};
-    forEach(keys(matcherSpec), function (key) {
+    const ret = {};
+    Object.keys(matcherSpec).forEach((key) => {
         ret[key] = matcherSpec[key];
     });
     ret.parsed = signature.parse(matcherSpec.pattern);
     return ret;
 }
-
 
 module.exports = Decorator;

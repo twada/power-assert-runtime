@@ -12,15 +12,15 @@ USAGE
 ---------------------------------------
 
 ```javascript
-var createFormatter = require('power-assert-context-formatter');
-var AstReducer = require('power-assert-context-reducer-ast');
-var FileRenderer = require('power-assert-renderer-file');
-var AssertionRenderer = require('power-assert-renderer-assertion');
-var DiagramRenderer = require('power-assert-renderer-diagram');
-var ComparisonRenderer = require('power-assert-renderer-comparison');
-var ComparisonReducer = require('power-assert-context-reducer-comparison');
+const createFormatter = require('power-assert-context-formatter');
+const AstReducer = require('power-assert-context-reducer-ast');
+const FileRenderer = require('power-assert-renderer-file');
+const AssertionRenderer = require('power-assert-renderer-assertion');
+const DiagramRenderer = require('power-assert-renderer-diagram');
+const ComparisonRenderer = require('power-assert-renderer-comparison');
+const ComparisonReducer = require('power-assert-context-reducer-comparison');
 
-var format = createFormatter({
+const format = createFormatter({
     pipeline: [
         AstReducer,
         FileRenderer,
@@ -31,14 +31,14 @@ var format = createFormatter({
     ]
 });
 
-var assert = require('assert');
+const assert = require('assert');
 
-var foo = 'foo';
-var bar = 'bar';
+const foo = 'foo';
+const bar = 'bar';
 try {
     assert(foo === bar);
 } catch (e) {
-    var formattedText = format(e.powerAssertContext);
+    const formattedText = format(e.powerAssertContext);
     . . .
 }
 ```
@@ -47,7 +47,7 @@ try {
 API
 ---------------------------------------
 
-### var createFormatter = require('power-assert-context-formatter');
+### const createFormatter = require('power-assert-context-formatter');
 
 | return type |
 |:------------|
@@ -56,7 +56,7 @@ API
 Returns creator function of formatter.
 
 
-### var format = createFormatter(options);
+### const format = createFormatter(options);
 
 | return type |
 |:------------|
@@ -79,7 +79,7 @@ Each Renderer is instantiated for each assertion and registered to `ContextTrave
 Each renderer accepts its options via form of object literal.
 
 ```javascript
-var format = createFormatter({
+const format = createFormatter({
     pipeline: [
         { ctor: AstReducer },
         { ctor: FileRenderer },
@@ -110,7 +110,7 @@ Number of spaces inserted at the left in power-assert output.
 Line separator in power assert output.
 
 
-### var formattedText = format(powerAssertContext);
+### const formattedText = format(powerAssertContext);
 
 | return type |
 |:------------|

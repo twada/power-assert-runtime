@@ -19,7 +19,7 @@ Produces comparison of expected and actual values of `BinaryExpression`.
 USAGE
 ---------------------------------------
 
-`var ComparisonRenderer = require('power-assert-renderer-comparison');`
+`const ComparisonRenderer = require('power-assert-renderer-comparison');`
 
 
 #### options.stringify

@@ -29,7 +29,7 @@ module.exports = function defaultOptions () {
 };
 
 function onError (errorEvent) {
-    var e = errorEvent.error;
+    const e = errorEvent.error;
     if (errorEvent.powerAssertContext && /^AssertionError/.test(e.name)) {
         e.powerAssertContext = errorEvent.powerAssertContext;
     }
@@ -41,10 +41,10 @@ function onSuccess(successEvent) {
 }
 
 function onRejected (errorEvent, resolve, reject) {
-    var originalError = errorEvent.error;
-    var config = errorEvent.config;
+    const originalError = errorEvent.error;
+    const config = errorEvent.config;
     try {
-        var handlerResult = config.onError.call(this, errorEvent);
+        const handlerResult = config.onError.call(this, errorEvent);
         if (typeof handlerResult !== 'undefined') {
             reject(handlerResult);
             return;
@@ -57,7 +57,7 @@ function onRejected (errorEvent, resolve, reject) {
 }
 
 function onFulfilled(successEvent, resolve, reject) {
-    var config = successEvent.config;
-    var handlerResult = config.onSuccess.call(this, successEvent);
+    const config = successEvent.config;
+    const handlerResult = config.onSuccess.call(this, successEvent);
     resolve(handlerResult);
 }

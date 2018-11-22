@@ -1,40 +1,33 @@
 'use strict';
 
-function BaseRenderer () {
+class BaseRenderer {
+    init (traversal) {
+        traversal.on('start', (context) => {
+            this.onStart(context);
+        });
+        traversal.on('data', (esNode) => {
+            this.onData(esNode);
+        });
+        traversal.on('end', () => {
+            this.onEnd();
+        });
+    }
+    setWritable (writable) {
+        this.writable = writable;
+    }
+    // API
+    onStart (context) {
+    }
+    // API
+    onData (esNode) {
+    }
+    // API
+    onEnd () {
+    }
+    // API
+    write (str) {
+        this.writable.write(str);
+    }
 }
-
-BaseRenderer.prototype.init = function (traversal) {
-    var _this = this;
-    traversal.on('start', function (context) {
-        _this.onStart(context);
-    });
-    traversal.on('data', function (esNode) {
-        _this.onData(esNode);
-    });
-    traversal.on('end', function () {
-        _this.onEnd();
-    });
-};
-
-BaseRenderer.prototype.setWritable = function (writable) {
-    this.writable = writable;
-};
-
-// API
-BaseRenderer.prototype.onStart = function (context) {
-};
-
-// API
-BaseRenderer.prototype.onData = function (esNode) {
-};
-
-// API
-BaseRenderer.prototype.onEnd = function () {
-};
-
-// API
-BaseRenderer.prototype.write = function (str) {
-    this.writable.write(str);
-};
 
 module.exports = BaseRenderer;

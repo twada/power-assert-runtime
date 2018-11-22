@@ -1,44 +1,38 @@
 'use strict';
 
-var BaseRenderer = require('power-assert-renderer-base');
-var inherits = require('util').inherits;
-var literalPattern = /^(?:String|Numeric|Null|Boolean|RegExp)?Literal$/;
+const BaseRenderer = require('power-assert-renderer-base');
+const literalPattern = /^(?:String|Numeric|Null|Boolean|RegExp)?Literal$/;
+const isLiteral = (node) => literalPattern.test(node.type);
 
-function isLiteral (node) {
-    return literalPattern.test(node.type);
-}
-
-function ComparisonReducer () {
-    BaseRenderer.call(this);
-    this.binexp = null;
-}
-inherits(ComparisonReducer, BaseRenderer);
-
-ComparisonReducer.prototype.onStart = function (context) {
-    this.context = context;
-};
-
-ComparisonReducer.prototype.onData = function (esNode) {
-    if (isTargetBinaryExpression(esNode)) {
-        this.binexp = {
-            operator: esNode.node.operator,
-            value: esNode.value
-        };
+class ComparisonReducer extends BaseRenderer {
+    constructor () {
+        super();
+        this.binexp = null;
     }
-    if (this.binexp && isTargetBinaryExpression(esNode.parent)) {
-        if (esNode.isCaptured || isLiteral(esNode.node)) {
-            this.binexp[esNode.key] = {code: esNode.code, value: esNode.value};
+    onStart (context) {
+        this.context = context;
+    }
+    onData (esNode) {
+        if (isTargetBinaryExpression(esNode)) {
+            this.binexp = {
+                operator: esNode.node.operator,
+                value: esNode.value
+            };
+        }
+        if (this.binexp && isTargetBinaryExpression(esNode.parent)) {
+            if (esNode.isCaptured || isLiteral(esNode.node)) {
+                this.binexp[esNode.key] = {code: esNode.code, value: esNode.value};
+            }
         }
     }
-};
-
-ComparisonReducer.prototype.onEnd = function () {
-    if (this.binexp && this.binexp.left && this.binexp.right) {
-        this.context.actual = this.binexp.left.value;
-        this.context.expected = this.binexp.right.value;
-        this.context.operator = this.binexp.operator;
+    onEnd () {
+        if (this.binexp && this.binexp.left && this.binexp.right) {
+            this.context.actual = this.binexp.left.value;
+            this.context.expected = this.binexp.right.value;
+            this.context.operator = this.binexp.operator;
+        }
     }
-};
+}
 
 function isTargetBinaryExpression (esNode) {
     return esNode &&

@@ -1,28 +1,28 @@
 'use strict';
 
 function spacerStr (len) {
-    var str = '';
-    for(var i = 0; i < len; i += 1) {
+    let str = '';
+    for(let i = 0; i < len; i += 1) {
         str += ' ';
     }
     return str;
 }
 
-function StringWriter (config) {
-    this.lines = [];
-    this.lineSeparator = config.lineSeparator;
-    this.regex = new RegExp(this.lineSeparator, 'g');
-    this.spacer = spacerStr(config.outputOffset);
+class StringWriter {
+    constructor(config) {
+        this.lines = [];
+        this.lineSeparator = config.lineSeparator;
+        this.regex = new RegExp(this.lineSeparator, 'g');
+        this.spacer = spacerStr(config.outputOffset);
+    }
+    write (str) {
+        this.lines.push(this.spacer + str.replace(this.regex, this.lineSeparator + this.spacer));
+    }
+    toString () {
+        const str = this.lines.join(this.lineSeparator);
+        this.lines.length = 0;
+        return str;
+    }
 }
-
-StringWriter.prototype.write = function (str) {
-    this.lines.push(this.spacer + str.replace(this.regex, this.lineSeparator + this.spacer));
-};
-
-StringWriter.prototype.toString = function () {
-    var str = this.lines.join(this.lineSeparator);
-    this.lines.length = 0;
-    return str;
-};
 
 module.exports = StringWriter;

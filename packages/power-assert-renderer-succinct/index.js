@@ -1,8 +1,6 @@
 'use strict';
 
-var DiagramRenderer = require('power-assert-renderer-diagram');
-var inherits = require('util').inherits;
-var some = require('core-js/library/fn/array/some');
+const DiagramRenderer = require('power-assert-renderer-diagram');
 
 /**
  * options.stringify [function]
@@ -14,34 +12,30 @@ var some = require('core-js/library/fn/array/some');
  * options.widthOf [function]
  * options.ambiguousEastAsianCharWidth [number]
  */
-function SuccinctRenderer (config) {
-    DiagramRenderer.call(this, config);
+class SuccinctRenderer extends DiagramRenderer {
+    onData (esNode) {
+        if (!esNode.isCaptured) {
+            return;
+        }
+        if (withinMemberExpression(esNode)) {
+            return;
+        }
+        this.dumpIfSupported(esNode);
+    }
+    dumpIfSupported (esNode) {
+        switch(esNode.node.type) {
+        case 'Identifier':
+        case 'MemberExpression':
+        case 'CallExpression':
+            this.events.push({value: esNode.value, leftIndex: esNode.range[0]});
+            break;
+        }
+    }
 }
-inherits(SuccinctRenderer, DiagramRenderer);
-
-SuccinctRenderer.prototype.onData = function (esNode) {
-    if (!esNode.isCaptured) {
-        return;
-    }
-    if (withinMemberExpression(esNode)) {
-        return;
-    }
-    this.dumpIfSupported(esNode);
-};
-
-SuccinctRenderer.prototype.dumpIfSupported = function (esNode) {
-    switch(esNode.node.type) {
-    case 'Identifier':
-    case 'MemberExpression':
-    case 'CallExpression':
-        this.events.push({value: esNode.value, leftIndex: esNode.range[0]});
-        break;
-    }
-};
 
 function withinMemberExpression (esNode) {
-    var ancestors = collectAncestors([], esNode.parent);
-    return some(ancestors, function (eachNode) {
+    const ancestors = collectAncestors([], esNode.parent);
+    return ancestors.some((eachNode) => {
         return eachNode.node.type === 'MemberExpression';
     });
 }

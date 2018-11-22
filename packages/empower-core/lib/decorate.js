@@ -1,29 +1,38 @@
 'use strict';
 
-var some = require('core-js/library/fn/array/some');
-var map = require('core-js/library/fn/array/map');
+const isNotCaptured = (value) => !isCaptured(value);
+const isCaptured = (value) => 
+          (typeof value === 'object') &&
+          (value !== null) &&
+          (typeof value.powerAssertContext !== 'undefined');
+const isRecorded = (value) => 
+          typeof value === 'object' &&
+          value !== null &&
+          typeof value.value === 'function' &&
+          typeof value.eject === 'function';
 
-function decorate (callSpec, decorator) {
-    var numArgsToCapture = callSpec.numArgsToCapture;
+module.exports = function decorate (callSpec, decorator) {
+    const numArgsToCapture = callSpec.numArgsToCapture;
 
     return function decoratedAssert () {
-        var context, hasMessage = (numArgsToCapture === (arguments.length - 1));
+        const hasMessage = (numArgsToCapture === (arguments.length - 1));
+        let context;
 
         // see: https://github.com/twada/empower-core/pull/8#issue-127859465
         // see: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#32-leaking-arguments
-        var args = new Array(arguments.length);
-        for(var i = 0; i < args.length; ++i) {
+        const args = new Array(arguments.length);
+        for(let i = 0; i < args.length; ++i) {
             args[i] = arguments[i];
         }
 
-        var invocation = {
-            thisObj: this,
+        const invocation = {
+            thisObj: this,  // be careful
             values: args,
             hasMessage: hasMessage
         };
 
-        if (some(args, isRecorded)) {
-            invocation.values = map(args, function (arg) {
+        if (args.some(isRecorded)) {
+            invocation.values = args.map((arg) => {
                 if (!isRecorded(arg)) {
                     return arg;
                 }
@@ -33,7 +42,7 @@ function decorate (callSpec, decorator) {
                         args: []
                     };
                 }
-                var record = arg.eject();
+                const record = arg.eject();
                 context.args.push({
                     // config: arg.config,  // per argument configuration
                     value: record.value,
@@ -42,8 +51,8 @@ function decorate (callSpec, decorator) {
                 return record.value;
             });
             return decorator.concreteAssert(callSpec, invocation, context);
-        } else if (some(args, isCaptured)) {
-            invocation.values = map(args, function (arg, idx) {
+        } else if (args.some(isCaptured)) {
+            invocation.values = args.map((arg, idx) => {
                 if (isNotCaptured(arg)) {
                     return arg;
                 }
@@ -64,23 +73,4 @@ function decorate (callSpec, decorator) {
             return decorator.concreteAssert(callSpec, invocation);
         }
     };
-}
-
-function isNotCaptured (value) {
-    return !isCaptured(value);
-}
-
-function isCaptured (value) {
-    return (typeof value === 'object') &&
-        (value !== null) &&
-        (typeof value.powerAssertContext !== 'undefined');
-}
-
-function isRecorded (value) {
-    return typeof value === 'object' &&
-        value !== null &&
-        typeof value.value === 'function' &&
-        typeof value.eject === 'function';
-}
-
-module.exports = decorate;
+};

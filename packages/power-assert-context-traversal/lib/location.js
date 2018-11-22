@@ -1,6 +1,6 @@
 'use strict';
 
-var syntax = require('estraverse').Syntax;
+const syntax = require('estraverse').Syntax;
 
 function locationOf(currentNode, tokens) {
     switch(currentNode.type) {
@@ -21,28 +21,26 @@ function locationOf(currentNode, tokens) {
     return currentNode.range;
 }
 
-function propertyLocationOf(memberExpression, tokens) {
-    var prop = memberExpression.property;
-    var token;
+function propertyLocationOf (memberExpression, tokens) {
+    const prop = memberExpression.property;
     if (!memberExpression.computed) {
         return prop.range;
     }
-    token = findLeftBracketTokenOf(memberExpression, tokens);
+    const token = findLeftBracketTokenOf(memberExpression, tokens);
     return token ? token.range : prop.range;
 }
 
 // calculate location of infix operator for BinaryExpression, AssignmentExpression and LogicalExpression.
 function infixOperatorLocationOf (expression, tokens) {
-    var token = findOperatorTokenOf(expression, tokens);
+    const token = findOperatorTokenOf(expression, tokens);
     return token ? token.range : expression.left.range;
 }
 
-function findLeftBracketTokenOf(expression, tokens) {
-    var fromColumn = expression.property.range[0];
-    return searchToken(tokens, function (token, index) {
-        var prevToken;
+function findLeftBracketTokenOf (expression, tokens) {
+    const fromColumn = expression.property.range[0];
+    return searchToken(tokens, (token, index) => {
         if (token.range[0] === fromColumn) {
-            prevToken = tokens[index - 1];
+            const prevToken = tokens[index - 1];
             // if (prevToken.type === 'Punctuator' && prevToken.value === '[') {  // esprima
             if (prevToken.type.label === '[') {  // acorn
                 return prevToken;
@@ -52,10 +50,10 @@ function findLeftBracketTokenOf(expression, tokens) {
     });
 }
 
-function findOperatorTokenOf(expression, tokens) {
-    var fromColumn = expression.left.range[1];
-    var toColumn = expression.right.range[0];
-    return searchToken(tokens, function (token, index) {
+function findOperatorTokenOf (expression, tokens) {
+    const fromColumn = expression.left.range[1];
+    const toColumn = expression.right.range[0];
+    return searchToken(tokens, (token, index) => {
         if (fromColumn < token.range[0] &&
             token.range[1] < toColumn &&
             token.value === expression.operator) {
@@ -65,11 +63,9 @@ function findOperatorTokenOf(expression, tokens) {
     });
 }
 
-function searchToken(tokens, predicate) {
-    var i, token, found;
-    for(i = 0; i < tokens.length; i += 1) {
-        token = tokens[i];
-        found = predicate(token, i);
+function searchToken (tokens, searcher) {
+    for(let i = 0; i < tokens.length; i += 1) {
+        const found = searcher(tokens[i], i);
         if (found) {
             return found;
         }

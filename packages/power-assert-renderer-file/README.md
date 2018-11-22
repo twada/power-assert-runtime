@@ -16,7 +16,7 @@ Produces filepath and line number of assertion.
 USAGE
 ---------------------------------------
 
-`var FileRenderer = require('power-assert-renderer-file');`
+`const FileRenderer = require('power-assert-renderer-file');`
 
 
 

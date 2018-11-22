@@ -1,12 +1,12 @@
 'use strict';
 
-var eaw = require('eastasianwidth');
+const eaw = require('eastasianwidth');
 
 function stringWidth (ambiguousCharWidth) {
     return function widthOf (str) {
-        var i, code, width = 0;
-        for(i = 0; i < str.length; i+=1) {
-            code = eaw.eastAsianWidth(str.charAt(i));
+        let width = 0;
+        for(let i = 0; i < str.length; i+=1) {
+            const code = eaw.eastAsianWidth(str.charAt(i));
             switch(code) {
             case 'F':
             case 'W':

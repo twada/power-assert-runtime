@@ -1,7 +1,7 @@
 'use strict';
 
-var babel = require('@babel/core');
-var createEspowerPlugin = require('babel-plugin-espower/create');
+const babel = require('@babel/core');
+const createEspowerPlugin = require('babel-plugin-espower/create');
 
 module.exports = function transpile (code, embedAst) {
     embedAst = (embedAst !== undefined) ? embedAst : true;
