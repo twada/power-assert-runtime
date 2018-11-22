@@ -13,17 +13,21 @@ USAGE
 
 ```javascript
 var createFormatter = require('power-assert-context-formatter');
+var AstReducer = require('power-assert-context-reducer-ast');
 var FileRenderer = require('power-assert-renderer-file');
 var AssertionRenderer = require('power-assert-renderer-assertion');
 var DiagramRenderer = require('power-assert-renderer-diagram');
 var ComparisonRenderer = require('power-assert-renderer-comparison');
+var ComparisonReducer = require('power-assert-context-reducer-comparison');
 
 var format = createFormatter({
     pipeline: [
+        AstReducer,
         FileRenderer,
         AssertionRenderer,
         DiagramRenderer,
-        ComparisonRenderer
+        ComparisonRenderer,
+        ComparisonReducer
     ]
 });
 
@@ -77,10 +81,12 @@ Each renderer accepts its options via form of object literal.
 ```javascript
 var format = createFormatter({
     pipeline: [
+        { ctor: AstReducer },
         { ctor: FileRenderer },
         { ctor: AssertionRenderer },
         { ctor: DiagramRenderer, options: { maxDepth: 2 } },
-        { ctor: ComparisonRenderer, options: { lineDiffThreshold: 3 } }
+        { ctor: ComparisonRenderer, options: { lineDiffThreshold: 3 } },
+        { ctor: ComparisonReducer }
     ]
 });
 ```
