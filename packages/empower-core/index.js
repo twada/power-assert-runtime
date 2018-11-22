@@ -20,54 +20,54 @@ const isEmpowered = (assertObjectOrFunction) => assertObjectOrFunction._empowere
  * @return enhanced assert function/object
  */
 function empowerCore (assert, options) {
-    const typeOfAssert = (typeof assert);
-    if ((typeOfAssert !== 'object' && typeOfAssert !== 'function') || assert === null) {
-        throw new TypeError('empower-core argument should be a function or object.');
-    }
-    if (isEmpowered(assert)) {
-        return assert;
-    }
-    let enhancedAssert;
-    switch (typeOfAssert) {
+  const typeOfAssert = (typeof assert);
+  if ((typeOfAssert !== 'object' && typeOfAssert !== 'function') || assert === null) {
+    throw new TypeError('empower-core argument should be a function or object.');
+  }
+  if (isEmpowered(assert)) {
+    return assert;
+  }
+  let enhancedAssert;
+  switch (typeOfAssert) {
     case 'function':
-        enhancedAssert = empowerAssertFunction(assert, options);
-        break;
+      enhancedAssert = empowerAssertFunction(assert, options);
+      break;
     case 'object':
-        enhancedAssert = empowerAssertObject(assert, options);
-        break;
+      enhancedAssert = empowerAssertObject(assert, options);
+      break;
     default:
-        throw new Error('Cannot be here');
-    }
-    define(enhancedAssert, { _empowered: true });
-    return enhancedAssert;
+      throw new Error('Cannot be here');
+  }
+  define(enhancedAssert, { _empowered: true });
+  return enhancedAssert;
 }
 
 function empowerAssertObject (assertObject, options) {
-    const config = Object.assign(defaultOptions(), options);
-    const target = config.destructive ? assertObject : Object.create(assertObject);
-    const decorator = new Decorator(target, config);
-    return Object.assign(target, decorator.enhancement());
+  const config = Object.assign(defaultOptions(), options);
+  const target = config.destructive ? assertObject : Object.create(assertObject);
+  const decorator = new Decorator(target, config);
+  return Object.assign(target, decorator.enhancement());
 }
 
 function empowerAssertFunction (assertFunction, options) {
-    const config = Object.assign(defaultOptions(), options);
-    if (config.destructive) {
-        throw new Error('cannot use destructive:true to function.');
-    }
-    const decorator = new Decorator(assertFunction, config);
-    const enhancement = decorator.enhancement();
-    let powerAssert;
-    if (typeof enhancement === 'function') {
-        powerAssert = function powerAssert () {
-            return enhancement.apply(null, slice.apply(arguments));
-        };
-    } else {
-        powerAssert = function powerAssert () {
-            return assertFunction.apply(null, slice.apply(arguments));
-        };
-    }
-    Object.assign(powerAssert, assertFunction);
-    return Object.assign(powerAssert, enhancement);
+  const config = Object.assign(defaultOptions(), options);
+  if (config.destructive) {
+    throw new Error('cannot use destructive:true to function.');
+  }
+  const decorator = new Decorator(assertFunction, config);
+  const enhancement = decorator.enhancement();
+  let powerAssert;
+  if (typeof enhancement === 'function') {
+    powerAssert = function powerAssert () {
+      return enhancement.apply(null, slice.apply(arguments));
+    };
+  } else {
+    powerAssert = function powerAssert () {
+      return assertFunction.apply(null, slice.apply(arguments));
+    };
+  }
+  Object.assign(powerAssert, assertFunction);
+  return Object.assign(powerAssert, enhancement);
 }
 
 empowerCore.defaultOptions = defaultOptions;
