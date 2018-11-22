@@ -12,7 +12,6 @@ const isPromiseLike = (obj) => obj !== null &&
           typeof obj.catch === 'function';
 
 class Decorator {
-
   constructor (receiver, config) {
     this.receiver = receiver;
     this.config = config;
@@ -23,7 +22,6 @@ class Decorator {
     this.signatures = config.patterns.map(parse);
     this.wrapOnlySignatures = config.wrapOnlyPatterns.map(parse);
   }
-
   enhancement () {
     const container = this.container();
     const wrappedMethods = [];
@@ -52,7 +50,6 @@ class Decorator {
     });
     return container;
   }
-
   container () {
     let basement = {};
     if (typeof this.receiver === 'function') {
@@ -75,7 +72,6 @@ class Decorator {
     }
     return basement;
   }
-
   concreteAssert (callSpec, invocation, context) {
     const func = callSpec.func;
     const thisObj = this.config.bindReceiver ? callSpec.thisObj : invocation.thisObj;
@@ -113,7 +109,6 @@ class Decorator {
 
     return this._callFunc(func, thisObj, args, data);
   }
-
   // see: https://github.com/twada/empower-core/pull/8#issuecomment-173480982
   _callFunc (func, thisObj, args, data) {
     let ret;
