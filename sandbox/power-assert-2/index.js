@@ -20,9 +20,6 @@ const AssertionRenderer = require('power-assert-renderer-assertion');
 const DiagramRenderer = require('power-assert-renderer-diagram');
 const ComparisonRenderer = require('power-assert-renderer-comparison');
 const ComparisonReducer = require('power-assert-context-reducer-comparison');
-const extend = require('xtend');
-const assign = require('xtend/mutable');
-const define = require('define-properties');
 const extractStack = require('extract-stack');
 const shouldRecreateAssertionError = (function isStackUnchanged () {
     const ae = new baseAssert.AssertionError({
@@ -33,6 +30,16 @@ const shouldRecreateAssertionError = (function isStackUnchanged () {
     ae.message = '[REPLACED MESSAGE]';
     return !(/REPLACED MESSAGE/.test(ae.stack)) && /123 === 456/.test(ae.stack);
 })();
+const define = (obj, map) => {
+    Object.keys(map).forEach((name) => {
+        Object.defineProperty(obj, name, {
+            configurable: true,
+            enumerable: false,
+            value: map[name],
+            writable: true
+        });
+    });
+};
 
 if (typeof baseAssert.deepStrictEqual !== 'function') {
     baseAssert.deepStrictEqual = function deepStrictEqual (actual, expected, message) {
@@ -58,22 +65,22 @@ if (typeof baseAssert.doesNotReject !== 'function') {
 
 function customize (customOptions) {
     const options = customOptions || {};
-    const applyEmpower = function (fn) {
+    const applyEmpower = (fn) => {
         const format = createFormatter(
-            extend({
+            Object.assign({
                 pipeline: [
                     AstReducer,
                     FileRenderer,
                     AssertionRenderer,
-                    { ctor: DiagramRenderer, options: extend({maxDepth: 2}, options.output) },
-                    { ctor: ComparisonRenderer, options: extend({maxDepth: 2}, options.output) },
+                    { ctor: DiagramRenderer, options: Object.assign({maxDepth: 2}, options.output) },
+                    { ctor: ComparisonRenderer, options: Object.assign({maxDepth: 2}, options.output) },
                     ComparisonReducer
                 ]
             }, options.output)
         );
         return empowerCore(
             fn,
-            extend({
+            Object.assign({
                 onError: function onError (errorEvent) {
                     let e = errorEvent.error;
                     if (!/^AssertionError/.test(e.name)) {
@@ -108,9 +115,10 @@ function customize (customOptions) {
 
                     // delete power-assert runtime related stack lines
                     const stackLines = extractStack.lines(e);
-                    let filteredLines = stackLines.filter(function (line) { return !/empower/.test(line); });
-                    filteredLines = filteredLines.filter(function (line) { return /\w+/.test(line); });
-                    e.stack = filteredLines.map(function (line) { return '    at ' + line; }).join('\n');
+                    const filteredLines = stackLines
+                              .filter((line) => !/empower/.test(line))
+                              .filter((line) => /\w+/.test(line));
+                    e.stack = filteredLines.map((line) => '    at ' + line).join('\n');
 
                     throw e;
                 }
@@ -123,7 +131,7 @@ function customize (customOptions) {
         poweredAssert.strict = applyEmpower(baseAssert.strict);
     } else {
         const strict = applyEmpower(baseAssert);
-        poweredAssert.strict = assign(strict, {
+        poweredAssert.strict = Object.assign(strict, {
             equal: strict.strictEqual,
             deepEqual: strict.deepStrictEqual,
             notEqual: strict.notStrictEqual,

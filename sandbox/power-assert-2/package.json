@@ -3,8 +3,6 @@
   "version": "1.0.0",
   "description": "spike for power-assert 2",
   "dependencies": {
-    "core-js": "^2.5.7",
-    "define-properties": "^1.1.2",
     "empower-core": "file:../../packages/empower-core",
     "extract-stack": "^1.0.0",
     "power-assert-context-formatter": "file:../../packages/power-assert-context-formatter",
@@ -15,8 +13,7 @@
     "power-assert-renderer-diagram": "file:../../packages/power-assert-renderer-diagram",
     "power-assert-renderer-file": "file:../../packages/power-assert-renderer-file",
     "rejected-or-not": "^1.0.0",
-    "universal-deep-strict-equal": "^1.0.0",
-    "xtend": "^4.0.1"
+    "universal-deep-strict-equal": "^1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
