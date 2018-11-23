@@ -19,7 +19,7 @@
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
     "@babel/polyfill": "^7.0.0",
-    "babel-plugin-espower": "file:../../../../power-assert-js/babel-plugin-espower",
+    "babel-plugin-espower": "power-assert-js/babel-plugin-espower#power-assert-2",
     "mocha": "^5.2.0"
   },
   "keywords": [],
