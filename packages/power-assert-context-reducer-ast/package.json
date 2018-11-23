@@ -19,7 +19,7 @@
   "dependencies": {
     "acorn": "^5.0.0",
     "acorn-es7-plugin": "^1.0.12",
-    "espurify": "^1.6.0",
+    "espurify": "^2.0.0",
     "estraverse": "^4.2.0",
     "power-assert-renderer-base": "^1.1.1"
   },
