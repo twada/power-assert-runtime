@@ -17,7 +17,7 @@ Produces succinct graph of value in expression.
 USAGE
 ---------------------------------------
 
-`var SuccinctRenderer = require('power-assert-renderer-succinct');`
+`const SuccinctRenderer = require('power-assert-renderer-succinct');`
 
 
 #### options.stringify

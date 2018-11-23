@@ -30,7 +30,7 @@ See [CHANGELOG](https://github.com/twada/power-assert-runtime/packages/empower-c
 API
 ---------------------------------------
 
-### var enhancedAssert = empowerCore(originalAssert, [options])
+### const enhancedAssert = empowerCore(originalAssert, [options])
 
 | return type            |
 |:-----------------------|
@@ -109,7 +109,7 @@ Both methods are called with a single `event` argument, it will have the followi
 
   ```js
   function onError (errorEvent) {
-    var e = errorEvent.error;
+    const e = errorEvent.error;
     if (errorEvent.powerAssertContext && /^AssertionError/.test(e.name)) {
         e.powerAssertContext = errorEvent.powerAssertContext;
     }
@@ -194,7 +194,7 @@ Methods matching these patterns will not be instrumented by the code transform, 
 
 Similar to the `options.patterns`, you may supply objects with a `pattern` member, and the additional metadata will be passed to the assertion listeners.
 
-### var options = empowerCore.defaultOptions();
+### const options = empowerCore.defaultOptions();
 
 Returns default options object for `empowerCore` function. In other words, returns
 
@@ -222,7 +222,7 @@ with sensible default for `onError` and `onSuccess`
 
 ```js
 function onError (errorEvent) {
-    var e = errorEvent.error;
+    const e = errorEvent.error;
     if (errorEvent.powerAssertContext && e.name === 'AssertionError') {
         e.powerAssertContext = errorEvent.powerAssertContext;
     }

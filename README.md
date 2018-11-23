@@ -1,6 +1,7 @@
 [![power-assert][power-assert-banner]][power-assert-url]
 
 [![Build Status][travis-image]][travis-url]
+[![Code Style][style-image]][style-url]
 [![License][license-image]][license-url]
 
 Reorganize [empower](https://github.com/power-assert-js/empower), [power-assert-formatter](https://github.com/power-assert-js/power-assert-formatter) and [power-assert-renderers](https://github.com/twada/power-assert-renderers) into [monorepo](https://github.com/babel/babel/blob/master/doc/design/monorepo.md) structure.
@@ -56,6 +57,9 @@ Licensed under the [MIT](https://github.com/twada/power-assert-runtime/blob/mast
 
 [travis-url]: https://travis-ci.org/twada/power-assert-runtime
 [travis-image]: https://secure.travis-ci.org/twada/power-assert-runtime.svg?branch=master
+
+[style-url]: https://github.com/Flet/semistandard
+[style-image]: https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg
 
 [license-url]: https://github.com/twada/power-assert-runtime/blob/master/LICENSE
 [license-image]: https://img.shields.io/badge/license-MIT-brightgreen.svg

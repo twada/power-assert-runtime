@@ -11,7 +11,7 @@ EventEmitter of `powerAssertContext` object provided by power-assert at runtime.
 API
 ---------------------------------------
 
-### var traversal = new ContextTraversal(powerAssertContext);
+### const traversal = new ContextTraversal(powerAssertContext);
 
 Create `EventEmitter` of `powerAssertContext` object, having structure below.
 

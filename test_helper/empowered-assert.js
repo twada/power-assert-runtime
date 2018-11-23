@@ -1,6 +1,6 @@
 'use strict';
 
-var baseAssert = require('assert');
-var empower = require('../packages/empower-core');
+const baseAssert = require('assert');
+const empower = require('../packages/empower-core');
 
 module.exports = empower(baseAssert);

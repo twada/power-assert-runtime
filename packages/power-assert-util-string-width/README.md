@@ -12,7 +12,7 @@ USAGE
 ---------------------------------------
 
 ```js
-var stringWidth = require('power-assert-util-string-width');
+const stringWidth = require('power-assert-util-string-width');
 stringWidth('abcde'); //=> 5
 stringWidth('あいうえお'); //=> 10
 stringWidth('ｱｲｳｴｵ'); //=> 5
