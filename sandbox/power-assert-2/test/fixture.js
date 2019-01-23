@@ -36,6 +36,22 @@ it('assert(foo === bar) with message expression', () => {
   assert(foo === bar, `${msg} ${msg2}`);
 });
 
+it('assert.equal(foo, bar)', () => {
+  const foo = 'FOO';
+  const bar = 'BAR';
+  assert.equal(foo, bar);
+});
+
+it('assert.equal("foo", bar)', () => {
+  const bar = 'BAR';
+  assert.equal('foo', bar);
+});
+
+it('assert.equal(foo, "bar")', () => {
+  const foo = 'FOO';
+  assert.equal(foo, 'bar');
+});
+
 it('assert.deepStrictEqual(foo, bar)', () => {
   const foo = 'FOO';
   const bar = 'BAR';
@@ -91,7 +107,7 @@ it('assert.throws func(does not throw), func', () => {
   assert.throws(func, validate);
 });
 
-it('assert.throws func(throws), func', () => {
+it('assert.throws func(throws), func->false', () => {
   const func = () => {
     throw new Error('BOOOM');
   };
