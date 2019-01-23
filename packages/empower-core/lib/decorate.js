@@ -5,10 +5,12 @@ const isCaptured = (value) =>
   (typeof value === 'object') &&
           (value !== null) &&
           (typeof value.powerAssertContext !== 'undefined');
+// MEMO: ArgumentRecorder or AssertionMessage
 const isRecorded = (value) =>
   typeof value === 'object' &&
           value !== null &&
-          typeof value.value === 'function' &&
+          typeof value.metadata === 'function' &&
+          typeof value.matchIndex === 'function' &&
           typeof value.eject === 'function';
 
 module.exports = function decorate (callSpec, decorator) {
@@ -45,6 +47,7 @@ module.exports = function decorate (callSpec, decorator) {
         const record = arg.eject();
         context.args.push({
           // config: arg.config,  // per argument configuration
+          matchIndex: arg.matchIndex(),
           value: record.value,
           events: record.logs
         });
