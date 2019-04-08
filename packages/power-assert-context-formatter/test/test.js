@@ -7,7 +7,6 @@ var DiagramRenderer = require('power-assert-renderer-diagram');
 var baseAssert = require('assert');
 var assert = require('../../../test_helper/empowered-assert');
 var transpile = require('../../../test_helper/transpile');
-var assign = require('core-js/library/fn/object/assign');
 var appendAst = require('power-assert-context-reducer-ast');
 
 
@@ -218,7 +217,7 @@ describe('power-assert-context-formatter : outputOffset option', function () {
 describe('power-assert-context-formatter : lineSeparator option', function () {
     function lineSeparatorTest (name, option, expectedSeparator) {
         it(name, function () {
-            var format = createFormatter(assign({
+            var format = createFormatter(Object.assign({
                 outputOffset: 0,
                 renderers: [ AssertionRenderer ]
             }, option));

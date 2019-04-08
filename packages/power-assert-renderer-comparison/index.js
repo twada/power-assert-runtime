@@ -3,11 +3,8 @@
 var BaseRenderer = require('power-assert-renderer-base');
 var inherits = require('util').inherits;
 var typeName = require('type-name');
-var keys = require('core-js/library/fn/object/keys');
-var forEach = require('core-js/library/fn/array/for-each');
 var udiff = require('./lib/udiff');
 var stringifier = require('stringifier');
-var assign = require('core-js/library/fn/object/assign');
 var defaultOptions = require('./lib/default-options');
 var literalPattern = /^(?:String|Numeric|Null|Boolean|RegExp)?Literal$/;
 
@@ -27,7 +24,7 @@ function isLiteral (node) {
  */
 function ComparisonRenderer (config) {
     BaseRenderer.call(this);
-    this.config = assign({}, defaultOptions(), config);
+    this.config = Object.assign({}, defaultOptions(), config);
     if (typeof this.config.stringify === 'function') {
         this.stringify = this.config.stringify;
     } else {
@@ -65,13 +62,13 @@ ComparisonRenderer.prototype.onData = function (esNode) {
 ComparisonRenderer.prototype.onEnd = function () {
     var _this = this;
     var pairs = [];
-    forEach(keys(this.espathToPair), function (espath) {
+    Object.keys(this.espathToPair).forEach(function (espath) {
         var pair = _this.espathToPair[espath];
         if (pair.left && pair.right) {
             pairs.push(pair);
         }
     });
-    forEach(pairs, function (pair) {
+    pairs.forEach(function (pair) {
         _this.compare(pair);
     });
 };

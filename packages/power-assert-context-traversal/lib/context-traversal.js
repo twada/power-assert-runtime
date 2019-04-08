@@ -3,11 +3,8 @@
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('util').inherits;
 var estraverse = require('estraverse');
-var forEach = require('core-js/library/fn/array/for-each');
-var reduce = require('core-js/library/fn/array/reduce');
 var locationOf = require('./location');
 var literalPattern = /^(?:String|Numeric|Null|Boolean|RegExp)?Literal$/;
-var assign = require('core-js/library/fn/object/assign');
 
 function ContextTraversal (powerAssertContext) {
     this.powerAssertContext = powerAssertContext;
@@ -22,7 +19,7 @@ ContextTraversal.prototype.traverse = function () {
     parseIfJson(source, 'tokens');
     parseIfJson(source, 'visitorKeys');
     _this.emit('start', this.powerAssertContext);
-    forEach(this.powerAssertContext.args, function (capturedArgument) {
+    this.powerAssertContext.args.forEach(function (capturedArgument) {
         onEachEsNode(capturedArgument, source, function (esNode) {
             _this.emit('data', esNode);
         });
@@ -37,7 +34,7 @@ function parseIfJson (source, propName) {
 }
 
 function onEachEsNode(capturedArgument, source, callback) {
-    var espathToValue = reduce(capturedArgument.events, function (accum, ev) {
+    var espathToValue = capturedArgument.events.reduce(function (accum, ev) {
         accum[ev.espath] = ev.value;
         return accum;
     }, {});

@@ -1,20 +1,15 @@
 'use strict';
 
-var forEach = require('core-js/library/fn/array/for-each');
-var filter = require('core-js/library/fn/array/filter');
-var map = require('core-js/library/fn/array/map');
 var signature = require('call-signature');
 var decorate = require('./decorate');
-var keys = require('core-js/library/fn/object/keys');
-
 
 function Decorator (receiver, config) {
     this.receiver = receiver;
     this.config = config;
     this.onError = config.onError;
     this.onSuccess = config.onSuccess;
-    this.signatures = map(config.patterns, parse);
-    this.wrapOnlySignatures = map(config.wrapOnlyPatterns, parse);
+    this.signatures = config.patterns.map(parse);
+    this.wrapOnlySignatures = config.wrapOnlyPatterns.map(parse);
 }
 
 Decorator.prototype.enhancement = function () {
@@ -39,11 +34,11 @@ Decorator.prototype.enhancement = function () {
         wrappedMethods.push(methodName);
     }
 
-    forEach(filter(this.signatures, methodCall), function (matcher) {
+    this.signatures.filter(methodCall).forEach(function (matcher) {
         attach(matcher, true);
     });
 
-    forEach(filter(this.wrapOnlySignatures, methodCall), function (matcher) {
+    this.wrapOnlySignatures.filter(methodCall).forEach(function (matcher) {
         attach(matcher, false);
     });
 
@@ -53,11 +48,11 @@ Decorator.prototype.enhancement = function () {
 Decorator.prototype.container = function () {
     var basement = {};
     if (typeof this.receiver === 'function') {
-        var candidates = filter(this.signatures, functionCall);
+        var candidates = this.signatures.filter(functionCall);
         var enhanced = true;
         if (candidates.length === 0) {
             enhanced = false;
-            candidates = filter(this.wrapOnlySignatures, functionCall);
+            candidates = this.wrapOnlySignatures.filter(functionCall);
         }
         if (candidates.length === 1) {
             var callSpec = {
@@ -154,7 +149,7 @@ function parse(matcherSpec) {
         matcherSpec = {pattern: matcherSpec};
     }
     var ret = {};
-    forEach(keys(matcherSpec), function (key) {
+    Object.keys(matcherSpec).forEach(function (key) {
         ret[key] = matcherSpec[key];
     });
     ret.parsed = signature.parse(matcherSpec.pattern);

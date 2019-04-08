@@ -7,8 +7,6 @@
  * Licensed under the MIT license.
  *   https://github.com/twada/power-assert-runtime/blob/master/LICENSE
  */
-var create = require('core-js/library/fn/object/create');
-var assign = require('core-js/library/fn/object/assign');
 var defaultOptions = require('./lib/default-options');
 var Decorator = require('./lib/decorator');
 var define = require('./lib/define-properties');
@@ -44,14 +42,14 @@ function empowerCore (assert, options) {
 }
 
 function empowerAssertObject (assertObject, options) {
-    var config = assign(defaultOptions(), options);
-    var target = config.destructive ? assertObject : create(assertObject);
+    var config = Object.assign(defaultOptions(), options);
+    var target = config.destructive ? assertObject : Object.create(assertObject);
     var decorator = new Decorator(target, config);
-    return assign(target, decorator.enhancement());
+    return Object.assign(target, decorator.enhancement());
 }
 
 function empowerAssertFunction (assertFunction, options) {
-    var config = assign(defaultOptions(), options);
+    var config = Object.assign(defaultOptions(), options);
     if (config.destructive) {
         throw new Error('cannot use destructive:true to function.');
     }
@@ -67,8 +65,8 @@ function empowerAssertFunction (assertFunction, options) {
             return assertFunction.apply(null, slice.apply(arguments));
         };
     }
-    assign(powerAssert, assertFunction);
-    return assign(powerAssert, enhancement);
+    Object.assign(powerAssert, assertFunction);
+    return Object.assign(powerAssert, enhancement);
 }
 
 function isEmpowered (assertObjectOrFunction) {

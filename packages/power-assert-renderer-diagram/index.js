@@ -2,10 +2,8 @@
 
 var BaseRenderer = require('power-assert-renderer-base');
 var inherits = require('util').inherits;
-var forEach = require('core-js/library/fn/array/for-each');
 var stringifier = require('stringifier');
 var stringWidth = require('power-assert-util-string-width');
-var assign = require('core-js/library/fn/object/assign');
 var defaultOptions = require('./lib/default-options');
 
 /**
@@ -20,7 +18,7 @@ var defaultOptions = require('./lib/default-options');
  */
 function DiagramRenderer (config) {
     BaseRenderer.call(this);
-    this.config = assign({}, defaultOptions(), config);
+    this.config = Object.assign({}, defaultOptions(), config);
     this.events = [];
     if (typeof this.config.stringify === 'function') {
         this.stringify = this.config.stringify;
@@ -52,7 +50,7 @@ DiagramRenderer.prototype.onEnd = function () {
     this.events.sort(rightToLeft);
     this.constructRows(this.events);
     var _this = this;
-    forEach(this.rows, function (columns) {
+    this.rows.forEach(function (columns) {
         _this.write(columns.join(''));
     });
 };
@@ -97,7 +95,7 @@ DiagramRenderer.prototype.isOverlapped = function (prevCapturing, nextCaputuring
 DiagramRenderer.prototype.constructRows = function (capturedEvents) {
     var that = this;
     var prevCaptured;
-    forEach(capturedEvents, function (captured) {
+    capturedEvents.forEach(function (captured) {
         var dumpedValue = that.stringify(captured.value);
         if (that.isOverlapped(prevCaptured, captured, dumpedValue)) {
             that.addOneMoreRow();
