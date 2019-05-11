@@ -2,7 +2,6 @@
 
 const BaseRenderer = require('power-assert-renderer-base');
 const parser = require('acorn');
-require('acorn-es7-plugin')(parser);
 const estraverse = require('estraverse');
 const purifyAst = require('espurify').customize({ extra: ['range'] });
 
@@ -19,15 +18,14 @@ class AstReducer extends BaseRenderer {
     try {
       astAndTokens = parse(source);
     } catch (e) {
-      Object.assign(powerAssertContext, { source: Object.assign({}, source, { error: e }) });
+      source.error = e;
       return;
     }
-    const newSource = Object.assign({}, source, {
+    Object.assign(source, {
       ast: purifyAst(astAndTokens.expression),
       tokens: astAndTokens.tokens,
       visitorKeys: estraverse.VisitorKeys
     });
-    Object.assign(powerAssertContext, { source: newSource });
   }
 }
 
@@ -43,8 +41,7 @@ function parserOptions (tokens) {
     ecmaVersion: 2018,
     locations: true,
     ranges: false,
-    onToken: tokens,
-    plugins: { asyncawait: true }
+    onToken: tokens
   };
 }
 
