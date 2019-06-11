@@ -1,7 +1,5 @@
 {
   "plugins": [
-    ["babel-plugin-espower", {
-      "embedAst": false
-    }]
+    "babel-plugin-espower"
   ]
 }
