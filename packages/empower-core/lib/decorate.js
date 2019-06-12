@@ -45,11 +45,16 @@ module.exports = function decorate (callSpec, decorator) {
           };
         }
         const record = arg.eject();
-        context.args.push({
-          matchIndex: arg.matchIndex(),
-          value: record.value,
-          events: record.logs // API (used in AVA)
-        });
+        const matchIndex = arg.matchIndex();
+        if (matchIndex === -1) { // generated AssertionMessage
+          invocation.hasMessage = false;
+        } else {
+          context.args.push({
+            matchIndex,
+            value: record.value,
+            events: record.logs // API (used in AVA)
+          });
+        }
         return record.value;
       });
       return decorator.concreteAssert(callSpec, invocation, context);

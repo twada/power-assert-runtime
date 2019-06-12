@@ -2,11 +2,15 @@
 
 class BaseRenderer {
   init (traversal) {
+    this.traversal = traversal;
     traversal.on('start', (context) => {
       this.onStart(context);
     });
     traversal.on('data', (esNode) => {
       this.onData(esNode);
+    });
+    traversal.on('arg:enter', (capturedArgument) => {
+      this.onArg(capturedArgument);
     });
     traversal.on('end', () => {
       this.onEnd();
@@ -20,6 +24,9 @@ class BaseRenderer {
   }
   // API
   onData (esNode) {
+  }
+  // API
+  onArg (capturedArgument) {
   }
   // API
   onEnd () {

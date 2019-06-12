@@ -80,7 +80,10 @@ class Decorator {
     const matcherSpec = callSpec.matcherSpec;
     let message;
     if (invocation.hasMessage) {
-      message = args[args.length - 1];
+      const messageCandidate = args[args.length - 1];
+      if (messageCandidate) {
+        message = messageCandidate;
+      }
     }
     // TODO: deprecate
     if (context && typeof this.config.modifyMessageBeforeAssert === 'function') {

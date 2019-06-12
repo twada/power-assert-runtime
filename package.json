@@ -14,7 +14,7 @@
     "@babel/plugin-proposal-function-bind": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
-    "babel-plugin-espower": "^3.0.0",
+    "babel-plugin-espower": "power-assert-js/babel-plugin-espower#power-assert-2",
     "lerna": "^2.11.0",
     "mocha": "^5.0.0",
     "semistandard": "^13.0.1",

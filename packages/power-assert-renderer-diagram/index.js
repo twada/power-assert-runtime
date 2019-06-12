@@ -22,27 +22,34 @@ class DiagramRenderer extends BaseRenderer {
     super();
     this.config = Object.assign({}, defaultOptions(), config);
     this.events = [];
-    if (typeof this.config.stringify === 'function') {
-      this.stringify = this.config.stringify;
-    } else {
-      this.stringify = stringifier(this.config);
-    }
     if (typeof this.config.widthOf === 'function') {
       this.widthOf = this.config.widthOf;
     } else {
       this.widthOf = (this.config.ambiguousEastAsianCharWidth === 1) ? stringWidth.narrow : stringWidth;
     }
     this.initialVertivalBarLength = 1;
+    this.stringifiers = new Map();
   }
   onStart (context) {
     this.assertionLine = context.source.content;
     this.initializeRows();
   }
+  onArg (arg) {
+    let stringify;
+    if (arg.paramDef && arg.paramDef.options) {
+      stringify = stringifier(arg.paramDef.options);
+    } else if (typeof this.config.stringify === 'function') {
+      stringify = this.config.stringify;
+    } else {
+      stringify = stringifier(this.config);
+    }
+    this.stringifiers.set(arg.paramDef, stringify);
+  }
   onData (esNode) {
     if (!esNode.isCaptured) {
       return;
     }
-    this.events.push({ value: esNode.value, leftIndex: esNode.range[0] });
+    this.events.push({ value: esNode.value, leftIndex: esNode.range[0], paramDef: esNode.paramDef });
   }
   onEnd () {
     this.events.sort(rightToLeft);
@@ -84,7 +91,8 @@ class DiagramRenderer extends BaseRenderer {
   constructRows (capturedEvents) {
     let prevCaptured;
     capturedEvents.forEach((captured) => {
-      const dumpedValue = this.stringify(captured.value);
+      const stringify = this.stringifiers.get(captured.paramDef);
+      const dumpedValue = stringify(captured.value);
       if (this.isOverlapped(prevCaptured, captured, dumpedValue)) {
         this.addOneMoreRow();
       }

@@ -27,7 +27,7 @@ class SuccinctRenderer extends DiagramRenderer {
       case 'Identifier':
       case 'MemberExpression':
       case 'CallExpression':
-        this.events.push({ value: esNode.value, leftIndex: esNode.range[0] });
+        this.events.push({ value: esNode.value, leftIndex: esNode.range[0], paramDef: esNode.paramDef });
         break;
     }
   }
