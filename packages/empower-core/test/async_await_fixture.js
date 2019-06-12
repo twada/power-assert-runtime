@@ -15,7 +15,7 @@ const willResolve = (value) => {
 };
 
 module.exports = function ({ empower, baseAssert, weave }) {
-  describe('assertions returing Promises', () => {
+  describe('assertions returning Promises', () => {
     describe('assert.rejects', () => {
       let log;
       const assert = empower(baseAssert, {
@@ -51,7 +51,8 @@ module.exports = function ({ empower, baseAssert, weave }) {
 
       it('resolves if the block is rejected', async () => {
         const prms = willReject(new Error('foo'));
-        const res = await eval(weave('assert.rejects(prms);'));
+        const blk = () => prms;
+        const res = await eval(weave('assert.rejects(blk);'));
         baseAssert.strictEqual(log.length, 2);
         baseAssert.strictEqual(log[0], 'onSuccess');
         baseAssert(res === undefined, 'assert.rejects resolves with undefined');
@@ -67,7 +68,8 @@ module.exports = function ({ empower, baseAssert, weave }) {
       it('rejects with AssertionError if the block is not rejected', async () => {
         try {
           const prms = willResolve('good');
-          await eval(weave('assert.rejects(prms);'));
+          const blk = () => prms;
+          await eval(weave('assert.rejects(blk);'));
           baseAssert.fail('should not be happen');
         } catch (e) {
           baseAssert(e instanceof baseAssert.AssertionError);
