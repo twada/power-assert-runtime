@@ -9,7 +9,7 @@ const willResolve = (value) => {
       resolve(value);
     }, 100);
   });
-}
+};
 
 it('assert(foo)', () => {
   const foo = null;
@@ -53,8 +53,16 @@ it('assert.equal(foo, "bar")', () => {
 });
 
 it('assert.deepStrictEqual(foo, bar)', () => {
-  const foo = 'FOO';
-  const bar = 'BAR';
+  const foo = {
+    children: [
+      {name: 'FOO'},
+      {name: 'bar'},
+    ]
+  };
+  const bar = [
+    {name: 'FOO'},
+    {name: 'bar'},
+  ];
   assert.deepStrictEqual(foo, bar);
 });
 
