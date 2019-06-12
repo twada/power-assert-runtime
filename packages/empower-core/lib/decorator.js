@@ -104,7 +104,7 @@ class Decorator {
     };
 
     if (context) {
-      data.powerAssertContext = context;
+      data.powerAssertContext = context; // API (used in AVA)
     }
 
     return this._callFunc(func, thisObj, args, data);
@@ -126,7 +126,7 @@ class Decorator {
             }
           }, (e) => { // onRejected
             data.assertionThrew = true;
-            data.error = e;
+            data.error = e; // API (used in AVA)
             try {
               this.onRejected.call(thisObj, data, resolve, reject);
             } catch (avoidUnhandled) {
@@ -137,7 +137,7 @@ class Decorator {
       }
     } catch (e) {
       data.assertionThrew = true;
-      data.error = e;
+      data.error = e; // API (used in AVA)
       return this.onError.call(thisObj, data);
     }
     data.assertionThrew = false;

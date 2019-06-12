@@ -40,16 +40,15 @@ module.exports = function decorate (callSpec, decorator) {
         }
         if (!context) {
           context = {
-            source: arg.metadata(),
-            args: []
+            source: arg.metadata(), // API (used in AVA)
+            args: [] // API (used in AVA)
           };
         }
         const record = arg.eject();
         context.args.push({
-          // config: arg.config,  // per argument configuration
           matchIndex: arg.matchIndex(),
           value: record.value,
-          events: record.logs
+          events: record.logs // API (used in AVA)
         });
         return record.value;
       });
