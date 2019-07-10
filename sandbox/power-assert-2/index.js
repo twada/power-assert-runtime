@@ -21,15 +21,6 @@ const DiagramRenderer = require('power-assert-renderer-diagram');
 const ComparisonRenderer = require('power-assert-renderer-comparison');
 const ComparisonReducer = require('power-assert-context-reducer-comparison');
 const extractStack = require('extract-stack');
-const shouldRecreateAssertionError = (function isStackUnchanged () {
-  const ae = new baseAssert.AssertionError({
-    actual: 123,
-    expected: 456,
-    operator: '==='
-  });
-  ae.message = '[REPLACED MESSAGE]';
-  return !(/REPLACED MESSAGE/.test(ae.stack)) && /123 === 456/.test(ae.stack);
-})();
 const define = (obj, map) => {
   Object.keys(map).forEach((name) => {
     Object.defineProperty(obj, name, {
@@ -108,17 +99,7 @@ function customize (customOptions) {
             e.expected = context.expected;
             e.operator = context.operator;
           }
-          if (shouldRecreateAssertionError) {
-            e = new baseAssert.AssertionError({
-              message: poweredMessage,
-              actual: e.actual,
-              expected: e.expected,
-              operator: e.operator,
-              stackStartFunction: e.stackStartFunction || onError
-            });
-          } else {
-            e.message = poweredMessage;
-          }
+          e.message = poweredMessage;
           e.powerAssertContext = errorEvent.powerAssertContext;
           e.generatedMessage = false;
 
