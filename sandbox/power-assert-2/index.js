@@ -57,9 +57,19 @@ if (typeof baseAssert.notDeepStrictEqual !== 'function') {
 }
 if (typeof baseAssert.rejects !== 'function') {
   baseAssert.rejects = rejects;
+} else {
+  // override assert.rejects on Node8 that only accepts functions, not Promises
+  if (baseAssert.rejects.toString().startsWith('async function rejects(block,')) {
+    baseAssert.rejects = rejects;
+  }
 }
 if (typeof baseAssert.doesNotReject !== 'function') {
   baseAssert.doesNotReject = doesNotReject;
+} else {
+  // override assert.doesNotReject on Node8 that only accepts functions, not Promises
+  if (baseAssert.doesNotReject.toString().startsWith('async function doesNotReject(block,')) {
+    baseAssert.doesNotReject = doesNotReject;
+  }
 }
 
 function customize (customOptions) {
