@@ -10,15 +10,15 @@
     "url": "https://github.com/twada/power-assert-runtime/issues"
   },
   "devDependencies": {
-    "babel-core": "^6.1.0",
-    "babel-plugin-espower": "^2.3.1",
-    "babel-plugin-transform-function-bind": "^6.1.0",
-    "babel-preset-es2015": "^6.1.0",
-    "babel-preset-react": "^6.1.0",
-    "babel-preset-stage-2": "^6.1.0",
-    "core-js": "^2.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-proposal-function-bind": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-plugin-espower": "power-assert-js/babel-plugin-espower#power-assert-2",
     "lerna": "^2.11.0",
-    "mocha": "^5.0.0"
+    "mocha": "^5.0.0",
+    "semistandard": "^13.0.1",
+    "snazzy": "^8.0.0"
   },
   "homepage": "https://github.com/twada/power-assert-runtime",
   "keywords": [
@@ -33,6 +33,8 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "lerna": "lerna",
-    "test": "mocha --timeout 0 packages/*/test/*.js"
+    "fmt": "semistandard --fix packages/*/index.js packages/*/lib/*.js",
+    "lint": "semistandard --verbose packages/*/index.js packages/*/lib/*.js | snazzy",
+    "test": "mocha --timeout 0 --reporter dot packages/*/test/*test.js"
   }
 }

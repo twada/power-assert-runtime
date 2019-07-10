@@ -17,8 +17,7 @@
     }
   ],
   "dependencies": {
-    "call-signature": "0.0.2",
-    "core-js": "^2.0.0"
+    "call-signature": "^0.0.2"
   },
   "devDependencies": {
     "acorn": "^5.0.0",
@@ -53,6 +52,6 @@
     "url": "https://github.com/twada/power-assert-runtime.git"
   },
   "scripts": {
-    "test": "mocha test"
+    "test": "mocha test/*test.js"
   }
 }

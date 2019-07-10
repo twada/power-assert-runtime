@@ -7,12 +7,11 @@
  * Licensed under the MIT license.
  *   https://github.com/twada/power-assert-runtime/blob/master/LICENSE
  */
-var create = require('core-js/library/fn/object/create');
-var assign = require('core-js/library/fn/object/assign');
-var defaultOptions = require('./lib/default-options');
-var Decorator = require('./lib/decorator');
-var define = require('./lib/define-properties');
-var slice = Array.prototype.slice;
+const defaultOptions = require('./lib/default-options');
+const Decorator = require('./lib/decorator');
+const define = require('./lib/define-properties');
+const slice = Array.prototype.slice;
+const isEmpowered = (assertObjectOrFunction) => assertObjectOrFunction._empowered;
 
 /**
  * Enhance Power Assert feature to assert function/object.
@@ -21,58 +20,54 @@ var slice = Array.prototype.slice;
  * @return enhanced assert function/object
  */
 function empowerCore (assert, options) {
-    var typeOfAssert = (typeof assert);
-    var enhancedAssert;
-    if ((typeOfAssert !== 'object' && typeOfAssert !== 'function') || assert === null) {
-        throw new TypeError('empower-core argument should be a function or object.');
-    }
-    if (isEmpowered(assert)) {
-        return assert;
-    }
-    switch (typeOfAssert) {
+  const typeOfAssert = (typeof assert);
+  if ((typeOfAssert !== 'object' && typeOfAssert !== 'function') || assert === null) {
+    throw new TypeError('empower-core argument should be a function or object.');
+  }
+  if (isEmpowered(assert)) {
+    return assert;
+  }
+  let enhancedAssert;
+  switch (typeOfAssert) {
     case 'function':
-        enhancedAssert = empowerAssertFunction(assert, options);
-        break;
+      enhancedAssert = empowerAssertFunction(assert, options);
+      break;
     case 'object':
-        enhancedAssert = empowerAssertObject(assert, options);
-        break;
+      enhancedAssert = empowerAssertObject(assert, options);
+      break;
     default:
-        throw new Error('Cannot be here');
-    }
-    define(enhancedAssert, { _empowered: true });
-    return enhancedAssert;
+      throw new Error('Cannot be here');
+  }
+  define(enhancedAssert, { _empowered: true });
+  return enhancedAssert;
 }
 
 function empowerAssertObject (assertObject, options) {
-    var config = assign(defaultOptions(), options);
-    var target = config.destructive ? assertObject : create(assertObject);
-    var decorator = new Decorator(target, config);
-    return assign(target, decorator.enhancement());
+  const config = Object.assign(defaultOptions(), options);
+  const target = config.destructive ? assertObject : Object.create(assertObject);
+  const decorator = new Decorator(target, config);
+  return Object.assign(target, decorator.enhancement());
 }
 
 function empowerAssertFunction (assertFunction, options) {
-    var config = assign(defaultOptions(), options);
-    if (config.destructive) {
-        throw new Error('cannot use destructive:true to function.');
-    }
-    var decorator = new Decorator(assertFunction, config);
-    var enhancement = decorator.enhancement();
-    var powerAssert;
-    if (typeof enhancement === 'function') {
-        powerAssert = function powerAssert () {
-            return enhancement.apply(null, slice.apply(arguments));
-        };
-    } else {
-        powerAssert = function powerAssert () {
-            return assertFunction.apply(null, slice.apply(arguments));
-        };
-    }
-    assign(powerAssert, assertFunction);
-    return assign(powerAssert, enhancement);
-}
-
-function isEmpowered (assertObjectOrFunction) {
-    return assertObjectOrFunction._empowered;
+  const config = Object.assign(defaultOptions(), options);
+  if (config.destructive) {
+    throw new Error('cannot use destructive:true to function.');
+  }
+  const decorator = new Decorator(assertFunction, config);
+  const enhancement = decorator.enhancement();
+  let powerAssert;
+  if (typeof enhancement === 'function') {
+    powerAssert = function powerAssert () {
+      return enhancement.apply(null, slice.apply(arguments));
+    };
+  } else {
+    powerAssert = function powerAssert () {
+      return assertFunction.apply(null, slice.apply(arguments));
+    };
+  }
+  Object.assign(powerAssert, assertFunction);
+  return Object.assign(powerAssert, enhancement);
 }
 
 empowerCore.defaultOptions = defaultOptions;

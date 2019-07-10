@@ -30,7 +30,7 @@ See [CHANGELOG](https://github.com/twada/power-assert-runtime/packages/empower-c
 API
 ---------------------------------------
 
-### var enhancedAssert = empowerCore(originalAssert, [options])
+### const enhancedAssert = empowerCore(originalAssert, [options])
 
 | return type            |
 |:-----------------------|
@@ -78,8 +78,8 @@ If `false`, empower-core mimics originalAssert as new object/function, so `origi
 `bindReceiver` defaults to `true`, meaning assertion methods have their `this` value bound to the original assertion. Setting `bindReceiver` to false causes the `this` reference to be passed through from the actual invocation.
 
 
-#### options.onError
-#### options.onSuccess
+#### options.onError(errorEvent)
+#### options.onSuccess(successEvent)
 
 | type       | default value |
 |:-----------|:--------------|
@@ -88,6 +88,8 @@ If `false`, empower-core mimics originalAssert as new object/function, so `origi
 Both methods are called with a single `event` argument, it will have the following properties:
 
 - `event.enhanced` - `true` for methods matching `patterns`. `false` for methods matching `wrapOnlyPatterns`.
+
+- `event.config` - actual configuration object that is `Object.assign`ed with `defaultOptions()` and `options`.
 
 - `event.originalMessage` - The actual value the user provided for optional `message` parameter. This will be `undefined` if the user did not provide a value, even if the underlying assertion provides a default message.
 
@@ -107,13 +109,34 @@ Both methods are called with a single `event` argument, it will have the followi
 
   ```js
   function onError (errorEvent) {
-    var e = errorEvent.error;
+    const e = errorEvent.error;
     if (errorEvent.powerAssertContext && /^AssertionError/.test(e.name)) {
         e.powerAssertContext = errorEvent.powerAssertContext;
     }
     throw e;
   }
   ```
+
+#### options.onFulfilled(errorEvent, resolve, reject)
+#### options.onRejected(successEvent, resolve, reject)
+
+| type       | default value |
+|:-----------|:--------------|
+| `function` | (function defined in `empowerCore.defaultOptions()`) |
+
+Handler functions to deal with Promises returned from target assertions. `onFulfilled` is called when assertion is resolved. `onRejected` is called when assertion is rejected.
+
+Both methods are called with three arguments, `event`, `resolve` and `reject`.
+
+| arg        | type          | description   |
+|:-----------|:--------------|:--------------|
+| `event`    | `object`      | same as `event` argument of `onError` or `onSuccess` |
+| `resolve`  | `function`    | same as `resolve` callback for Promise |
+| `reject`   | `function`    | same as `reject` callback for Promise  |
+
+
+Default implementations of `onFulfilled` and `onRejected` simply delegate to `onSuccess` and `onError` so you don't need to override `onFulfilled` and `onRejected` in most cases.
+
 
 #### options.modifyMessageBeforeAssert
 
@@ -171,7 +194,7 @@ Methods matching these patterns will not be instrumented by the code transform, 
 
 Similar to the `options.patterns`, you may supply objects with a `pattern` member, and the additional metadata will be passed to the assertion listeners.
 
-### var options = empowerCore.defaultOptions();
+### const options = empowerCore.defaultOptions();
 
 Returns default options object for `empowerCore` function. In other words, returns
 
@@ -199,7 +222,7 @@ with sensible default for `onError` and `onSuccess`
 
 ```js
 function onError (errorEvent) {
-    var e = errorEvent.error;
+    const e = errorEvent.error;
     if (errorEvent.powerAssertContext && e.name === 'AssertionError') {
         e.powerAssertContext = errorEvent.powerAssertContext;
     }

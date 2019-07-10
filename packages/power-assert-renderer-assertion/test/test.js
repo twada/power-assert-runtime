@@ -1,50 +1,45 @@
 'use strict';
 
 delete require.cache[require.resolve('..')];
-var AssertionRenderer = require('..');
-var assert = require('../../../test_helper/empowered-assert');
-var transpile = require('../../../test_helper/transpile');
-var testRendering = require('../../../test_helper/test-rendering');
-var appendAst = require('power-assert-context-reducer-ast');
+const AssertionRenderer = require('..');
+const assert = require('../../../test_helper/empowered-assert');
+const transpile = require('../../../test_helper/transpile');
+const testRendering = require('../../../test_helper/test-rendering');
+const AstReducer = require('power-assert-context-reducer-ast');
 
-describe('AssertionRenderer', function () {
+describe('AssertionRenderer', () => {
+  it('assert(foo === bar)', () => {
+    const foo = 'foo';
+    const bar = 'bar';
+    testRendering(() => {
+      eval(transpile('assert(foo === bar)'));
+    }, [
+      '',
+      'assert(foo === bar)'
+    ], { pipeline: [AstReducer, AssertionRenderer] });
+  });
 
-    it('assert(foo === bar)', function () {
-        var foo = 'foo';
-        var bar = 'bar';
-        testRendering(function () {
-            eval(transpile('assert(foo === bar)'));
-        }, [
-            '',
-            'assert(foo === bar)'
-        ], { renderers: [AssertionRenderer] });
+  it('show syntax error when there are some parse errors caused by not supported syntax', () => {
+    function validate (name) {
+      return {
+        name: name,
+        valid: true,
+        value: this
+      };
+    }
+    testRendering(() => {
+      eval(transpile('assert.deepEqual(true::validate("foo"), { valid: true, value: true, name: "bar" })', false));
+    }, [
+      '',
+      'assert.deepEqual(true::validate("foo"), { valid: true, value: true, name: "bar" })',
+      '                     ?                                                            ',
+      '                     ?                                                            ',
+      '                     SyntaxError: Unexpected token (1:21)                         ',
+      '                                                                                  ',
+      'If you are using `babel-plugin-espower` and want to use experimental syntax in your assert(), you should set `embedAst` option to true.',
+      'see: https://github.com/power-assert-js/babel-plugin-espower#optionsembedast      '
+    ], {
+      pipeline: [AstReducer, AssertionRenderer]
     });
-
-    it('show syntax error when there are some parse errors caused by not supported syntax', function () {
-        function validate(name) {
-            return {
-                name: name,
-                valid: true,
-                value: this
-            };
-        }
-        testRendering(function () {
-            eval(transpile('assert.deepEqual(true::validate("foo"), { valid: true, value: true, name: "bar" })', false));
-        }, [
-            '',
-            'assert.deepEqual(true::validate("foo"), { valid: true, value: true, name: "bar" })',
-            '                     ?                                                            ',
-            '                     ?                                                            ',
-            '                     SyntaxError: Unexpected token (1:21)                         ',
-            '                                                                                  ',
-            'If you are using `babel-plugin-espower` and want to use experimental syntax in your assert(), you should set `embedAst` option to true.',
-            'see: https://github.com/power-assert-js/babel-plugin-espower#optionsembedast      '
-        ], {
-            reducers: [
-                appendAst
-            ],
-            renderers: [AssertionRenderer]
-        });
-    });
-
+  });
 });

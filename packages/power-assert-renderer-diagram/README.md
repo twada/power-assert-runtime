@@ -19,7 +19,7 @@ Produces graph of each value in expression.
 USAGE
 ---------------------------------------
 
-`var DiagramRenderer = require('power-assert-renderer-diagram');`
+`const DiagramRenderer = require('power-assert-renderer-diagram');`
 
 
 #### options.stringify

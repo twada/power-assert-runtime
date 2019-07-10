@@ -5,26 +5,14 @@
 [![License][license-image]][license-url]
 
 
-Produces filepath and line number of assertion.
-
-```
-  # test/some_test.js:26
-  assert(a.name === 'bar')
-```
-
-
-USAGE
----------------------------------------
-
-`const FileRenderer = require('power-assert-renderer-file');`
-
+Add `expected`, `actual` and `operator` to powerAssertContext.
 
 
 INSTALL
 ---------------------------------------
 
 ```sh
-$ npm install --save-dev power-assert-renderer-file
+$ npm install --save-dev power-assert-context-reducer-comparison
 ```
 
 
@@ -44,8 +32,8 @@ Licensed under the [MIT](https://github.com/twada/power-assert-runtime/blob/mast
 [travis-url]: https://travis-ci.org/twada/power-assert-runtime
 [travis-image]: https://secure.travis-ci.org/twada/power-assert-runtime.svg?branch=master
 
-[npm-url]: https://npmjs.org/package/power-assert-renderer-file
-[npm-image]: https://badge.fury.io/js/power-assert-renderer-file.svg
+[npm-url]: https://npmjs.org/package/power-assert-context-reducer-ast
+[npm-image]: https://badge.fury.io/js/power-assert-context-reducer-ast.svg
 
 [license-url]: https://github.com/twada/power-assert-runtime/blob/master/LICENSE
 [license-image]: https://img.shields.io/badge/license-MIT-brightgreen.svg

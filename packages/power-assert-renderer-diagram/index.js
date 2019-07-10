@@ -1,12 +1,11 @@
 'use strict';
 
-var BaseRenderer = require('power-assert-renderer-base');
-var inherits = require('util').inherits;
-var forEach = require('core-js/library/fn/array/for-each');
-var stringifier = require('stringifier');
-var stringWidth = require('power-assert-util-string-width');
-var assign = require('core-js/library/fn/object/assign');
-var defaultOptions = require('./lib/default-options');
+const BaseRenderer = require('power-assert-renderer-base');
+const stringifier = require('stringifier');
+const stringWidth = require('power-assert-util-string-width');
+const defaultOptions = require('./lib/default-options');
+const createRow = (numCols, initial) => new Array(numCols).fill(initial);
+const rightToLeft = (a, b) => b.leftIndex - a.leftIndex;
 
 /**
  * options.stringify [function]
@@ -14,114 +13,97 @@ var defaultOptions = require('./lib/default-options');
  * options.lineSeparator [string]
  * options.anonymous [string]
  * options.circular [string]
- * 
+ *
  * options.widthOf [function]
  * options.ambiguousEastAsianCharWidth [number]
  */
-function DiagramRenderer (config) {
-    BaseRenderer.call(this);
-    this.config = assign({}, defaultOptions(), config);
+class DiagramRenderer extends BaseRenderer {
+  constructor (config) {
+    super();
+    this.config = Object.assign({}, defaultOptions(), config);
     this.events = [];
-    if (typeof this.config.stringify === 'function') {
-        this.stringify = this.config.stringify;
-    } else {
-        this.stringify = stringifier(this.config);
-    }
     if (typeof this.config.widthOf === 'function') {
-        this.widthOf = this.config.widthOf;
+      this.widthOf = this.config.widthOf;
     } else {
-        this.widthOf = (this.config.ambiguousEastAsianCharWidth === 1) ? stringWidth.narrow : stringWidth;
+      this.widthOf = (this.config.ambiguousEastAsianCharWidth === 1) ? stringWidth.narrow : stringWidth;
     }
     this.initialVertivalBarLength = 1;
-}
-inherits(DiagramRenderer, BaseRenderer);
-
-DiagramRenderer.prototype.onStart = function (context) {
+    this.stringifiers = new Map();
+  }
+  onStart (context) {
     this.assertionLine = context.source.content;
     this.initializeRows();
-};
-
-DiagramRenderer.prototype.onData = function (esNode) {
-    if (!esNode.isCaptured) {
-        return;
+  }
+  onArg (arg) {
+    let stringify;
+    if (arg.paramDef && arg.paramDef.options) {
+      stringify = stringifier(arg.paramDef.options);
+    } else if (typeof this.config.stringify === 'function') {
+      stringify = this.config.stringify;
+    } else {
+      stringify = stringifier(this.config);
     }
-    this.events.push({value: esNode.value, leftIndex: esNode.range[0]});
-};
-
-DiagramRenderer.prototype.onEnd = function () {
+    this.stringifiers.set(arg.paramDef, stringify);
+  }
+  onData (esNode) {
+    if (!esNode.isCaptured) {
+      return;
+    }
+    this.events.push({ value: esNode.value, leftIndex: esNode.range[0], paramDef: esNode.paramDef });
+  }
+  onEnd () {
     this.events.sort(rightToLeft);
     this.constructRows(this.events);
-    var _this = this;
-    forEach(this.rows, function (columns) {
-        _this.write(columns.join(''));
+    this.rows.forEach((columns) => {
+      this.write(columns.join(''));
     });
-};
-
-DiagramRenderer.prototype.initializeRows = function () {
+  }
+  initializeRows () {
     this.rows = [];
-    for (var i = 0; i <= this.initialVertivalBarLength; i += 1) {
-        this.addOneMoreRow();
+    for (let i = 0; i <= this.initialVertivalBarLength; i += 1) {
+      this.addOneMoreRow();
     }
-};
-
-DiagramRenderer.prototype.newRowFor = function (assertionLine) {
+  }
+  newRowFor (assertionLine) {
     return createRow(this.widthOf(assertionLine), ' ');
-};
-
-DiagramRenderer.prototype.addOneMoreRow = function () {
+  }
+  addOneMoreRow () {
     this.rows.push(this.newRowFor(this.assertionLine));
-};
-
-DiagramRenderer.prototype.lastRow = function () {
+  }
+  lastRow () {
     return this.rows[this.rows.length - 1];
-};
-
-DiagramRenderer.prototype.renderVerticalBarAt = function (columnIndex) {
-    var i, lastRowIndex = this.rows.length - 1;
-    for (i = 0; i < lastRowIndex; i += 1) {
-        this.rows[i].splice(columnIndex, 1, '|');
+  }
+  renderVerticalBarAt (columnIndex) {
+    const lastRowIndex = this.rows.length - 1;
+    for (let i = 0; i < lastRowIndex; i += 1) {
+      this.rows[i].splice(columnIndex, 1, '|');
     }
-};
-
-DiagramRenderer.prototype.renderValueAt = function (columnIndex, dumpedValue) {
-    var i, width = this.widthOf(dumpedValue);
-    for (i = 0; i < width; i += 1) {
-        this.lastRow().splice(columnIndex + i, 1, dumpedValue.charAt(i));
+  }
+  renderValueAt (columnIndex, dumpedValue) {
+    const width = this.widthOf(dumpedValue);
+    for (let i = 0; i < width; i += 1) {
+      this.lastRow().splice(columnIndex + i, 1, dumpedValue.charAt(i));
     }
-};
-
-DiagramRenderer.prototype.isOverlapped = function (prevCapturing, nextCaputuring, dumpedValue) {
+  }
+  isOverlapped (prevCapturing, nextCaputuring, dumpedValue) {
     return (typeof prevCapturing !== 'undefined') && this.startColumnFor(prevCapturing) <= (this.startColumnFor(nextCaputuring) + this.widthOf(dumpedValue));
-};
-
-DiagramRenderer.prototype.constructRows = function (capturedEvents) {
-    var that = this;
-    var prevCaptured;
-    forEach(capturedEvents, function (captured) {
-        var dumpedValue = that.stringify(captured.value);
-        if (that.isOverlapped(prevCaptured, captured, dumpedValue)) {
-            that.addOneMoreRow();
-        }
-        that.renderVerticalBarAt(that.startColumnFor(captured));
-        that.renderValueAt(that.startColumnFor(captured), dumpedValue);
-        prevCaptured = captured;
+  }
+  constructRows (capturedEvents) {
+    let prevCaptured;
+    capturedEvents.forEach((captured) => {
+      const stringify = this.stringifiers.get(captured.paramDef);
+      const dumpedValue = stringify(captured.value);
+      if (this.isOverlapped(prevCaptured, captured, dumpedValue)) {
+        this.addOneMoreRow();
+      }
+      this.renderVerticalBarAt(this.startColumnFor(captured));
+      this.renderValueAt(this.startColumnFor(captured), dumpedValue);
+      prevCaptured = captured;
     });
-};
-
-DiagramRenderer.prototype.startColumnFor = function (captured) {
+  }
+  startColumnFor (captured) {
     return this.widthOf(this.assertionLine.slice(0, captured.leftIndex));
-};
-
-function createRow (numCols, initial) {
-    var row = [], i;
-    for(i = 0; i < numCols; i += 1) {
-        row[i] = initial;
-    }
-    return row;
-}
-
-function rightToLeft (a, b) {
-    return b.leftIndex - a.leftIndex;
+  }
 }
 
 module.exports = DiagramRenderer;

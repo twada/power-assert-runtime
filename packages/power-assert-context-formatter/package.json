@@ -11,7 +11,6 @@
     "url": "https://github.com/twada/power-assert-runtime/issues"
   },
   "dependencies": {
-    "core-js": "^2.0.0",
     "power-assert-context-traversal": "^1.2.0"
   },
   "devDependencies": {
