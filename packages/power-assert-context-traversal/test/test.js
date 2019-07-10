@@ -168,7 +168,8 @@ describe('powerAssertContext structure', () => {
     } catch (e) {
       baseAssert.deepStrictEqual(e.powerAssertContext, {
         source: {
-          version: 2,
+          transpiler: "babel-plugin-espower",
+          version: "3.0.1",
           content: 'assert(foo === bar)',
           filepath: 'test/some_test.js',
           line: 1,
@@ -222,7 +223,8 @@ describe('powerAssertContext structure', () => {
     } catch (e) {
       baseAssert.deepStrictEqual(e.powerAssertContext, {
         source: {
-          version: 2,
+          transpiler: "babel-plugin-espower",
+          version: "3.0.1",
           content: 'assert.equal(foo, bar)',
           filepath: 'test/some_test.js',
           line: 1,
