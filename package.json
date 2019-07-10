@@ -35,6 +35,6 @@
     "lerna": "lerna",
     "fmt": "semistandard --fix packages/*/index.js packages/*/lib/*.js",
     "lint": "semistandard --verbose packages/*/index.js packages/*/lib/*.js | snazzy",
-    "test": "mocha --timeout 0 packages/*/test/*test.js"
+    "test": "mocha --timeout 0 --reporter dot packages/*/test/*test.js"
   }
 }
