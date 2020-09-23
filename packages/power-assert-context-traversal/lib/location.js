@@ -23,11 +23,10 @@ function locationOf(currentNode, tokens) {
 
 function propertyLocationOf(memberExpression, tokens) {
     var prop = memberExpression.property;
-    var token;
     if (!memberExpression.computed) {
         return prop.range;
     }
-    token = findLeftBracketTokenOf(memberExpression, tokens);
+    var token = findLeftBracketTokenOf(memberExpression, tokens);
     return token ? token.range : prop.range;
 }
 
