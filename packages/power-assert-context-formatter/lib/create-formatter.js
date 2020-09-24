@@ -1,11 +1,9 @@
 'use strict';
 
-var assign = require('core-js/library/fn/object/assign');
 var ContextTraversal = require('power-assert-context-traversal');
 var LegacyContextTraversal = require('./legacy-context-traversal');
 var StringWriter = require('./string-writer');
 var defaultOptions = require('./default-options');
-var reduce = require('core-js/library/fn/array/reduce');
 
 /**
  * options.reducers [array]
@@ -15,13 +13,13 @@ var reduce = require('core-js/library/fn/array/reduce');
  * options.legacy [boolean]
  */
 function createFormatter (options) {
-    var formatterConfig = assign({}, defaultOptions(), options);
+    var formatterConfig = Object.assign({}, defaultOptions(), options);
     var reducers = formatterConfig.reducers || [];
     var rendererConfigs = formatterConfig.renderers;
     var len = rendererConfigs.length;
 
     return function (powerAssertContext) {
-        var context = reduce(reducers, function (prevContext, reducer) {
+        var context = reducers.reduce(function (prevContext, reducer) {
             return reducer(prevContext);
         }, powerAssertContext);
         var writer = new StringWriter(formatterConfig);

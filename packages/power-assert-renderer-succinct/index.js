@@ -2,7 +2,6 @@
 
 var DiagramRenderer = require('power-assert-renderer-diagram');
 var inherits = require('util').inherits;
-var some = require('core-js/library/fn/array/some');
 
 /**
  * options.stringify [function]
@@ -41,7 +40,7 @@ SuccinctRenderer.prototype.dumpIfSupported = function (esNode) {
 
 function withinMemberExpression (esNode) {
     var ancestors = collectAncestors([], esNode.parent);
-    return some(ancestors, function (eachNode) {
+    return ancestors.some(function (eachNode) {
         return eachNode.node.type === 'MemberExpression';
     });
 }

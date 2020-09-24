@@ -4,7 +4,6 @@ var parser = require('acorn');
 require('acorn-es7-plugin')(parser);
 var estraverse = require('estraverse');
 var purifyAst = require('espurify').customize({extra: ['range']});
-var assign = require('core-js/library/fn/object/assign');
 
 module.exports = function (powerAssertContext) {
     var source = powerAssertContext.source;
@@ -15,14 +14,14 @@ module.exports = function (powerAssertContext) {
     try {
         astAndTokens = parse(source);
     } catch (e) {
-        return assign({}, powerAssertContext, { source: assign({}, source, { error: e }) });
+        return Object.assign({}, powerAssertContext, { source: Object.assign({}, source, { error: e }) });
     }
-    var newSource = assign({}, source, {
+    var newSource = Object.assign({}, source, {
         ast: purifyAst(astAndTokens.expression),
         tokens: astAndTokens.tokens,
         visitorKeys: estraverse.VisitorKeys
     });
-    return assign({}, powerAssertContext, { source: newSource });
+    return Object.assign({}, powerAssertContext, { source: newSource });
 };
 
 function parserOptions(tokens) {

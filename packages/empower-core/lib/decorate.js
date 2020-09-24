@@ -1,8 +1,5 @@
 'use strict';
 
-var some = require('core-js/library/fn/array/some');
-var map = require('core-js/library/fn/array/map');
-
 function decorate (callSpec, decorator) {
     var numArgsToCapture = callSpec.numArgsToCapture;
 
@@ -28,8 +25,8 @@ function decorate (callSpec, decorator) {
             hasMessage: hasMessage
         };
 
-        if (some(args, isCaptured)) {
-            invocation.values = map(args.slice(0, numArgsToCapture), function (arg) {
+        if (args.some(isCaptured)) {
+            invocation.values = args.slice(0, numArgsToCapture).map(function (arg) {
                 if (isNotCaptured(arg)) {
                     return arg;
                 }
